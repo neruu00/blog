@@ -1,0 +1,43 @@
+{
+  "name": "next-boilerplate",
+  "version": "1.0.0",
+  "description": "quickly start a Next.js project with Turbopack and Tailwind CSS",
+  "author": "dnwogus4260@naver.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neruu00/Next-js-Boilerplate.git"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "clean": "git clean -xdf node_modules",
+    "setup": "bash setup.sh"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.19",
+    "@tanstack/react-query-devtools": "^5.91.2",
+    "next": "15.5.9",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@tanstack/eslint-plugin-query": "^5.91.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
