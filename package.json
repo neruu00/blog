@@ -1,11 +1,11 @@
 {
-  "name": "next-boilerplate",
+  "name": "blog",
   "version": "1.0.0",
-  "description": "quickly start a Next.js project with Turbopack and Tailwind CSS",
+  "description": "my tech blog",
   "author": "dnwogus4260@naver.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/neruu00/Next-js-Boilerplate.git"
+    "url": "https://github.com/neruu00/blog.git"
   },
   "private": true,
   "scripts": {
@@ -15,15 +15,26 @@
     "lint": "eslint",
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "clean": "git clean -xdf node_modules",
-    "setup": "bash setup.sh"
+    "clean": "git clean -xdf node_modules"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.1",
     "@tanstack/react-query": "^5.90.19",
     "@tanstack/react-query-devtools": "^5.91.2",
+    "@tiptap/extension-code-block-lowlight": "^3.20.0",
+    "@tiptap/pm": "^3.20.0",
+    "@tiptap/react": "^3.20.0",
+    "@tiptap/starter-kit": "^3.20.0",
+    "clsx": "^2.1.1",
+    "lowlight": "^3.3.0",
+    "lucide-react": "^0.575.0",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.1",
     "next": "15.5.9",
+    "next-auth": "^4.24.13",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
