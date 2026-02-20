@@ -1,9 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
+
 import type { Metadata } from 'next';
 
 import './globals.css';
-import TanstackQueryLayout from './layouts/TanstackQueryLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
