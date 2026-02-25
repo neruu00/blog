@@ -1,49 +1,54 @@
-import TurntablePlayer from '@/components/TurntablePlayer';
 import Link from 'next/link';
 import { Github, Mail } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
+import MusicPlayer from '@/components/MusicPlayer';
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-6 py-12 relative z-10">
-        {/* 상단 헤더 영역 (턴테이블 제거됨) */}
+        {/* 🔥 상단 헤더 영역: flex justify-between으로 양끝 정렬 */}
         <header className="flex justify-between items-center mb-12">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             .Blog
           </h1>
+          <MusicPlayer size={52} className="md:hidden p-2! rounded-full!" />
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* 좌측 사이드바 (개발자 정보 + 턴테이블 카드) */}
-          <aside className="lg:col-span-1 space-y-6">
-            {/* 개발자 정보 카드 */}
-            <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800">
-              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">우재현</h2>
-              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
-                Dong-eui University <br />
-                Applied Software
-              </p>
-              <div className="pt-4 border-t border-gray-100 dark:border-neutral-800 space-y-2 flex gap-4">
+          {/* 좌측 사이드바: 기본(모바일/태블릿)은 flex-col(세로) -> md에서 flex-row(가로) -> lg에서 다시 flex-col(세로) */}
+          <aside className="lg:col-span-1 flex flex-col md:flex-row lg:flex-col gap-6">
+            {/* 개발자 정보 카드 (가로 정렬 시 1:1 비율을 위해 flex-1 추가) */}
+            <div className="flex-1 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 flex flex-col justify-center">
+              <div>
+                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">우재현</h2>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
+                  Dong-eui University <br />
+                  Applied Software
+                </p>
+              </div>
+
+              <div className="pt-4 mt-auto border-t border-gray-100 dark:border-neutral-800 space-y-2 flex gap-4">
                 <Tooltip content="dnwogus4260@naver.com">
                   <a
                     href="mailto:dnwogus4260@naver.com"
-                    className="block text-sm hover:text-orange-500 hover:underline"
+                    className="block text-sm hover:text-orange-500 hover:underline text-gray-700 dark:text-neutral-300"
                   >
                     <Mail />
                   </a>
                 </Tooltip>
-                <Tooltip content="github.com/neruu00">
+                <Tooltip content="github.com/Woolegend">
                   <a
-                    href="https://github.com/neruu00"
+                    href="https://github.com/Woolegend"
                     target="_blank"
                     rel="noreferrer"
-                    className="block text-sm hover:text-orange-500 hover:underline"
+                    className="block text-sm hover:text-orange-500 hover:underline text-gray-700 dark:text-neutral-300"
                   >
                     <Github />
                   </a>
                 </Tooltip>
               </div>
+
               <div className="mt-6 flex flex-wrap gap-2">
                 {['Next.js', 'React', 'TypeScript', 'Supabase', 'Tailwind'].map((tech) => (
                   <span
@@ -56,8 +61,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 🔥 새로 추가된 턴테이블 카드 */}
-            <TurntablePlayer />
+            <MusicPlayer className="hidden md:flex" />
           </aside>
 
           {/* 우측 메인 영역 (최신 게시물) */}
@@ -78,7 +82,7 @@ export default function HomePage() {
                   key={item}
                   className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 hover:border-orange-400 dark:hover:border-orange-500 transition-colors group cursor-pointer"
                 >
-                  <h3 className="text-lg font-bold text-gray-900  dark:text-white group-hover:text-orange-500 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-orange-500 transition-colors">
                     서버 사이드 렌더링(SSR)과 Tiptap 에디터 트러블슈팅
                   </h3>
                   <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400 line-clamp-2">
