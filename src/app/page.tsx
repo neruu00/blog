@@ -78,7 +78,7 @@ export default function HomePage() {
                   key={item}
                   className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 hover:border-orange-400 dark:hover:border-orange-500 transition-colors group cursor-pointer"
                 >
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-orange-500 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900  dark:text-white group-hover:text-orange-500 transition-colors">
                     서버 사이드 렌더링(SSR)과 Tiptap 에디터 트러블슈팅
                   </h3>
                   <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400 line-clamp-2">
