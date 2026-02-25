@@ -85,6 +85,24 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Code className="w-5 h-5" />
       </button>
+      {editor.isActive('codeBlock') && (
+        <>
+          <select
+            value={editor.getAttributes('codeBlock').language || 'javascript'}
+            onChange={(e) => {
+              editor.chain().focus().setCodeBlock({ language: e.target.value }).run();
+            }}
+            className="ml-1 text-sm bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-colors"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang.label}
+              </option>
+            ))}
+          </select>
+          <div className="w-px h-6 bg-gray-200 dark:bg-neutral-700 mx-1" />
+        </>
+      )}
       <button
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={getButtonClass(editor.isActive('blockquote'))}
@@ -106,24 +124,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <ListOrdered className="w-5 h-5" />
       </button>
-      {editor.isActive('codeBlock') && (
-        <>
-          <div className="w-px h-6 bg-gray-200 dark:bg-neutral-700 mx-1" />
-          <select
-            value={editor.getAttributes('codeBlock').language || 'javascript'}
-            onChange={(e) => {
-              editor.chain().focus().setCodeBlock({ language: e.target.value }).run();
-            }}
-            className="ml-1 text-sm bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-neutral-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-colors"
-          >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.value} value={lang.value}>
-                {lang.label}
-              </option>
-            ))}
-          </select>
-        </>
-      )}
     </div>
   );
 }
