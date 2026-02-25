@@ -1,0 +1,100 @@
+'use client';
+
+import { type Editor } from '@tiptap/react';
+import {
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  Heading1,
+  Heading2,
+  List,
+  ListOrdered,
+  Quote,
+} from 'lucide-react';
+
+interface ToolbarProps {
+  editor: Editor | null;
+}
+
+export default function Toolbar({ editor }: ToolbarProps) {
+  if (!editor) return null;
+
+  // 버튼 스타일을 통합 관리하는 헬퍼 함수
+  const getButtonClass = (isActive: boolean) =>
+    `p-2 rounded-lg transition-colors duration-200 ${
+      isActive
+        ? 'bg-orange-100 text-orange-600' // 활성화 상태: 오렌지 포인트
+        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' // 기본 상태
+    }`;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2 rounded-t-2xl">
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        className={getButtonClass(editor.isActive('heading', { level: 1 }))}
+        title="제목 1"
+      >
+        <Heading1 className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={getButtonClass(editor.isActive('heading', { level: 2 }))}
+        title="제목 2"
+      >
+        <Heading2 className="w-5 h-5" />
+      </button>
+      <div className="w-px h-6 bg-gray-200 mx-1" /> {/* 구분선 */}
+      <button
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={getButtonClass(editor.isActive('bold'))}
+        title="굵게"
+      >
+        <Bold className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={getButtonClass(editor.isActive('italic'))}
+        title="기울임"
+      >
+        <Italic className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        className={getButtonClass(editor.isActive('strike'))}
+        title="취소선"
+      >
+        <Strikethrough className="w-5 h-5" />
+      </button>
+      <div className="w-px h-6 bg-gray-200 mx-1" />
+      <button
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        className={getButtonClass(editor.isActive('codeBlock'))}
+        title="코드 블록"
+      >
+        <Code className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        className={getButtonClass(editor.isActive('blockquote'))}
+        title="인용구"
+      >
+        <Quote className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={getButtonClass(editor.isActive('bulletList'))}
+        title="글머리 기호"
+      >
+        <List className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        className={getButtonClass(editor.isActive('orderedList'))}
+        title="번호 매기기"
+      >
+        <ListOrdered className="w-5 h-5" />
+      </button>
+    </div>
+  );
+}

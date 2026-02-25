@@ -1,7 +1,7 @@
-import connectDB from '@/lib/db';
+// import connectDB from '@/lib/db';
 
 export default async function Home() {
-  await connectDB();
+  // await connectDB();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
