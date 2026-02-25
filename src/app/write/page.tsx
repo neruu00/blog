@@ -15,7 +15,7 @@ export default function WritePage() {
         <input
           type="text"
           placeholder="제목을 입력하세요"
-          className="w-full max-w-4xl mx-auto block text-4xl font-bold bg-transparent border-none outline-none placeholder-gray-300 text-gray-900"
+          className="w-full max-w-4xl dark:prose-invert mx-auto block text-4xl font-bold bg-transparent border-none outline-none placeholder-gray-300 text-gray-900"
         />
         <br />
 

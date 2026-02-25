@@ -29,7 +29,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
     }`;
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2 rounded-t-2xl">
+    <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2">
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={getButtonClass(editor.isActive('heading', { level: 1 }))}

@@ -4,6 +4,7 @@ import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
 
 import type { Metadata } from 'next';
 
+import 'highlight.js/styles/atom-one-dark.css';
 import './globals.css';
 
 const geistSans = Geist({
