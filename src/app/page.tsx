@@ -1,5 +1,7 @@
 import TurntablePlayer from '@/components/TurntablePlayer';
 import Link from 'next/link';
+import { Github, Mail } from 'lucide-react';
+import Tooltip from '@/components/Tooltip';
 
 export default function HomePage() {
   return (
@@ -22,21 +24,25 @@ export default function HomePage() {
                 Dong-eui University <br />
                 Applied Software
               </p>
-              <div className="pt-4 border-t border-gray-100 dark:border-neutral-800 space-y-2">
-                <a
-                  href="mailto:dnwogus4260@naver.com"
-                  className="block text-sm text-orange-500 hover:underline"
-                >
-                  dnwogus4260@naver.com
-                </a>
-                <a
-                  href="https://github.com/neruu00"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block text-sm text-orange-500 hover:underline"
-                >
-                  github.com/neruu00
-                </a>
+              <div className="pt-4 border-t border-gray-100 dark:border-neutral-800 space-y-2 flex gap-4">
+                <Tooltip content="dnwogus4260@naver.com">
+                  <a
+                    href="mailto:dnwogus4260@naver.com"
+                    className="block text-sm hover:text-orange-500 hover:underline"
+                  >
+                    <Mail />
+                  </a>
+                </Tooltip>
+                <Tooltip content="github.com/neruu00">
+                  <a
+                    href="https://github.com/neruu00"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block text-sm hover:text-orange-500 hover:underline"
+                  >
+                    <Github />
+                  </a>
+                </Tooltip>
               </div>
               <div className="mt-6 flex flex-wrap gap-2">
                 {['Next.js', 'React', 'TypeScript', 'Supabase', 'Tailwind'].map((tech) => (
