@@ -4,10 +4,6 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { common, createLowlight } from 'lowlight';
-import css from 'highlight.js/lib/languages/css';
-import js from 'highlight.js/lib/languages/javascript';
-import ts from 'highlight.js/lib/languages/typescript';
-import html from 'highlight.js/lib/languages/xml';
 import Toolbar from './Toolbar';
 import { useState } from 'react';
 
@@ -34,6 +30,8 @@ const CONTENT = `
 const lowlight = createLowlight(common);
 
 export default function TiptapEditor() {
+  const [_, forceUpdate] = useState(false);
+
   const editor = useEditor({
     immediatelyRender: false, // SSR 에러 방지
     extensions: [
@@ -57,6 +55,9 @@ export default function TiptapEditor() {
         class:
           'prose prose-orange dark:prose-invert max-w-none w-full min-h-[500px] p-6 focus:outline-none',
       },
+    },
+    onTransaction: () => {
+      forceUpdate((prev) => !prev);
     },
   });
 
