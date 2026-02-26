@@ -6,35 +6,33 @@ import WriteLinkButton from '@/components/WriteLinkButton';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] relative overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
       <WriteLinkButton />
-      <div className="max-w-5xl mx-auto px-6 py-12 relative z-10">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 py-12">
         {/* 🔥 상단 헤더 영역: flex justify-between으로 양끝 정렬 */}
-        <header className="flex justify-between items-center mb-12">
+        <header className="mb-12 flex items-center justify-between">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             .Blog
           </h1>
-          <MusicPlayer size={52} className="md:hidden p-2! rounded-full!" />
+          <MusicPlayer size={52} className="rounded-full! p-2! md:hidden" />
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* 좌측 사이드바: 기본(모바일/태블릿)은 flex-col(세로) -> md에서 flex-row(가로) -> lg에서 다시 flex-col(세로) */}
-          <aside className="lg:col-span-1 flex flex-col md:flex-row lg:flex-col gap-6">
-            {/* 개발자 정보 카드 (가로 정렬 시 1:1 비율을 위해 flex-1 추가) */}
-            <div className="flex-1 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 flex flex-col justify-center">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+          <aside className="flex flex-col gap-6 md:flex-row lg:col-span-1 lg:flex-col">
+            <div className="flex flex-1 flex-col justify-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <div>
-                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">우재현</h2>
-                <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
+                <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">우재현</h2>
+                <p className="mb-2 text-sm text-gray-600 dark:text-neutral-400">
                   Dong-eui University <br />
                   Applied Software
                 </p>
               </div>
 
-              <div className="pt-4 mt-auto border-t border-gray-100 dark:border-neutral-800 space-y-2 flex gap-4">
+              <div className="mt-auto flex gap-4 space-y-2 border-t border-gray-100 pt-4 dark:border-neutral-800">
                 <Tooltip content="dnwogus4260@naver.com">
                   <a
                     href="mailto:dnwogus4260@naver.com"
-                    className="block text-sm hover:text-orange-500 hover:underline text-gray-700 dark:text-neutral-300"
+                    className="block text-sm text-gray-700 hover:text-orange-500 hover:underline dark:text-neutral-300"
                   >
                     <Mail />
                   </a>
@@ -44,7 +42,7 @@ export default function HomePage() {
                     href="https://github.com/neruu00"
                     target="_blank"
                     rel="noreferrer"
-                    className="block text-sm hover:text-orange-500 hover:underline text-gray-700 dark:text-neutral-300"
+                    className="block text-sm text-gray-700 hover:text-orange-500 hover:underline dark:text-neutral-300"
                   >
                     <Github />
                   </a>
@@ -55,7 +53,7 @@ export default function HomePage() {
                 {['Next.js', 'React', 'TypeScript', 'Supabase', 'Tailwind'].map((tech) => (
                   <span
                     key={tech}
-                    className="px-2 py-1 bg-gray-100 dark:bg-neutral-800 text-xs text-gray-700 dark:text-neutral-300 rounded-md"
+                    className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-neutral-800 dark:text-neutral-300"
                   >
                     {tech}
                   </span>
@@ -68,11 +66,11 @@ export default function HomePage() {
 
           {/* 우측 메인 영역 (최신 게시물) */}
           <section className="lg:col-span-2">
-            <div className="flex justify-between items-end mb-6">
+            <div className="mb-6 flex items-end justify-between">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">최신 포스트</h2>
               <Link
                 href="/posts"
-                className="text-sm text-orange-500 hover:text-orange-600 font-medium"
+                className="text-sm font-medium text-orange-500 hover:text-orange-600"
               >
                 전체 보기 &rarr;
               </Link>
@@ -82,12 +80,12 @@ export default function HomePage() {
               {[1, 2, 3].map((item) => (
                 <article
                   key={item}
-                  className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 hover:border-orange-400 dark:hover:border-orange-500 transition-colors group cursor-pointer"
+                  className="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:border-orange-400 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-500"
                 >
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-orange-500 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 transition-colors group-hover:text-orange-500 dark:text-white">
                     서버 사이드 렌더링(SSR)과 Tiptap 에디터 트러블슈팅
                   </h3>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400 line-clamp-2">
+                  <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-neutral-400">
                     Next.js App Router 환경에서 Tiptap 에디터를 도입할 때 발생하는 Hydration 에러를
                     해결하고, 성능을 최적화하는 방법에 대해 알아봅니다.
                   </p>

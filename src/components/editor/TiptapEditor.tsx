@@ -62,7 +62,7 @@ export default function TiptapEditor() {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col bg-white dark:bg-neutral-900 shadow-sm border border-gray-200 dark:border-neutral-800 focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-400 transition-all">
+    <div className="mx-auto flex w-full max-w-4xl flex-col border border-gray-200 bg-white shadow-sm transition-all focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-400 dark:border-neutral-800 dark:bg-neutral-900">
       {/* 상단 툴바 */}
       <Toolbar editor={editor} />
       {/* 에디터 본문 영역 */}

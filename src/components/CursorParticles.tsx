@@ -79,5 +79,5 @@ export default function CursorParticles() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" />;
+  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-50" />;
 }

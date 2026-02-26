@@ -159,10 +159,10 @@ export default function Turntable({
     <button
       onClick={toggleMusic}
       style={size ? { width: size, height: size } : {}}
-      className={`relative flex items-center justify-center rounded-full focus:outline-none shrink-0 hover:scale-[1.02] transition-transform mx-auto ${className}`}
+      className={`relative mx-auto flex shrink-0 items-center justify-center rounded-full transition-transform hover:scale-[1.02] focus:outline-none ${className}`}
       title={isPlaying ? '음악 정지' : '음악 재생'}
     >
-      <canvas ref={canvasRef} width={400} height={400} className="w-full h-full block" />
+      <canvas ref={canvasRef} width={400} height={400} className="block h-full w-full" />
     </button>
   );
 }

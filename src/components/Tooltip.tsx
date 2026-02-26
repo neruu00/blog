@@ -21,30 +21,23 @@ export default function Tooltip({ children, content, position = 'top' }: Tooltip
 
   return (
     // 1. 래퍼에 group 클래스를 주어 내부 요소들이 호버 상태를 공유하게 합니다.
-    <div className="relative inline-block group">
+    <div className="group relative inline-block">
       {/* 2. 사용자가 마우스를 올릴 실제 요소 */}
       {children}
 
       {/* 3. 툴팁 본문 (기본적으로 투명하고 약간 아래에 위치) */}
       <div
-        className={`absolute left-1/2 -translate-x-1/2 ${positionClasses} z-50 w-max pointer-events-none`}
+        className={`absolute left-1/2 -translate-x-1/2 ${positionClasses} pointer-events-none z-50 w-max`}
       >
         {/* 애니메이션 효과: 투명도(opacity)와 Y축 이동(translate) */}
         <div
-          className={`
-          invisible opacity-0 translate-y-1 
-          group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 
-          transition-all duration-200 ease-out
-          px-3 py-1.5 bg-neutral-800 dark:bg-neutral-700 text-white text-sm font-medium rounded-lg shadow-lg
-        `}
+          className={`invisible translate-y-1 rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-medium text-white opacity-0 shadow-lg transition-all duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 dark:bg-neutral-700`}
         >
           {content}
 
           {/* 4. 툴팁 꼬리 (말풍선 화살표) */}
           <div
-            className={`
-            absolute left-1/2 -translate-x-1/2 border-[5px] border-transparent ${arrowClasses}
-          `}
+            className={`absolute left-1/2 -translate-x-1/2 border-[5px] border-transparent ${arrowClasses} `}
           />
         </div>
       </div>

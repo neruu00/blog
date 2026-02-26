@@ -13,7 +13,7 @@ export default function MusicPlayer({ className = '', size = 180 }: MusicPlayerP
 
   return (
     <div
-      className={`bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 transition-all flex flex-col items-center justify-center p-6 ${className}`}
+      className={`flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all dark:border-neutral-800 dark:bg-neutral-900 ${className}`}
     >
       <Turntable isPlaying={isPlaying} toggleMusic={toggleMusic} size={size} />
     </div>
