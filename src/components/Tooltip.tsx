@@ -35,7 +35,7 @@ export default function Tooltip({ children, content, position = 'top' }: Tooltip
           invisible opacity-0 translate-y-1 
           group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 
           transition-all duration-200 ease-out
-          px-3 py-1.5 bg-neutral-800 dark:bg-neutral-700 text-white text-xs font-medium rounded-lg shadow-lg
+          px-3 py-1.5 bg-neutral-800 dark:bg-neutral-700 text-white text-sm font-medium rounded-lg shadow-lg
         `}
         >
           {content}

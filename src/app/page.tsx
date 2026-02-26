@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { Github, Mail } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 import MusicPlayer from '@/components/MusicPlayer';
+import WriteLinkButton from '@/components/WriteLinkButton';
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] relative overflow-hidden">
+      <WriteLinkButton />
       <div className="max-w-5xl mx-auto px-6 py-12 relative z-10">
         {/* 🔥 상단 헤더 영역: flex justify-between으로 양끝 정렬 */}
         <header className="flex justify-between items-center mb-12">
@@ -37,9 +39,9 @@ export default function HomePage() {
                     <Mail />
                   </a>
                 </Tooltip>
-                <Tooltip content="github.com/Woolegend">
+                <Tooltip content="neruu00">
                   <a
-                    href="https://github.com/Woolegend"
+                    href="https://github.com/neruu00"
                     target="_blank"
                     rel="noreferrer"
                     className="block text-sm hover:text-orange-500 hover:underline text-gray-700 dark:text-neutral-300"
