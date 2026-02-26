@@ -1,4 +1,5 @@
 export interface BlogPost {
+  id: string; // 🔥 고유 ID 추가
   title: string;
   author: string;
   tags: string[];
@@ -25,6 +26,7 @@ const generateTiptapJSON = (heading: string, paragraph: string) => ({
 
 export const mockPosts: BlogPost[] = [
   {
+    id: '1',
     title: 'Next.js와 Supabase로 사내 채팅 서비스 구축하기',
     author: '우재현',
     tags: ['Next.js', 'Supabase', 'Websocket'],
@@ -36,6 +38,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2025-10-26T10:30:00Z'),
   },
   {
+    id: '2',
     title: '뽀모도로 타이머 익스텐션 개발과 애니메이션 최적화',
     author: '우재현',
     tags: ['React', 'Tailwind CSS', 'Chrome Extension'],
@@ -47,6 +50,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2025-11-16T14:20:00Z'),
   },
   {
+    id: '3',
     title: 'Server-Driven UI(SDUI) 프론트엔드 아키텍처 도입 고민',
     author: '우재현',
     tags: ['Architecture', 'SDUI', 'React'],
@@ -58,6 +62,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2025-12-08T09:00:00Z'),
   },
   {
+    id: '4',
     title: '인터랙티브한 프론트엔드 개발자 포트폴리오 제작기',
     author: '우재현',
     tags: ['Portfolio', 'Next.js', 'Animation'],
@@ -69,6 +74,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-01-20T13:20:00Z'),
   },
   {
+    id: '5',
     title: '탭 그룹 관리를 위한 크롬 익스텐션 Zenless Navigation 개발기',
     author: '우재현',
     tags: ['Chrome Extension', 'React', 'Side Project'],
@@ -80,6 +86,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-02-19T10:00:00Z'),
   },
   {
+    id: '6',
     title: 'Tailwind CSS v4의 새로운 @theme inline 문법 파헤치기',
     author: '우재현',
     tags: ['Tailwind CSS', 'CSS', 'Frontend'],
@@ -91,6 +98,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-02-10T08:10:00Z'),
   },
   {
+    id: '7',
     title: 'Next.js App Router 환경에서의 Hydration 에러 해결',
     author: '우재현',
     tags: ['Next.js', 'React', 'Troubleshooting'],
@@ -102,6 +110,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-02-16T11:20:00Z'),
   },
   {
+    id: '8',
     title: '[일상] 흑백요리사2 출시를 기다리며... 개발자의 휴식',
     author: '우재현',
     tags: ['Life', '흑백요리사2', 'Gaming'],
@@ -113,6 +122,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-02-20T22:15:00Z'),
   },
   {
+    id: '9',
     title: 'Tiptap 에디터에 highlight.js 완벽하게 적용하는 방법',
     author: '우재현',
     tags: ['Tiptap', 'React', 'Frontend'],
@@ -124,6 +134,7 @@ export const mockPosts: BlogPost[] = [
     updatedAt: new Date('2026-02-24T14:30:00Z'),
   },
   {
+    id: '10',
     title: 'Web Audio API를 활용한 제너레이티브 로파이(Lofi) 플레이어 만들기',
     author: '우재현',
     tags: ['Web Audio', 'Canvas', 'React'],

@@ -3,8 +3,12 @@ import { Github, Mail } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 import MusicPlayer from '@/components/MusicPlayer';
 import WriteLinkButton from '@/components/WriteLinkButton';
+import { mockPosts } from '@/mocks/mockPosts';
+import PostCard from '@/components/PostCard';
 
 export default function HomePage() {
+  const sortedPosts = [...mockPosts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
       <WriteLinkButton />
@@ -18,7 +22,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           <aside className="flex flex-col gap-6 md:flex-row lg:col-span-1 lg:flex-col">
-            <div className="flex flex-1 flex-col justify-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="flex flex-col justify-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <div>
                 <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">우재현</h2>
                 <p className="mb-2 text-sm text-gray-600 dark:text-neutral-400">
@@ -76,22 +80,8 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-4">
-              {[1, 2, 3].map((item) => (
-                <article
-                  key={item}
-                  className="group cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:border-orange-400 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-500"
-                >
-                  <h3 className="text-lg font-bold text-gray-900 transition-colors group-hover:text-orange-500 dark:text-white">
-                    서버 사이드 렌더링(SSR)과 Tiptap 에디터 트러블슈팅
-                  </h3>
-                  <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-neutral-400">
-                    Next.js App Router 환경에서 Tiptap 에디터를 도입할 때 발생하는 Hydration 에러를
-                    해결하고, 성능을 최적화하는 방법에 대해 알아봅니다.
-                  </p>
-                  <div className="mt-4 text-xs text-gray-500 dark:text-neutral-500">
-                    2026. 02. 25
-                  </div>
-                </article>
+              {sortedPosts.slice(0, 3).map((post) => (
+                <PostCard key={post.id} post={post} />
               ))}
             </div>
           </section>

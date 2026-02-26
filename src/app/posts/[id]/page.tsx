@@ -8,7 +8,7 @@ import { mockPosts } from '@/mocks/mockPosts';
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   // URL에서 넘어온 id를 숫자로 변환하여 MOCK 데이터 배열에서 찾습니다.
   const postId = parseInt(params.id, 10);
-  const post = mockPosts[postId];
+  const post = mockPosts[postId - 1];
 
   // 포스트가 없거나 id가 숫자가 아니면 404 페이지로 보냅니다.
   if (!post || isNaN(postId)) {
