@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import 'highlight.js/styles/atom-one-dark.css';
 import './globals.css';
 import CursorParticles from '@/components/CursorParticles';
+import { MusicProvider } from '@/contexts/MusicProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,7 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} relative antialiased`}>
         <CursorParticles />
-        <TanstackQueryLayout>{children}</TanstackQueryLayout>
+        <TanstackQueryLayout>
+          <MusicProvider>{children}</MusicProvider>
+        </TanstackQueryLayout>
       </body>
     </html>
   );

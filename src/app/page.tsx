@@ -9,7 +9,6 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
       <WriteLinkButton />
       <div className="relative z-10 mx-auto max-w-5xl px-6 py-12">
-        {/* 🔥 상단 헤더 영역: flex justify-between으로 양끝 정렬 */}
         <header className="mb-12 flex items-center justify-between">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             .Blog

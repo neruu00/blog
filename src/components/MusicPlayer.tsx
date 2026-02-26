@@ -1,6 +1,6 @@
 'use client';
 
-import useMusic from '@/hooks/useMusic';
+import { useGlobalMusic } from '@/contexts/MusicProvider';
 import Turntable from './Turntable';
 
 interface MusicPlayerProps {
@@ -9,7 +9,7 @@ interface MusicPlayerProps {
 }
 
 export default function MusicPlayer({ className = '', size = 180 }: MusicPlayerProps) {
-  const { isPlaying, toggleMusic } = useMusic();
+  const { isPlaying, toggleMusic } = useGlobalMusic();
 
   return (
     <div
