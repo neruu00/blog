@@ -11,8 +11,6 @@ export default function PostCard({ post }: Props) {
   const plainText = extractTextFromTiptap(post.content);
   const snippet = plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText;
 
-  post.tags = ['Next.js', 'Blog'];
-
   const formattedDate = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',
