@@ -1,13 +1,18 @@
 import Link from 'next/link';
 
 import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
-import { BlogPost } from '@/mocks/mockPosts';
+import { Post } from '@/types/post.type';
 
-export default function PostCard({ post }: { post: BlogPost }) {
+interface Props {
+  post: Post;
+}
+
+export default function PostCard({ post }: Props) {
   const plainText = extractTextFromTiptap(post.content);
   const snippet = plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText;
 
-  // 날짜 포맷팅 (예: 2026년 2월 26일)
+  post.tags = ['Next.js', 'Blog'];
+
   const formattedDate = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -40,7 +45,7 @@ export default function PostCard({ post }: { post: BlogPost }) {
         </time>
         {/* 태그 (최대 3개만 표시) */}
         <div className="hidden flex-wrap gap-2 sm:flex">
-          {post.tags.slice(0, 3).map((tag) => (
+          {post.tags?.slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
