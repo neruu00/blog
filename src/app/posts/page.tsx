@@ -1,7 +1,8 @@
-import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { mockPosts } from '@/mocks/mockPosts';
+import Link from 'next/link';
+
 import PostCard from '@/components/PostCard';
+import { mockPosts } from '@/mocks/mockPosts';
 
 export default function PostsPage() {
   // 최신 글이 위로 오도록 정렬

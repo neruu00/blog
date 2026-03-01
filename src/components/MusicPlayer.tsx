@@ -1,6 +1,7 @@
 'use client';
 
 import { useGlobalMusic } from '@/contexts/MusicProvider';
+
 import Turntable from './Turntable';
 
 interface MusicPlayerProps {

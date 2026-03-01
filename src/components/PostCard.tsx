@@ -1,6 +1,7 @@
+import Link from 'next/link';
+
 import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
 import { BlogPost } from '@/mocks/mockPosts';
-import Link from 'next/link';
 
 export default function PostCard({ post }: { post: BlogPost }) {
   const plainText = extractTextFromTiptap(post.content);

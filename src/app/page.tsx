@@ -1,10 +1,11 @@
-import Link from 'next/link';
 import { Github, Mail } from 'lucide-react';
-import Tooltip from '@/components/Tooltip';
+import Link from 'next/link';
+
 import MusicPlayer from '@/components/MusicPlayer';
+import PostCard from '@/components/PostCard';
+import Tooltip from '@/components/Tooltip';
 import WriteLinkButton from '@/components/WriteLinkButton';
 import { mockPosts } from '@/mocks/mockPosts';
-import PostCard from '@/components/PostCard';
 
 export default function HomePage() {
   const sortedPosts = [...mockPosts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());

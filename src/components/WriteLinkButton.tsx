@@ -1,5 +1,6 @@
 import { PenBox } from 'lucide-react';
 import Link from 'next/link';
+
 import Tooltip from './Tooltip';
 
 export default function WriteLinkButton() {
