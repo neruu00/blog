@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
+
 import useMusic from '@/hooks/useMusic';
 
 type MusicContextType = ReturnType<typeof useMusic>;

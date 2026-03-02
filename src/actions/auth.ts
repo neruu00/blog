@@ -1,7 +1,7 @@
 'use server';
 
-import * as OTPAuth from 'otpauth';
 import { cookies } from 'next/headers';
+import * as OTPAuth from 'otpauth';
 
 export async function verifyOTP(otpCode: string) {
   const secret = process.env.OTP_SECRET;

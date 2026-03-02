@@ -1,12 +1,16 @@
-import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
-import { BlogPost } from '@/mocks/mockPosts';
 import Link from 'next/link';
 
-export default function PostCard({ post }: { post: BlogPost }) {
+import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
+import { Post } from '@/types/post.type';
+
+interface Props {
+  post: Post;
+}
+
+export default function PostCard({ post }: Props) {
   const plainText = extractTextFromTiptap(post.content);
   const snippet = plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText;
 
-  // 날짜 포맷팅 (예: 2026년 2월 26일)
   const formattedDate = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',

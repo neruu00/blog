@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import { verifyOTP } from '@/actions/auth';
 import ConfettiParticles from '@/components/ConfettiParticles';
 
@@ -14,55 +15,58 @@ export default function LoginPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const handleVerify = async (currentOtp: string) => {
-    if (currentOtp.length !== 6 || isLoading || isSuccess) return;
+  const handleVerify = useCallback(
+    async (currentOtp: string) => {
+      if (currentOtp.length !== 6 || isLoading || isSuccess) return;
 
-    setIsLoading(true);
-    setError('');
+      setIsLoading(true);
+      setError('');
 
-    try {
-      /**
-       * NOTE - 구라 스피너
-       * 실제 OTP 검증은 서버에서 매우 빠르게 처리되지만,
-       * 인증 시 사용자 경험을 위해 최소 0.5초는 로딩 스피너가 돌아가도록 강제합니다.
-       * 반드시 필요한 기능이 아니므로 나중에 필요없다면 제거하세요.
-       */
-      const [result] = await Promise.all([
-        verifyOTP(currentOtp),
-        new Promise((resolve) => setTimeout(resolve, 500)),
-      ]);
-
-      if (result.success) {
-        setIsLoading(false);
-        setIsSuccess(true);
-
+      try {
         /**
-         * NOTE - 구라 컨페티
-         * OTP 인증이 성공하면 축하하는 의미로 잠깐 컨페티 애니메이션을 보여줍니다.
-         * 실제로는 인증이 성공하자마자 홈으로 리다이렉트해도 무방하지만,
-         * 사용자에게 '인증이 완료되었다'는 시각적 피드백을 주기 위해 1.5초 후에 리다이렉트합니다.
-         * 꼭 필요한 기능은 아니므로 나중에 필요없다면 제거하세요.
+         * NOTE - 구라 스피너
+         * 실제 OTP 검증은 서버에서 매우 빠르게 처리되지만,
+         * 인증 시 사용자 경험을 위해 최소 0.5초는 로딩 스피너가 돌아가도록 강제합니다.
+         * 반드시 필요한 기능이 아니므로 나중에 필요없다면 제거하세요.
          */
-        setTimeout(() => {
-          router.push('/');
-        }, 1500);
-      } else {
-        setError(result.error || '인증 실패');
+        const [result] = await Promise.all([
+          verifyOTP(currentOtp),
+          new Promise((resolve) => setTimeout(resolve, 500)),
+        ]);
+
+        if (result.success) {
+          setIsLoading(false);
+          setIsSuccess(true);
+
+          /**
+           * NOTE - 구라 컨페티
+           * OTP 인증이 성공하면 축하하는 의미로 잠깐 컨페티 애니메이션을 보여줍니다.
+           * 실제로는 인증이 성공하자마자 홈으로 리다이렉트해도 무방하지만,
+           * 사용자에게 '인증이 완료되었다'는 시각적 피드백을 주기 위해 1.5초 후에 리다이렉트합니다.
+           * 꼭 필요한 기능은 아니므로 나중에 필요없다면 제거하세요.
+           */
+          setTimeout(() => {
+            router.push('/');
+          }, 1500);
+        } else {
+          setError(result.error || '인증 실패');
+          setOtp('');
+          setIsLoading(false);
+          inputRef.current?.focus();
+        }
+      } catch (err) {
+        setError('서버 오류가 발생했습니다.');
         setOtp('');
         setIsLoading(false);
         inputRef.current?.focus();
       }
-    } catch (err) {
-      setError('서버 오류가 발생했습니다.');
-      setOtp('');
-      setIsLoading(false);
-      inputRef.current?.focus();
-    }
-  };
+    },
+    [isLoading, isSuccess, router],
+  );
 
   useEffect(() => {
     if (otp.length === 6) handleVerify(otp);
-  }, [otp]);
+  }, [otp, handleVerify]);
 
   return (
     <>

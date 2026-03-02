@@ -1,13 +1,37 @@
-import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
 import { Github, Mail } from 'lucide-react';
-import Tooltip from '@/components/Tooltip';
-import MusicPlayer from '@/components/MusicPlayer';
-import WriteLinkButton from '@/components/WriteLinkButton';
-import { mockPosts } from '@/mocks/mockPosts';
-import PostCard from '@/components/PostCard';
+import Link from 'next/link';
 
-export default function HomePage() {
-  const sortedPosts = [...mockPosts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+import MusicPlayer from '@/components/MusicPlayer';
+import PostCard from '@/components/PostCard';
+import Tooltip from '@/components/Tooltip';
+import WriteLinkButton from '@/components/WriteLinkButton';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
+
+export default async function HomePage() {
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  if (error) {
+    console.error('게시글을 불러오는 중 에러 발생:', error);
+  }
+
+  // 3. PostCard 컴포넌트의 props 규격에 맞게 데이터 가공
+  const formattedPosts = (posts || []).map((post) => ({
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    createdAt: new Date(post.created_at),
+    author: post.author || 'admin',
+    tags: post.tags || ['Next.js', 'Blog'],
+  }));
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
@@ -80,7 +104,7 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-4">
-              {sortedPosts.slice(0, 3).map((post) => (
+              {formattedPosts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </div>
