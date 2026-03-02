@@ -27,10 +27,16 @@ export async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
-  const tags = tagsString ? JSON.parse(tagsString) : [];
 
   if (!title || !content) {
     return { success: false, error: '제목과 내용을 모두 입력해주세요.' };
+  }
+
+  let tags: string[] = [];
+  try {
+    tags = tagsString ? JSON.parse(tagsString) : [];
+  } catch (e) {
+    return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
   try {

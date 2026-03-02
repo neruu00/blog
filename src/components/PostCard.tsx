@@ -43,7 +43,7 @@ export default function PostCard({ post }: Props) {
         </time>
         {/* 태그 (최대 3개만 표시) */}
         <div className="hidden flex-wrap gap-2 sm:flex">
-          {post.tags?.slice(0, 3).map((tag) => (
+          {post.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
