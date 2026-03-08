@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
-import { supabase } from '@/lib/supabase';
 import { verifyAdminSession } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   // 1. 비동기로 params 해제하여 id 추출

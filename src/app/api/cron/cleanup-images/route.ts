@@ -1,5 +1,6 @@
-import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic'; // 항상 동적으로 실행되도록 강제
 

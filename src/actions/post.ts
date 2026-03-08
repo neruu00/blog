@@ -2,9 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { protect } from '@/lib/auth';
 import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { supabase } from '@/lib/supabase';
-import { protect } from '@/lib/auth';
 
 export async function createPost(formData: FormData) {
   await protect(() => {

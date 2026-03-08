@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 
-import EditPostClient from './_components/EditPostClient';
 import { supabase } from '@/lib/supabase';
+
+import EditPostClient from './_components/EditPostClient';
 
 export default async function EditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
