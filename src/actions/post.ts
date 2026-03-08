@@ -1,14 +1,10 @@
 'use server';
 
-import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
-import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
+import { supabase } from '@/lib/supabase';
 
 export async function createPost(formData: FormData) {
   const session = (await cookies()).get('admin_session');

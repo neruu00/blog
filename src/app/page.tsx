@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -6,11 +5,7 @@ import MusicPlayer from '@/components/MusicPlayer';
 import PostCard from '@/components/PostCard';
 import Tooltip from '@/components/Tooltip';
 import WriteLinkButton from '@/components/WriteLinkButton';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import { supabase } from '@/lib/supabase';
 
 export default async function HomePage() {
   const { data: posts, error } = await supabase

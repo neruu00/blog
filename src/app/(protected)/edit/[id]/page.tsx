@@ -1,12 +1,8 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
-import EditPostClient from './_components/EditPostClient';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import EditPostClient from './_components/EditPostClient';
+import { supabase } from '@/lib/supabase';
 
 export default async function EditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

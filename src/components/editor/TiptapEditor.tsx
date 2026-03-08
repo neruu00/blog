@@ -1,8 +1,8 @@
 'use client';
 
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import Image from '@tiptap/extension-image';
+import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 import { useState } from 'react';

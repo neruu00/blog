@@ -1,10 +1,11 @@
 // src/app/(admin)/edit/[id]/EditPostClient.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { JSONContent } from '@tiptap/react';
 import { Loader2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { updatePost } from '@/actions/post';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 

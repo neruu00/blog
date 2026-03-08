@@ -1,17 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import TiptapViewer from '@/components/editor/TiptapViewer';
-import { cookies } from 'next/headers';
 import DeletePostButton from '@/components/DeletePostButton';
-
-// Supabase 클라이언트 초기화 (조회는 누구나 가능하므로 ANON KEY 사용 가능)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import TiptapViewer from '@/components/editor/TiptapViewer';
+import { supabase } from '@/lib/supabase';
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   // 1. 비동기로 params 해제하여 id 추출

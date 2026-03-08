@@ -1,6 +1,5 @@
 'use client';
 
-import { uploadImage } from '@/actions/image';
 import { type Editor } from '@tiptap/react';
 import {
   Bold,
@@ -14,6 +13,8 @@ import {
   Quote,
   ImageIcon,
 } from 'lucide-react';
+
+import { uploadImage } from '@/actions/image';
 
 // https://github.com/wooorm/lowlight
 const LANGUAGES = [
