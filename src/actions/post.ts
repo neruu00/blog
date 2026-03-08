@@ -78,3 +78,36 @@ export async function createPost(formData: FormData) {
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
 }
+
+export async function deletePost(postId: string) {
+  // 1. 관리자 권한(쿠키) 검증
+  const session = (await cookies()).get('admin_session');
+  if (!session) return { success: false, error: '권한이 없습니다.' };
+
+  try {
+    // 2. 삭제할 게시글에 속한 이미지 URL들을 DB에서 조회
+    const { data: images } = await supabase.from('images').select('url').eq('post_id', postId);
+
+    // 3. Supabase Storage에서 실제 이미지 파일들 삭제
+    if (images && images.length > 0) {
+      const fileNames = images.map((img) => img.url.split('/').pop()!);
+      const { error: storageError } = await supabase.storage.from('images').remove(fileNames);
+
+      if (storageError) console.error('스토리지 파일 삭제 실패:', storageError);
+    }
+
+    // 4. DB에서 게시글 삭제 (ON DELETE CASCADE로 인해 images 테이블 기록도 자동 삭제됨)
+    const { error: dbError } = await supabase.from('posts').delete().eq('id', postId);
+
+    if (dbError) throw dbError;
+
+    // 5. 캐시 초기화 (목록 페이지와 메인 페이지 갱신)
+    revalidatePath('/posts');
+    revalidatePath('/');
+
+    return { success: true };
+  } catch (error) {
+    console.error('게시글 삭제 에러:', error);
+    return { success: false, error: '게시글 삭제에 실패했습니다.' };
+  }
+}
