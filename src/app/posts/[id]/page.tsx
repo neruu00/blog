@@ -49,7 +49,17 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             목록으로 돌아가기
           </Link>
 
-          {isAdmin && <DeletePostButton postId={post.id} />}
+          {isAdmin && (
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/edit/${post.id}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+              >
+                수정하기
+              </Link>
+              <DeletePostButton postId={post.id} />
+            </div>
+          )}
         </div>
 
         <header className="mb-10">
