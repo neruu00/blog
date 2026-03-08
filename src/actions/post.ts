@@ -1,25 +1,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 
 import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { supabase } from '@/lib/supabase';
+import { protect } from '@/lib/auth';
 
 export async function createPost(formData: FormData) {
-  const session = (await cookies()).get('admin_session');
-  if (!session) {
-    return { success: false, error: '권한이 없습니다. (쿠키 없음)' };
-  }
-
-  try {
-    const decodedSecret = Buffer.from(session.value, 'base64').toString('utf8');
-    if (decodedSecret !== process.env.SESSION_SECRET) {
-      return { success: false, error: '유효하지 않은 세션입니다.' };
-    }
-  } catch (e) {
-    return { success: false, error: '세션 검증 중 오류가 발생했습니다.' };
-  }
+  await protect(() => {
+    return { success: false, error: '권한이 유효하지 않습니다.' };
+  });
 
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -76,8 +66,9 @@ export async function createPost(formData: FormData) {
 }
 
 export async function updatePost(formData: FormData) {
-  const session = (await cookies()).get('admin_session');
-  if (!session) return { success: false, error: '권한이 없습니다.' };
+  await protect(() => {
+    return { success: false, error: '권한이 유효하지 않습니다.' };
+  });
 
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
@@ -147,8 +138,9 @@ export async function updatePost(formData: FormData) {
 
 export async function deletePost(postId: string) {
   // 1. 관리자 권한(쿠키) 검증
-  const session = (await cookies()).get('admin_session');
-  if (!session) return { success: false, error: '권한이 없습니다.' };
+  await protect(() => {
+    return { success: false, error: '권한이 유효하지 않습니다.' };
+  });
 
   try {
     // 2. 삭제할 게시글에 속한 이미지 URL들을 DB에서 조회
