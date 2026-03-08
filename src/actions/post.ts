@@ -1,5 +1,6 @@
 'use server';
 
+import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
@@ -39,21 +40,34 @@ export async function createPost(formData: FormData) {
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
+  const body = {
+    title,
+    content,
+    author: 'admin',
+    tags,
+  };
+
   try {
-    const { data: newPost, error } = await supabase
+    const { data: newPost, error: postError } = await supabase
       .from('posts')
-      .insert([
-        {
-          title,
-          content,
-          author: 'admin',
-          tags,
-        },
-      ])
+      .insert([body])
       .select()
       .single();
 
-    if (error) throw error;
+    if (postError) throw postError;
+
+    const paresedContent = JSON.parse(content);
+
+    const usedImageUrls = extractImageUrlsFromTiptap(paresedContent);
+
+    if (usedImageUrls.length > 0) {
+      const { error: imageError } = await supabase
+        .from('images')
+        .update({ is_used: true, post_id: newPost.id })
+        .in('url', usedImageUrls);
+
+      if (imageError) throw imageError;
+    }
 
     // 새 글이 생겼으니 목록 페이지 캐시 날리기
     revalidatePath('/posts');

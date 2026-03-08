@@ -1,5 +1,6 @@
 'use client';
 
+import { uploadImage } from '@/actions/image';
 import { type Editor } from '@tiptap/react';
 import {
   Bold,
@@ -11,6 +12,7 @@ import {
   List,
   ListOrdered,
   Quote,
+  ImageIcon,
 } from 'lucide-react';
 
 // https://github.com/wooorm/lowlight
@@ -38,6 +40,31 @@ export default function Toolbar({ editor }: ToolbarProps) {
         ? 'bg-orange-100 text-orange-600' // 활성화 상태: 오렌지 포인트
         : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900' // 기본 상태
     }`;
+
+  const handleImageUpload = async () => {
+    // 가장 심플한 파일 선택 방식 (input 태그 동적 생성)
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // 서버 액션 호출하여 업로드
+      const result = await uploadImage(formData);
+
+      if (result.success && result.url) {
+        // 성공 시 에디터 커서 위치에 이미지 삽입
+        editor?.chain().focus().setImage({ src: result.url }).run();
+      } else {
+        alert(result.error);
+      }
+    };
+    input.click();
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2">
@@ -109,6 +136,14 @@ export default function Toolbar({ editor }: ToolbarProps) {
           <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-neutral-700" />
         </>
       )}
+      <button
+        type="button"
+        onClick={handleImageUpload}
+        className="rounded p-1.5 text-gray-500 hover:bg-gray-200 hover:text-orange-500 dark:text-neutral-400 dark:hover:bg-neutral-800"
+        title="이미지 업로드"
+      >
+        <ImageIcon className="h-5 w-5" />
+      </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}

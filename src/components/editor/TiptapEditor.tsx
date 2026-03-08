@@ -2,6 +2,7 @@
 
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
+import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 import { useState } from 'react';
@@ -34,6 +35,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         enableTabIndentation: true,
         tabSize: 2,
       }),
+      Image.configure({ inline: true, allowBase64: true }),
     ],
     editorProps: {
       attributes: {
