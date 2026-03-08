@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import CursorParticles from '@/components/CursorParticles';
 import { MusicProvider } from '@/contexts/MusicProvider';
 import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import type { Metadata } from 'next';
 
@@ -31,6 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <SpeedInsights />
       <body className={`${geistSans.variable} ${geistMono.variable} relative antialiased`}>
         <CursorParticles />
         <TanstackQueryLayout>
