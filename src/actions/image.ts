@@ -1,8 +1,11 @@
 'use server';
 
+import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
 export async function uploadImage(formData: FormData) {
+  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
+
   const file = formData.get('file') as File;
   if (!file) return { success: false, error: '파일이 없습니다.' };
 

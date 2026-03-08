@@ -56,7 +56,7 @@ export default function EditPostClient({ post }: EditPostClientProps) {
     // 수정 서버 액션 호출
     const result = await updatePost(formData);
 
-    if (result.success && result.postId) {
+    if (result.success) {
       router.push(`/posts/${result.postId}`);
       router.refresh();
     } else {

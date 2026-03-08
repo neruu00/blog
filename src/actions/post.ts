@@ -2,14 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { protect } from '@/lib/auth';
+import { verifyAdminSession } from '@/lib/auth';
 import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { supabase } from '@/lib/supabase';
 
 export async function createPost(formData: FormData) {
-  await protect(() => {
-    return { success: false, error: '권한이 유효하지 않습니다.' };
-  });
+  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -65,10 +63,10 @@ export async function createPost(formData: FormData) {
   }
 }
 
-export async function updatePost(formData: FormData) {
-  await protect(() => {
-    return { success: false, error: '권한이 유효하지 않습니다.' };
-  });
+export async function updatePost(
+  formData: FormData,
+): Promise<{ success: true; postId: string } | { success: false; error: string }> {
+  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
@@ -138,9 +136,7 @@ export async function updatePost(formData: FormData) {
 
 export async function deletePost(postId: string) {
   // 1. 관리자 권한(쿠키) 검증
-  await protect(() => {
-    return { success: false, error: '권한이 유효하지 않습니다.' };
-  });
+  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   try {
     // 2. 삭제할 게시글에 속한 이미지 URL들을 DB에서 조회
