@@ -1,13 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 import PostCard from '@/components/PostCard';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import { supabase } from '@/lib/supabase';
 
 export default async function PostsPage() {
   const { data: posts, error } = await supabase

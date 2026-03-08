@@ -1,19 +1,18 @@
-import { createClient } from '@supabase/supabase-js';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
-
-// Supabase 클라이언트 초기화 (조회는 누구나 가능하므로 ANON KEY 사용 가능)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import { verifyAdminSession } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   // 1. 비동기로 params 해제하여 id 추출
   const { id } = await params;
+
+  // 관리자 여부 판단 (게시글 조회는 누구나 가능하지만, 삭제 버튼 등은 관리자에게만 보여주기 위함)
+  const isAdmin = await verifyAdminSession();
 
   // 2. Supabase에서 해당 id의 게시글 단건 조회
   const { data: post, error } = await supabase.from('posts').select('*').eq('id', id).single();
@@ -29,19 +28,32 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   const author = post.author || 'admin';
 
-  //TODO - 태그 기능이 추가되면 post.tags로 대체
-  const tags = post.tags || ['Next.js', 'Blog'];
+  const tags = post.tags || [];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-white dark:bg-[#0a0a0a]">
       <div className="relative z-10 mx-auto max-w-3xl px-6 py-16">
-        <Link
-          href="/posts"
-          className="mb-12 inline-flex items-center text-sm font-medium text-gray-500 transition-colors hover:text-orange-500"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          목록으로 돌아가기
-        </Link>
+        <div className="mb-12 flex items-center justify-between">
+          <Link
+            href="/posts"
+            className="inline-flex items-center text-sm font-medium text-gray-500 transition-colors hover:text-orange-500"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            목록으로 돌아가기
+          </Link>
+
+          {isAdmin && (
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/edit/${post.id}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+              >
+                수정하기
+              </Link>
+              <DeletePostButton postId={post.id} />
+            </div>
+          )}
+        </div>
 
         <header className="mb-10">
           <div className="mb-6 flex flex-wrap gap-2">

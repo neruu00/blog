@@ -1,3 +1,4 @@
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import CursorParticles from '@/components/CursorParticles';
@@ -31,6 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <SpeedInsights />
       <body className={`${geistSans.variable} ${geistMono.variable} relative antialiased`}>
         <CursorParticles />
         <TanstackQueryLayout>
