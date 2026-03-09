@@ -32,12 +32,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SpeedInsights />
       <body className={`${geistSans.variable} ${geistMono.variable} relative antialiased`}>
         <CursorParticles />
         <TanstackQueryLayout>
           <MusicProvider>{children}</MusicProvider>
         </TanstackQueryLayout>
+        <SpeedInsights />
       </body>
     </html>
   );
