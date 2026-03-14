@@ -2,9 +2,9 @@
 
 import { PenBox } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import Tooltip from './Tooltip';
-import { usePathname } from 'next/navigation';
 
 export default function WriteLinkButton() {
   const pathname = usePathname();

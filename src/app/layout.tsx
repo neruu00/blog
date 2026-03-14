@@ -2,6 +2,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import CursorParticles from '@/components/CursorParticles';
+import WriteLinkButton from '@/components/WriteLinkButton';
 import { MusicProvider } from '@/contexts/MusicProvider';
 import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
 
@@ -9,7 +10,6 @@ import type { Metadata } from 'next';
 
 import 'highlight.js/styles/atom-one-dark.css';
 import './globals.css';
-import WriteLinkButton from '@/components/WriteLinkButton';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
