@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 
 import 'highlight.js/styles/atom-one-dark.css';
 import './globals.css';
+import WriteLinkButton from '@/components/WriteLinkButton';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,11 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable} relative antialiased`}>
         <CursorParticles />
         <TanstackQueryLayout>
-          <MusicProvider>{children}</MusicProvider>
+          <MusicProvider>
+            {children}
+            <WriteLinkButton />
+          </MusicProvider>
         </TanstackQueryLayout>
         <SpeedInsights />
       </body>
