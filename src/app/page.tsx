@@ -4,7 +4,6 @@ import Link from 'next/link';
 import MusicPlayer from '@/components/MusicPlayer';
 import PostCard from '@/components/PostCard';
 import Tooltip from '@/components/Tooltip';
-import WriteLinkButton from '@/components/WriteLinkButton';
 import { supabase } from '@/lib/supabase';
 
 export default async function HomePage() {
@@ -30,7 +29,6 @@ export default async function HomePage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
-      <WriteLinkButton />
       <div className="relative z-10 mx-auto max-w-5xl px-6 py-12">
         <header className="mb-12 flex items-center justify-between">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
