@@ -169,27 +169,49 @@ export async function updatePost(
  * SECTION - 게시글 삭제
  */
 export async function deletePost(postId: string) {
-  // 1. 관리자 권한(쿠키) 검증
   if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   try {
-    // 2. 삭제할 게시글에 속한 이미지 URL들을 DB에서 조회
-    const { data: images } = await supabase.from('images').select('url').eq('post_id', postId);
+    const { data: images, error: fetchError } = await supabase
+      .from('images')
+      .select('url')
+      .eq('post_id', postId);
 
-    // 3. Supabase Storage에서 실제 이미지 파일들 삭제
-    if (images && images.length > 0) {
-      const fileNames = images.map((img) => img.url.split('/').pop()!);
-      const { error: storageError } = await supabase.storage.from('images').remove(fileNames);
+    if (fetchError) throw fetchError;
 
-      if (storageError) console.error('스토리지 파일 삭제 실패:', storageError);
+    const urls = images?.map((img) => img.url) || [];
+    let needsHardDelete = false;
+
+    if (urls.length > 0) {
+      const { error: orphanError } = await supabase
+        .from('images')
+        .update({ is_used: false, post_id: null })
+        .in('url', urls);
+
+      if (orphanError) {
+        console.warn('고아 상태 전환 실패, 게시글 삭제 후 직접 삭제를 실행합니다:', orphanError);
+        needsHardDelete = true; // 실패 시 하드 딜리트 플래그
+      }
     }
 
-    // 4. DB에서 게시글 삭제 (ON DELETE CASCADE로 인해 images 테이블 기록도 자동 삭제됨)
     const { error: dbError } = await supabase.from('posts').delete().eq('id', postId);
 
-    if (dbError) throw dbError;
+    if (dbError) {
+      if (urls.length > 0 && !needsHardDelete) {
+        await supabase.from('images').update({ is_used: true, post_id: postId }).in('url', urls);
+      }
+      throw dbError;
+    }
 
-    // 5. 캐시 초기화 (목록 페이지와 메인 페이지 갱신)
+    if (needsHardDelete && urls.length > 0) {
+      try {
+        const fileNames = urls.map((url) => url.split('/').pop()!);
+        await supabase.storage.from('images').remove(fileNames);
+      } catch (hardDeleteError) {
+        console.error('좀비 이미지 강제 삭제 최종 실패 - 수동 확인 필요:', hardDeleteError);
+      }
+    }
+
     revalidatePath('/posts');
     revalidatePath('/');
 
