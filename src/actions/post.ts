@@ -12,7 +12,6 @@ import { supabase } from '@/lib/supabase';
 export async function createPost(formData: FormData) {
   if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
-  // 1. 폼 데이터에서 제목, 내용, 태그 추출 및 검증
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
@@ -36,7 +35,7 @@ export async function createPost(formData: FormData) {
   };
 
   try {
-    // 2. 게시글 데이터 DB에 저장 및 새로 생성된 게시글 ID 가져오기
+    // 1. 게시글 데이터 DB에 저장 및 새로 생성된 게시글 ID 가져오기
     const { data: newPost, error: postError } = await supabase
       .from('posts')
       .insert([body])
@@ -45,7 +44,7 @@ export async function createPost(formData: FormData) {
 
     if (postError) throw postError;
 
-    // 3. 이미지 URL 추출 및 이미지 레코드 업데이트
+    // 2. 이미지 URL 추출 및 이미지 레코드 업데이트
     const paresedContent = JSON.parse(content);
     const usedImageUrls = extractImageUrlsFromTiptap(paresedContent);
 
@@ -65,6 +64,7 @@ export async function createPost(formData: FormData) {
     revalidatePath('/posts');
     return { success: true, postId: newPost.id };
   } catch (err) {
+    console.error('게시글 생성 중 오류 발생:', err);
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
 }
@@ -78,7 +78,6 @@ export async function updatePost(
 ): Promise<{ success: true; postId: string } | { success: false; error: string }> {
   if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
-  // 1. 폼 데이터에서 게시글 ID, 제목, 내용, 태그 추출 및 검증
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
@@ -96,8 +95,13 @@ export async function updatePost(
   }
 
   try {
-    // 2. 현재 콘텐츠에서 이미지 URL 추출
-    const contentJSON = JSON.parse(contentString);
+    // 1. 현재 콘텐츠에서 이미지 URL 추출
+    let contentJSON;
+    try {
+      contentJSON = JSON.parse(contentString);
+    } catch (e) {
+      return { success: false, error: '게시글 내용 형식이 잘못되었습니다.' };
+    }
     const currentUrls = extractImageUrlsFromTiptap(contentJSON);
 
     const { data: previousImages, error: fetchError } = await supabase
@@ -111,7 +115,7 @@ export async function updatePost(
     const removedImages = previousImages?.filter((img) => !currentUrls.includes(img.url)) || [];
     const addedUrls = currentUrls.filter((url) => !previousUrls.includes(url));
 
-    // 3. 새로 추가된 이미지 URL 사용 여부 업데이트, 게시글과 연결
+    // 2. 새로 추가된 이미지 URL 사용 여부 업데이트, 게시글과 연결
     if (addedUrls.length > 0) {
       const { error: addError } = await supabase
         .from('images')
@@ -121,13 +125,13 @@ export async function updatePost(
       if (addError) throw addError;
     }
 
-    // 4. 게시글 업데이트
+    // 3. 게시글 업데이트
     const { error: updateError } = await supabase
       .from('posts')
       .update({ title, content: contentJSON, tags })
       .eq('id', postId);
 
-    // ALLBACK: 게시글 업데이트 실패 시, 새로 추가된 이미지들은 다시 고아 상태로 롤백 처리
+    // FALLBACK: 게시글 업데이트 실패 시, 새로 추가된 이미지들은 다시 고아 상태로 롤백 처리
     if (updateError) {
       if (addedUrls.length > 0) {
         await supabase
@@ -138,7 +142,7 @@ export async function updatePost(
       throw updateError;
     }
 
-    // 6. 기존에 연결되어 있었지만 현재 콘텐츠에서 제거된 이미지들은 고아 상태로 전환
+    // FALLBACK: 기존에 연결되어 있었지만 현재 콘텐츠에서 제거된 이미지들은 고아 상태로 전환
     if (removedImages.length > 0) {
       const removedUrls = removedImages.map((img) => img.url);
 
