@@ -78,7 +78,13 @@ export async function updatePost(
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
-  const tags = tagsString ? JSON.parse(tagsString) : [];
+
+  let tags: string[] = [];
+  try {
+    tags = tagsString ? JSON.parse(tagsString) : [];
+  } catch (e) {
+    return { success: false, error: '태그 형식이 잘못되었습니다.' };
+  }
 
   if (!postId || !title || !contentString) {
     return { success: false, error: '필수 항목이 누락되었습니다.' };
@@ -86,49 +92,67 @@ export async function updatePost(
 
   try {
     const contentJSON = JSON.parse(contentString);
-
-    // 1. 현재 폼에서(수정 후) 사용된 이미지 URL 추출
     const currentUrls = extractImageUrlsFromTiptap(contentJSON);
 
-    // 2. DB에 기록된 기존(수정 전) 이미지 리스트 불러오기
-    const { data: previousImages } = await supabase
+    const { data: previousImages, error: fetchError } = await supabase
       .from('images')
       .select('id, url')
       .eq('post_id', postId);
 
+    if (fetchError) throw fetchError;
+
     const previousUrls = previousImages?.map((img) => img.url) || [];
 
-    // 3. 변경점 비교 (제거된 이미지 vs 추가된 이미지)
     const removedImages = previousImages?.filter((img) => !currentUrls.includes(img.url)) || [];
     const addedUrls = currentUrls.filter((url) => !previousUrls.includes(url));
 
-    // 4. 제거된 이미지 DB와 Storage에서 삭제
-    if (removedImages.length > 0) {
-      const removedUrls = removedImages.map((img) => img.url);
-      const fileNames = removedUrls.map((url) => url.split('/').pop()!);
-
-      // Storage에서 제거
-      await supabase.storage.from('images').remove(fileNames);
-
-      // DB에서 제거
-      const removedIds = removedImages.map((img) => img.id);
-      await supabase.from('images').delete().in('id', removedIds);
-    }
-
-    // 5. 새로 추가된 이미지는 DB 사용 여부(is_used) 기록
     if (addedUrls.length > 0) {
-      await supabase.from('images').update({ is_used: true, post_id: postId }).in('url', addedUrls);
+      const { error: addError } = await supabase
+        .from('images')
+        .update({ is_used: true, post_id: postId })
+        .in('url', addedUrls);
+
+      if (addError) throw addError;
     }
 
-    // 6. 마지막으로 게시글 내용 업데이트
     const { error: updateError } = await supabase
       .from('posts')
       .update({ title, content: contentJSON, tags })
       .eq('id', postId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      if (addedUrls.length > 0) {
+        await supabase
+          .from('images')
+          .update({ is_used: false, post_id: null })
+          .in('url', addedUrls);
+      }
+      throw updateError;
+    }
 
-    // 7. 관련 캐시 초기화
+    if (removedImages.length > 0) {
+      const removedUrls = removedImages.map((img) => img.url);
+
+      const { error: orphanError } = await supabase
+        .from('images')
+        .update({ is_used: false, post_id: null })
+        .in('url', removedUrls);
+
+      if (orphanError) {
+        console.warn('고아 상태 전환 실패, 직접 삭제(플랜 B)를 시도합니다:', orphanError);
+
+        try {
+          const fileNames = removedUrls.map((url) => url.split('/').pop()!);
+          await supabase.storage.from('images').remove(fileNames);
+
+          const removedIds = removedImages.map((img) => img.id);
+          await supabase.from('images').delete().in('id', removedIds);
+        } catch (hardDeleteError) {
+          console.error('좀비 이미지 강제 삭제 실패 - 수동 처리 필요 :', hardDeleteError);
+        }
+      }
+    }
+
     revalidatePath(`/posts/${postId}`);
     revalidatePath('/posts');
     revalidatePath('/');
