@@ -195,7 +195,7 @@ export async function deletePost(postId: string) {
     // 1. 게시글에 연결된 이미지 URL 조회
     const { data: images, error: fetchError } = await supabase
       .from('images')
-      .select('url')
+      .select('id, url')
       .eq('post_id', postId);
 
     if (fetchError) throw fetchError;
