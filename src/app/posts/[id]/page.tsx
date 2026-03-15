@@ -1,25 +1,22 @@
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
+import { JSONContent } from '@tiptap/react';
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
 import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  // 1. 비동기로 params 해제하여 id 추출
   const { id } = await params;
 
-  // 관리자 여부 판단 (게시글 조회는 누구나 가능하지만, 삭제 버튼 등은 관리자에게만 보여주기 위함)
   const isAdmin = await verifyAdminSession();
 
-  // 2. Supabase에서 해당 id의 게시글 단건 조회
   const { data: post, error } = await supabase.from('posts').select('*').eq('id', id).single();
 
   if (error || !post) notFound();
 
-  // 4. 날짜 포맷팅 (Supabase의 created_at 사용)
   const formattedDate = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -29,6 +26,17 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const author = post.author || 'admin';
 
   const tags = post.tags || [];
+
+  let parsedContent: JSONContent;
+  try {
+    // FIXME - JSONContent를 보장 가능한 경우 제거
+    // 서버 코드기 때문에 실제로 들어오는 content는 JSONContent이지만,
+    // String으로 들어오는 경우를 대비한 방어 코드
+    parsedContent = typeof post.content === 'string' ? JSON.parse(post.content) : post.content;
+  } catch (error) {
+    alert('게시글 내용을 불러오는 데 실패했습니다.');
+    redirect('/posts');
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-white dark:bg-[#0a0a0a]">
@@ -85,7 +93,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         </header>
 
         <article className="mt-10 min-h-[50vh]">
-          <TiptapViewer content={post.content} />
+          <TiptapViewer content={parsedContent} />
         </article>
       </div>
     </main>

@@ -15,7 +15,7 @@ interface TiptapViewerProps {
 export default function TiptapViewer({ content }: TiptapViewerProps) {
   const editor = useEditor({
     content,
-    editable: false, // Read Only
+    editable: false,
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({
@@ -31,14 +31,13 @@ export default function TiptapViewer({ content }: TiptapViewerProps) {
     ],
     editorProps: {
       attributes: {
-        // prose 클래스를 통해 타이포그래피 스타일을 완벽하게 적용합니다.
         class: 'prose prose-orange dark:prose-invert max-w-none w-full focus:outline-none',
       },
     },
   });
 
-  // TODO - skeleton UI 추가하기
-  if (!editor) return <div className="min-h-125" />;
+  if (!editor)
+    return <div className="min-h-125 animate-pulse rounded-xl bg-gray-100 dark:bg-neutral-800" />;
 
   return <EditorContent editor={editor} />;
 }
