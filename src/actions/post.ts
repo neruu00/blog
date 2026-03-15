@@ -229,10 +229,14 @@ export async function deletePost(postId: string) {
     }
 
     // FALLBACK: 게시글 삭제는 성공했지만 이미지 레코드 업데이트가 실패한 경우, 좀비 이미지 방지를 위해 직접 삭제 시도
-    if (needsHardDelete && urls.length > 0) {
+    if (needsHardDelete && images && images.length > 0) {
       try {
+        const urls = images.map((img) => img.url);
         const fileNames = urls.map((url) => url.split('/').pop()!);
         await supabase.storage.from('images').remove(fileNames);
+
+        const imageIds = images.map((img) => img.id);
+        await supabase.from('images').delete().in('id', imageIds);
       } catch (hardDeleteError) {
         console.error('좀비 이미지 강제 삭제 최종 실패 - 수동 확인 필요:', hardDeleteError);
       }
