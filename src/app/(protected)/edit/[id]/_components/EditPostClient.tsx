@@ -1,13 +1,13 @@
-// src/app/(admin)/edit/[id]/EditPostClient.tsx
 'use client';
 
 import { JSONContent } from '@tiptap/react';
-import { Loader2, X } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { updatePost } from '@/actions/post';
 import TiptapEditor from '@/components/editor/TiptapEditor';
+import TagInputField from '@/components/editor/TagInputField';
 
 interface EditPostClientProps {
   post: {
@@ -22,20 +22,8 @@ export default function EditPostClient({ post }: EditPostClientProps) {
   const [title, setTitle] = useState(post.title);
   const [content, setContent] = useState<JSONContent>(post.content);
   const [tags, setTags] = useState<string[]>(post.tags || []);
-  const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      const newTag = tagInput.trim().replace(/^#/, '');
-      if (newTag && !tags.includes(newTag)) setTags([...tags, newTag]);
-      setTagInput('');
-    } else if (e.key === 'Backspace' && tagInput === '' && tags.length > 0) {
-      setTags(tags.slice(0, -1));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,12 +36,11 @@ export default function EditPostClient({ post }: EditPostClientProps) {
     setIsSubmitting(true);
 
     const formData = new FormData();
-    formData.append('postId', post.id); // 수정은 게시글 ID가 필수!
+    formData.append('postId', post.id);
     formData.append('title', title);
     formData.append('content', JSON.stringify(content));
     formData.append('tags', JSON.stringify(tags));
 
-    // 수정 서버 액션 호출
     const result = await updatePost(formData);
 
     if (result.success) {
@@ -79,44 +66,19 @@ export default function EditPostClient({ post }: EditPostClientProps) {
           </button>
         </div>
 
-        <input
-          type="text"
-          placeholder="제목을 입력하세요"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') e.preventDefault();
-          }}
-          className="w-full border-b border-gray-200 bg-transparent py-4 text-4xl font-bold outline-none placeholder:text-gray-300 dark:border-neutral-800 dark:text-white dark:placeholder:text-neutral-700"
-        />
-
-        <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-4 dark:border-neutral-800">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="flex items-center gap-1.5 rounded-full bg-orange-50 py-1.5 pr-2 pl-3 text-sm font-medium text-orange-600 transition-colors dark:bg-orange-500/10 dark:text-orange-400"
-            >
-              {tag}
-              <button
-                type="button"
-                onClick={() => setTags(tags.filter((t) => t !== tag))}
-                className="rounded-full p-0.5 hover:bg-orange-200 hover:text-orange-800 dark:hover:bg-orange-500/20 dark:hover:text-orange-300"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))}
+        <div className="space-y-6">
           <input
             type="text"
-            placeholder={tags.length === 0 ? '태그를 입력하고 Enter를 누르세요' : ''}
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={handleTagKeyDown}
-            className="min-w-50 flex-1 bg-transparent py-1.5 text-sm text-gray-700 outline-none placeholder:text-gray-400 dark:text-gray-300 dark:placeholder:text-gray-600"
+            placeholder="제목을 입력하세요"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.preventDefault();
+            }}
+            className="w-full border-b border-gray-200 bg-transparent py-4 text-4xl font-bold outline-none placeholder:text-gray-300 dark:border-neutral-800 dark:text-white dark:placeholder:text-neutral-700"
           />
-        </div>
 
-        <div className="min-h-125 w-full pb-20">
+          <TagInputField tags={tags} onChange={setTags} />
           <TiptapEditor content={content} onChange={setContent} />
         </div>
       </form>
