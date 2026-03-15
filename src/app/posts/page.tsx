@@ -18,8 +18,13 @@ const TAG_DICTIONARY = [
   { name: 'etc', keywords: ['기타'] },
 ];
 
-export default async function PostsPage({ searchParams }: { searchParams: { tag?: string } }) {
-  const currentTag = searchParams.tag || 'All'; // 기본값은 전체(All)
+export default async function PostsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const resolveSearchParams = await searchParams; // 기본값은 전체(All)
+  const currentTag = resolveSearchParams.tag || 'All';
 
   let query = supabase.from('posts').select('*').order('created_at', { ascending: false });
 
