@@ -13,14 +13,14 @@ interface EditPostClientProps {
   post: {
     id: string;
     title: string;
-    content: string;
+    content: JSONContent;
     tags: string[];
   };
 }
 
 export default function EditPostClient({ post }: EditPostClientProps) {
   const [title, setTitle] = useState(post.title);
-  const [content, setContent] = useState<JSONContent | null>(JSON.parse(post.content));
+  const [content, setContent] = useState<JSONContent>(post.content);
   const [tags, setTags] = useState<string[]>(post.tags || []);
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
