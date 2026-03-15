@@ -5,30 +5,16 @@ import Image from '@tiptap/extension-image';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
-import { useMemo } from 'react';
 
 const lowlight = createLowlight(common);
 
 interface TiptapViewerProps {
-  content: JSONContent | string | any;
+  content: JSONContent;
 }
 
 export default function TiptapViewer({ content }: TiptapViewerProps) {
-  const parsedContent = useMemo(() => {
-    if (!content) return '';
-
-    if (typeof content === 'string') {
-      try {
-        return JSON.parse(content);
-      } catch (e) {
-        return content;
-      }
-    }
-    return content;
-  }, [content]);
-
   const editor = useEditor({
-    content: parsedContent,
+    content,
     editable: false, // Read Only
     immediatelyRender: false,
     extensions: [
