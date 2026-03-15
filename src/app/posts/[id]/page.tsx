@@ -1,8 +1,8 @@
+import { JSONContent } from '@tiptap/react';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
-import { JSONContent } from '@tiptap/react';
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
 import { verifyAdminSession } from '@/lib/auth';

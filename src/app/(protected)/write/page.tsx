@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { createPost } from '@/actions/post';
-import TiptapEditor from '@/components/editor/TiptapEditor';
 import TagInputField from '@/components/editor/TagInputField';
+import TiptapEditor from '@/components/editor/TiptapEditor';
 
 export default function WritePage() {
   const [title, setTitle] = useState('');

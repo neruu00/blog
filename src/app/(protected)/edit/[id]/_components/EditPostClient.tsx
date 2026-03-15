@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { updatePost } from '@/actions/post';
-import TiptapEditor from '@/components/editor/TiptapEditor';
 import TagInputField from '@/components/editor/TagInputField';
+import TiptapEditor from '@/components/editor/TiptapEditor';
 
 interface EditPostClientProps {
   post: {
