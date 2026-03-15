@@ -8,18 +8,14 @@ import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  // 1. 비동기로 params 해제하여 id 추출
   const { id } = await params;
 
-  // 관리자 여부 판단 (게시글 조회는 누구나 가능하지만, 삭제 버튼 등은 관리자에게만 보여주기 위함)
   const isAdmin = await verifyAdminSession();
 
-  // 2. Supabase에서 해당 id의 게시글 단건 조회
   const { data: post, error } = await supabase.from('posts').select('*').eq('id', id).single();
 
   if (error || !post) notFound();
 
-  // 4. 날짜 포맷팅 (Supabase의 created_at 사용)
   const formattedDate = new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',
