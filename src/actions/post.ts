@@ -13,8 +13,15 @@ export async function createPost(formData: FormData) {
   if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   const title = formData.get('title') as string;
-  const content = formData.get('content') as string;
+  const contentString = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
+
+  let content;
+  try {
+    content = JSON.parse(contentString);
+  } catch (e) {
+    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
+  }
 
   if (!title || !content) {
     return { success: false, error: '제목과 내용을 모두 입력해주세요.' };
@@ -30,8 +37,8 @@ export async function createPost(formData: FormData) {
   const body = {
     title,
     content,
-    author: 'admin',
     tags,
+    author: 'admin',
   };
 
   try {
@@ -45,8 +52,7 @@ export async function createPost(formData: FormData) {
     if (postError) throw postError;
 
     // 2. 이미지 URL 추출 및 이미지 레코드 업데이트
-    const paresedContent = JSON.parse(content);
-    const usedImageUrls = extractImageUrlsFromTiptap(paresedContent);
+    const usedImageUrls = extractImageUrlsFromTiptap(content);
 
     if (usedImageUrls.length > 0) {
       const { error: imageError } = await supabase
@@ -90,19 +96,19 @@ export async function updatePost(
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
-  if (!postId || !title || !contentString) {
+  let content;
+  try {
+    content = JSON.parse(contentString);
+  } catch (e) {
+    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
+  }
+
+  if (!postId || !title || !content) {
     return { success: false, error: '필수 항목이 누락되었습니다.' };
   }
 
   try {
-    // 1. 현재 콘텐츠에서 이미지 URL 추출
-    let contentJSON;
-    try {
-      contentJSON = JSON.parse(contentString);
-    } catch (e) {
-      return { success: false, error: '게시글 내용 형식이 잘못되었습니다.' };
-    }
-    const currentUrls = extractImageUrlsFromTiptap(contentJSON);
+    const currentUrls = extractImageUrlsFromTiptap(content);
 
     const { data: previousImages, error: fetchError } = await supabase
       .from('images')
@@ -128,7 +134,7 @@ export async function updatePost(
     // 3. 게시글 업데이트
     const { error: updateError } = await supabase
       .from('posts')
-      .update({ title, content: contentJSON, tags })
+      .update({ title, content, tags })
       .eq('id', postId);
 
     // FALLBACK: 게시글 업데이트 실패 시, 새로 추가된 이미지들은 다시 고아 상태로 롤백 처리

@@ -1,7 +1,6 @@
-import { JSONContent } from '@tiptap/react';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
@@ -26,17 +25,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const author = post.author || 'admin';
 
   const tags = post.tags || [];
-
-  let parsedContent: JSONContent;
-  try {
-    // FIXME - JSONContent를 보장 가능한 경우 제거
-    // 서버 코드기 때문에 실제로 들어오는 content는 JSONContent이지만,
-    // String으로 들어오는 경우를 대비한 방어 코드
-    parsedContent = typeof post.content === 'string' ? JSON.parse(post.content) : post.content;
-  } catch (error) {
-    alert('게시글 내용을 불러오는 데 실패했습니다.');
-    redirect('/posts');
-  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-white dark:bg-[#0a0a0a]">
@@ -93,7 +81,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         </header>
 
         <article className="mt-10 min-h-[50vh]">
-          <TiptapViewer content={parsedContent} />
+          <TiptapViewer content={post.content} />
         </article>
       </div>
     </main>
