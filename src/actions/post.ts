@@ -44,7 +44,6 @@ export async function createPost(formData: FormData) {
     if (postError) throw postError;
 
     const paresedContent = JSON.parse(content);
-
     const usedImageUrls = extractImageUrlsFromTiptap(paresedContent);
 
     if (usedImageUrls.length > 0) {
@@ -53,15 +52,15 @@ export async function createPost(formData: FormData) {
         .update({ is_used: true, post_id: newPost.id })
         .in('url', usedImageUrls);
 
-      if (imageError) throw imageError;
+      if (imageError) {
+        await supabase.from('posts').delete().eq('id', newPost.id);
+        throw imageError;
+      }
     }
 
-    // 새 글이 생겼으니 목록 페이지 캐시 날리기
     revalidatePath('/posts');
-
     return { success: true, postId: newPost.id };
   } catch (err) {
-    console.error('DB 저장 에러:', err);
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
 }
