@@ -6,8 +6,11 @@ import { verifyAdminSession } from '@/lib/auth';
 import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { supabase } from '@/lib/supabase';
 
+/**
+ * SECTION - 게시글 생성
+ */
 export async function createPost(formData: FormData) {
-  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -62,11 +65,15 @@ export async function createPost(formData: FormData) {
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
 }
+// !SECTION - 게시글 생성
 
+/**
+ * SECTION - 게시글 수정
+ */
 export async function updatePost(
   formData: FormData,
 ): Promise<{ success: true; postId: string } | { success: false; error: string }> {
-  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
@@ -133,10 +140,14 @@ export async function updatePost(
     return { success: false, error: '게시글 수정에 실패했습니다.' };
   }
 }
+// !SECTION - 게시글 수정
 
+/**
+ * SECTION - 게시글 삭제
+ */
 export async function deletePost(postId: string) {
   // 1. 관리자 권한(쿠키) 검증
-  if (await verifyAdminSession()) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
 
   try {
     // 2. 삭제할 게시글에 속한 이미지 URL들을 DB에서 조회
@@ -165,3 +176,4 @@ export async function deletePost(postId: string) {
     return { success: false, error: '게시글 삭제에 실패했습니다.' };
   }
 }
+// !SECTION - 게시글 삭제
