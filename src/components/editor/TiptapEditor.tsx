@@ -8,6 +8,7 @@ import { common, createLowlight } from 'lowlight';
 import { useState } from 'react';
 
 import Toolbar from './Toolbar';
+import { CanvasExtension } from './extensions/CanvasExtension';
 
 const lowlight = createLowlight(common);
 
@@ -36,6 +37,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         tabSize: 2,
       }),
       Image.configure({ inline: true, allowBase64: true }),
+      CanvasExtension,
     ],
     editorProps: {
       attributes: {

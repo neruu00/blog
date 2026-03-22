@@ -1,4 +1,4 @@
-import CustomCanvas from './CustomCanvas';
+import CustomCanvas from '../../components/canvas/CustomCanvas';
 
 export default function Page() {
   return (
