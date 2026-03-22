@@ -508,30 +508,35 @@ export default function CustomCanvas({
     const pos = getRelativePointerPosition(stage);
     if (!pos) return;
 
-    const currentShapes = [...history[historyStep]];
-    let lastShape = { ...currentShapes[currentShapes.length - 1] };
+    if (!selectedId) return;
+    const node = layerRef.current?.findOne('#' + selectedId);
+    if (!node) return;
 
-    if ((tool === 'straightLine' || tool === 'arrow') && lastShape.points) {
-      const snap = findSnapPoint(pos.x, pos.y, lastShape.id);
+    if (tool === 'straightLine' || tool === 'arrow') {
+      const snap = findSnapPoint(pos.x, pos.y, selectedId);
       if (snap) {
-        lastShape.points = [lastShape.points[0], lastShape.points[1], snap.x, snap.y];
         setSnappedShapeId(snap.shapeId);
+        const currentPoints = node.getAttr('points') || [0,0,0,0];
+        node.setAttr('points', [currentPoints[0], currentPoints[1], snap.x, snap.y]);
       } else {
-        lastShape.points = [lastShape.points[0], lastShape.points[1], pos.x, pos.y];
         setSnappedShapeId(null);
+        const currentPoints = node.getAttr('points') || [0,0,0,0];
+        node.setAttr('points', [currentPoints[0], currentPoints[1], pos.x, pos.y]);
       }
-    } else if (tool === 'rect' && lastShape.type === 'rect') {
-      lastShape.width = pos.x - (lastShape.x || 0);
-      lastShape.height = pos.y - (lastShape.y || 0);
-    } else if (tool === 'ellipse' && lastShape.type === 'ellipse') {
-      lastShape.radiusX = Math.abs(pos.x - (lastShape.x || 0));
-      lastShape.radiusY = Math.abs(pos.y - (lastShape.y || 0));
+      node.getLayer()?.batchDraw();
+    } else if (tool === 'rect') {
+      const startX = node.x();
+      const startY = node.y();
+      node.width(pos.x - startX);
+      node.height(pos.y - startY);
+      node.getLayer()?.batchDraw();
+    } else if (tool === 'ellipse') {
+      const startX = node.x();
+      const startY = node.y();
+      node.setAttr('radiusX', Math.abs(pos.x - startX));
+      node.setAttr('radiusY', Math.abs(pos.y - startY));
+      node.getLayer()?.batchDraw();
     }
-
-    currentShapes[currentShapes.length - 1] = lastShape;
-    const newHistory = [...history];
-    newHistory[historyStep] = currentShapes;
-    setHistory(newHistory);
   };
 
   const handleMouseUp = (e: Konva.KonvaEventObject<MouseEvent>) => {
@@ -589,27 +594,45 @@ export default function CustomCanvas({
       isDrawing.current = false;
       setSnappedShapeId(null);
       
-      const currentShapes = [...history[historyStep]];
-      const lastShape = currentShapes[currentShapes.length - 1];
-      let isEmpty = false;
-      if (lastShape) {
-        if (lastShape.type === 'rect' && lastShape.width === 0 && lastShape.height === 0) {
-          isEmpty = true;
-        } else if (lastShape.type === 'ellipse' && lastShape.radiusX === 0 && lastShape.radiusY === 0) {
-          isEmpty = true;
-        } else if ((lastShape.type === 'straightLine' || lastShape.type === 'arrow') && lastShape.points) {
-          if (lastShape.points[0] === lastShape.points[2] && lastShape.points[1] === lastShape.points[3]) {
-            isEmpty = true;
+      if (selectedId) {
+        const currentShapes = [...history[historyStep]];
+        const index = currentShapes.findIndex(s => s.id === selectedId);
+        
+        if (index !== -1) {
+          const lastShape = { ...currentShapes[index] };
+          const node = layerRef.current?.findOne('#' + selectedId);
+          
+          let isEmpty = true;
+          if (node) {
+            if (tool === 'straightLine' || tool === 'arrow') {
+              lastShape.points = node.getAttr('points') || lastShape.points;
+              if (lastShape.points && (Math.abs(lastShape.points[0] - lastShape.points[2]) > 2 || Math.abs(lastShape.points[1] - lastShape.points[3]) > 2)) {
+                isEmpty = false;
+              }
+            } else if (tool === 'rect') {
+              lastShape.width = node.width() || lastShape.width;
+              lastShape.height = node.height() || lastShape.height;
+              if (Math.abs(lastShape.width || 0) > 2 || Math.abs(lastShape.height || 0) > 2) isEmpty = false;
+            } else if (tool === 'ellipse') {
+              lastShape.radiusX = node.getAttr('radiusX') || lastShape.radiusX;
+              lastShape.radiusY = node.getAttr('radiusY') || lastShape.radiusY;
+              if (Math.abs(lastShape.radiusX || 0) > 2 || Math.abs(lastShape.radiusY || 0) > 2) isEmpty = false;
+            }
+          }
+          
+          if (isEmpty) {
+            currentShapes.splice(index, 1);
+            const newHistory = [...history];
+            newHistory[historyStep] = currentShapes;
+            setHistory(newHistory);
+            setSelectedId(null);
+          } else {
+            currentShapes[index] = lastShape;
+            const newHistory = [...history];
+            newHistory[historyStep] = currentShapes;
+            setHistory(newHistory);
           }
         }
-      }
-      
-      if (isEmpty) {
-        currentShapes.pop();
-        const newHistory = [...history];
-        newHistory[historyStep] = currentShapes;
-        setHistory(newHistory);
-        setSelectedId(null);
       }
 
       if (tool === 'straightLine' || tool === 'arrow' || tool === 'rect' || tool === 'ellipse') {
