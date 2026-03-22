@@ -1,11 +1,43 @@
 import { ArrowLeft, Calendar, User } from 'lucide-react';
+import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
 import { verifyAdminSession } from '@/lib/auth';
+import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
 import { supabase } from '@/lib/supabase';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { id } = await params;
+  const { data: post } = await supabase.from('posts').select('*').eq('id', id).single();
+
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    };
+  }
+
+  const plainText = extractTextFromTiptap(post.content);
+  const description = plainText.length > 160 ? plainText.slice(0, 160) + '...' : plainText;
+
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      publishedTime: post.created_at,
+      authors: [post.author || 'neruu00'],
+      tags: post.tags || [],
+    },
+  };
+}
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

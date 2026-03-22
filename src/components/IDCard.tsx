@@ -34,13 +34,13 @@ export default function IDCard() {
                   className="size-32 object-cover"
                 />
                 <div className="mt-2 flex flex-col items-center text-center">
-                  <p className="mb-1 font-sans text-xxs font-bold tracking-[0.2em] text-slate-500 uppercase">
+                  <p className="text-xxs mb-1 font-sans font-bold tracking-[0.2em] text-slate-500 uppercase">
                     Developer
                   </p>
                   <h2 className="mb-1 font-serif text-2xl font-black tracking-widest text-slate-800 uppercase dark:text-slate-100">
                     우재현
                   </h2>
-                  <p className="font-mono text-xxs tracking-widest text-slate-400">neruu00</p>
+                  <p className="text-xxs font-mono tracking-widest text-slate-400">neruu00</p>
                 </div>
               </div>
 
@@ -76,7 +76,7 @@ export default function IDCard() {
                       href="https://github.com/neruu00"
                       target="_blank"
                       rel="noreferrer"
-                      className="flex w-full items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-xs font-bold text-slate-600 transition-colors hover:border-[#5bc2c8] hover:bg-[#5bc2c8] hover:text-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-300 dark:hover:bg-[#5bc2c8]"
+                      className="hover:border-brand hover:bg-brand dark:hover:bg-brand flex w-full items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-xs font-bold text-slate-600 transition-colors hover:text-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-300"
                     >
                       <Github className="mr-2 h-4 w-4" /> GITHUB
                     </a>
@@ -85,7 +85,7 @@ export default function IDCard() {
                   <Tooltip content="dnwogus4260@naver.com">
                     <a
                       href="mailto:dnwogus4260@naver.com"
-                      className="flex w-full items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-xs font-bold text-slate-600 transition-colors hover:border-[#5bc2c8] hover:bg-[#5bc2c8] hover:text-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-300 dark:hover:bg-[#5bc2c8]"
+                      className="hover:border-brand hover:bg-brand dark:hover:bg-brand flex w-full items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-xs font-bold text-slate-600 transition-colors hover:text-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-slate-300"
                     >
                       <Mail className="mr-2 h-4 w-4" /> EMAIL
                     </a>
@@ -94,7 +94,7 @@ export default function IDCard() {
               </div>
 
               <div className="flex h-10 w-full shrink-0 items-center justify-center bg-[#4a4f54] px-2 dark:bg-slate-800">
-                <span className="font-sans text-tiny tracking-wider text-white opacity-70 sm:text-xxs">
+                <span className="text-tiny tracking-wider text-white opacity-70 sm:text-xs">
                   ®&© 2026 neruu00. All Rights Reserved.
                 </span>
               </div>
