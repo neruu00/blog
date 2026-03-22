@@ -222,26 +222,6 @@ export default function CustomCanvas({
     }
   };
 
-  const handleTransform = (e: Konva.KonvaEventObject<Event>, shapeId: string) => {
-    if (isReadOnly) return;
-    const node = e.target;
-    const currentShapes = [...history[historyStep]];
-    const index = currentShapes.findIndex(s => s.id === shapeId);
-    if (index !== -1) {
-      currentShapes[index] = { 
-        ...currentShapes[index], 
-        x: node.x(), 
-        y: node.y(),
-        scaleX: node.scaleX(),
-        scaleY: node.scaleY(),
-      };
-      
-      const newHistory = [...history];
-      newHistory[historyStep] = currentShapes;
-      setHistory(newHistory);
-    }
-  };
-
   const handleTransformEnd = (e: Konva.KonvaEventObject<Event>, shapeId: string) => {
     if (isReadOnly) return;
     const node = e.target;
@@ -922,7 +902,6 @@ export default function CustomCanvas({
                     draggable={!isReadOnly && tool === 'select' && isSelected}
                     onDragEnd={(e) => handleDragEnd(e, shape.id)}
                     onTransformStart={() => setIsTransforming(true)}
-                    onTransform={(e) => handleTransform(e, shape.id)}
                     onTransformEnd={(e) => { setIsTransforming(false); handleTransformEnd(e, shape.id); }}
                     onMouseDown={(e) => handleShapeSelect(e, shape.id)}
                     onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
@@ -950,7 +929,6 @@ export default function CustomCanvas({
                     draggable={!isReadOnly && tool === 'select' && isSelected}
                     onDragEnd={(e) => handleDragEnd(e, shape.id)}
                     onTransformStart={() => setIsTransforming(true)}
-                    onTransform={(e) => handleTransform(e, shape.id)}
                     onTransformEnd={(e) => { setIsTransforming(false); handleTransformEnd(e, shape.id); }}
                     onMouseDown={(e) => handleShapeSelect(e, shape.id)}
                     onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
