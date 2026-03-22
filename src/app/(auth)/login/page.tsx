@@ -72,9 +72,9 @@ export default function LoginPage() {
     <>
       {isSuccess && <ConfettiParticles /> /* 인증 성공 시 컨페티 보여줌 */}
 
-      <main className="flex min-h-screen items-center justify-center bg-gray-50 p-6 dark:bg-[#0a0a0a]">
-        <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <h1 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-white">
+      <main className="flex min-h-screen font-sans items-center justify-center p-6">
+        <div className="w-full max-w-sm rounded-2xl border-t-8 border-brand bg-white p-8 shadow-xl dark:border-neutral-800 dark:bg-neutral-900 transform -rotate-1">
+          <h1 className="mb-8 font-marker text-center text-4xl font-extrabold text-brand dark:text-white">
             Admin Login
           </h1>
 
@@ -113,10 +113,10 @@ export default function LoginPage() {
                       key={`otp-char-${index}`}
                       className={`flex h-14 w-10 items-center justify-center border-b-2 font-mono text-3xl transition-colors sm:w-12 ${
                         isActive && !isLoading && !isSuccess
-                          ? 'border-orange-500 text-orange-500'
+                          ? 'border-brand text-brand'
                           : char
                             ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
-                            : 'border-gray-300 dark:border-neutral-700'
+                            : 'border-slate-300 dark:border-slate-700'
                       } `}
                     >
                       {char || ''}
@@ -128,16 +128,15 @@ export default function LoginPage() {
               {/* 로딩 스피너 오버레이 */}
               {isLoading && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-brand" />
                 </div>
               )}
             </div>
 
-            {/* 성공/실패 메시지 영역 */}
             <div className="mt-8 flex h-6 w-full items-center justify-center">
               {isSuccess ? (
-                <p className="animate-bounce text-center font-medium text-orange-500">
-                  🎉 인증이 완료되었습니다!
+                <p className="animate-bounce font-marker text-2xl text-center font-bold text-brand">
+                  🎉 AUTHENTICATION SUCCESSFUL!
                 </p>
               ) : error ? (
                 <p className="text-center text-sm font-medium text-red-500">{error}</p>

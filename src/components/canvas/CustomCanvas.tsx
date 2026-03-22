@@ -748,7 +748,7 @@ export default function CustomCanvas({
   return (
     <div 
       ref={containerRef}
-      className={`border border-gray-200 rounded-xl overflow-hidden bg-white dark:bg-neutral-900 shadow-sm relative focus:outline-none focus:ring-2 focus:ring-orange-400/50 ${isReadOnly ? 'pointer-events-none' : ''}`} 
+      className={`border border-gray-200 rounded-xl overflow-hidden bg-white dark:bg-neutral-900 shadow-sm relative focus:outline-none focus:ring-2 focus:ring-brand/50 ${isReadOnly ? 'pointer-events-none' : ''}`} 
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onContextMenu={(e) => e.preventDefault()}
