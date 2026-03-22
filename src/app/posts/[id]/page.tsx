@@ -1,7 +1,7 @@
-import { cache } from 'react';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
