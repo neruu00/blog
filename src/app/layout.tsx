@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Geist, Nanum_Pen_Script } from 'next/font/google';
+import { Geist, Geist_Mono, Nanum_Pen_Script } from 'next/font/google';
 
 import CursorParticles from '@/components/CursorParticles';
 import WriteLinkButton from '@/components/WriteLinkButton';
@@ -13,6 +13,11 @@ import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -34,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${nanumPen.variable} font-sans text-slate-900 relative antialiased min-h-screen bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] bg-slate-50 dark:bg-slate-900 dark:text-slate-100`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nanumPen.variable} font-sans text-slate-900 relative antialiased min-h-screen bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] bg-slate-50 dark:bg-slate-900 dark:text-slate-100`}>
         <CursorParticles />
         <TanstackQueryLayout>
             {children}

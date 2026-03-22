@@ -15,7 +15,7 @@ export default function WriteLinkButton() {
 
   return (
     <Link href="/write" className="fixed right-6 bottom-6 z-50">
-      <Tooltip content="글쓰기">
+      <Tooltip content="Write">
         <div className="rounded-full bg-brand p-4 shadow-lg hover:bg-cyan-500 active:bg-cyan-600 transition-colors">
           <PenBox color="white" />
         </div>

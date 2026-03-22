@@ -18,7 +18,12 @@ export default function PostCard({ post, index }: Props) {
     day: 'numeric',
   }).format(post.createdAt);
 
-  const bgColors = ['bg-blue-50 dark:bg-blue-900/20', 'bg-yellow-50 dark:bg-yellow-900/20', 'bg-pink-50 dark:bg-pink-900/20', 'bg-green-50 dark:bg-green-900/20'];
+  const bgColors = [
+    'bg-blue-50 dark:bg-blue-900/20',
+    'bg-yellow-50 dark:bg-yellow-900/20',
+    'bg-pink-50 dark:bg-pink-900/20',
+    'bg-green-50 dark:bg-green-900/20',
+  ];
   const pinColors = ['bg-red-400', 'bg-brand', 'bg-pink-400', 'bg-green-500'];
   const rotations = ['rotate-1', '-rotate-1', 'rotate-2', '-rotate-2'];
 
@@ -32,11 +37,12 @@ export default function PostCard({ post, index }: Props) {
       className={`group relative flex flex-col items-start justify-between p-8 shadow-md transition-all hover:scale-105 hover:shadow-xl dark:shadow-neutral-900 ${bgColor} ${rotation} hover:z-20`}
     >
       {/* Pin */}
-      <div className={`absolute -top-2 left-1/2 -ml-2 w-4 h-4 rounded-full ${pinColor} shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/40 z-10`}></div>
+      <div
+        className={`absolute -top-2 left-1/2 -ml-2 h-4 w-4 rounded-full ${pinColor} z-10 border border-white/40 shadow-[0_2px_4px_rgba(0,0,0,0.3)]`}
+      ></div>
 
       <div className="mb-4 w-full">
-        <p className="font-sans text-[10px] font-bold tracking-widest text-brand uppercase mb-2">Web Performance</p>
-        <h2 className="text-2xl font-bold text-slate-800 transition-colors group-hover:text-brand dark:text-slate-100 mb-2">
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 transition-colors dark:text-slate-100">
           <Link href={`/posts/${post.id}`}>
             <span className="absolute inset-0" />
             {post.title}
@@ -53,7 +59,7 @@ export default function PostCard({ post, index }: Props) {
           {post.tags.slice(0, 1).map((tag) => (
             <span
               key={tag}
-              className="rounded bg-white/50 px-2 py-1 font-sans text-[10px] font-semibold tracking-wider text-brand dark:bg-black/20"
+              className="text-brand font-sans text-[10px] font-semibold tracking-wider dark:bg-black/20"
             >
               {tag.toUpperCase()}
             </span>

@@ -92,11 +92,11 @@ export default async function PostsPage({
         </nav>
 
         {/* 게시글 리스트 영역 */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {formattedPosts.length > 0 ? (
             formattedPosts.map((post, index) => <PostCard key={post.id} post={post} index={index} />)
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500 dark:text-neutral-400 relative bg-yellow-50 dark:bg-yellow-900/20 shadow-md p-8 transform rotate-1 rounded-sm w-full max-w-md mx-auto">
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-slate-500 dark:text-neutral-400 relative bg-yellow-50 dark:bg-yellow-900/20 shadow-md p-8 transform rotate-1 rounded-sm w-full max-w-md mx-auto">
                <div className="absolute -top-2 left-1/2 -ml-2 w-4 h-4 rounded-full bg-red-400 shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/40 z-10"></div>
               <p className="mb-4 text-2xl font-marker font-bold text-slate-800 dark:text-white">No posts in this category.</p>
               <Link href="/write" className="text-xl font-marker text-brand hover:underline">

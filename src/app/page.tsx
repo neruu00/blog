@@ -1,9 +1,7 @@
-import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 import IDCard from '@/components/IDCard';
 import PostCard from '@/components/PostCard';
-import Tooltip from '@/components/Tooltip';
 import { supabase } from '@/lib/supabase';
 
 export default async function HomePage() {
@@ -41,16 +39,17 @@ export default async function HomePage() {
 
           {/* 우측 메인 영역 (최신 게시물) */}
           <section className="lg:col-span-2">
-            <div className="mb-10 flex items-center justify-between border-b-4 border-slate-100 pb-4 dark:border-slate-800">
+            <div className="mb-10 flex items-center justify-between">
               <h2 className="font-marker relative text-5xl font-extrabold text-gray-900 dark:text-white">
                 LATEST LOGS
-                <span className="bg-brand absolute -bottom-[20px] left-0 h-1 w-1/2"></span>
               </h2>
               <Link
                 href="/posts"
-                className="font-marker text-brand hover:bg-brand flex items-center gap-1 rounded-full px-4 py-1 text-2xl font-bold tracking-wide transition-colors hover:text-white"
+                className="group relative inline-flex items-center px-2 py-1 font-marker text-2xl font-bold tracking-wide text-brand transition-colors"
+                title="View All Posts"
               >
-                VIEW ALL POSTS
+                <span className="relative z-10">VIEW ALL POSTS</span>
+                <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
               </Link>
             </div>
 

@@ -1004,7 +1004,7 @@ export default function CustomCanvas({
               onClick={handleUndo}
               disabled={historyStep === 0}
               className="flex items-center justify-center w-10 h-10 rounded-full shadow-lg bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700 border border-gray-200 dark:border-neutral-700 transition"
-              title="실행 취소 (Ctrl+Z / Cmd+Z)"
+              title="Undo (Ctrl+Z / Cmd+Z)"
             >
               <Undo2 size={20} />
             </button>

@@ -74,7 +74,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={getButtonClass(editor.isActive('heading', { level: 1 }))}
-        title="제목 1"
+        title="Heading 1"
       >
         <Heading1 className="h-5 w-5" />
       </button>
@@ -82,7 +82,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={getButtonClass(editor.isActive('heading', { level: 2 }))}
-        title="제목 2"
+        title="Heading 2"
       >
         <Heading2 className="h-5 w-5" />
       </button>
@@ -91,7 +91,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={getButtonClass(editor.isActive('bold'))}
-        title="굵게"
+        title="Bold"
       >
         <Bold className="h-5 w-5" />
       </button>
@@ -99,7 +99,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={getButtonClass(editor.isActive('italic'))}
-        title="기울임"
+        title="Italic"
       >
         <Italic className="h-5 w-5" />
       </button>
@@ -107,7 +107,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={getButtonClass(editor.isActive('strike'))}
-        title="취소선"
+        title="Strikethrough"
       >
         <Strikethrough className="h-5 w-5" />
       </button>
@@ -116,7 +116,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         className={getButtonClass(editor.isActive('codeBlock'))}
-        title="코드 블록"
+        title="Code Block"
       >
         <Code className="h-5 w-5" />
       </button>
@@ -142,7 +142,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={handleImageUpload}
         className="rounded p-1.5 text-gray-500 hover:bg-gray-200 hover:text-orange-500 dark:text-neutral-400 dark:hover:bg-neutral-800"
-        title="이미지 업로드"
+        title="Upload Image"
       >
         <ImageIcon className="h-5 w-5" />
       </button>
@@ -150,7 +150,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().insertContent({ type: 'canvas' }).run()}
         className={getButtonClass(editor.isActive('canvas'))}
-        title="그림 캔버스 삽입"
+        title="Insert Canvas"
       >
         <PenTool className="h-5 w-5" />
       </button>
@@ -158,7 +158,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={getButtonClass(editor.isActive('blockquote'))}
-        title="인용구"
+        title="Blockquote"
       >
         <Quote className="h-5 w-5" />
       </button>
@@ -166,7 +166,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={getButtonClass(editor.isActive('bulletList'))}
-        title="글머리 기호"
+        title="Bullet List"
       >
         <List className="h-5 w-5" />
       </button>
@@ -174,7 +174,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={getButtonClass(editor.isActive('orderedList'))}
-        title="번호 매기기"
+        title="Ordered List"
       >
         <ListOrdered className="h-5 w-5" />
       </button>
