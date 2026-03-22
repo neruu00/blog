@@ -66,14 +66,12 @@ export function CanvasToolbar({
         <button
           type="button"
           onClick={() => setTool('ellipse')}
-          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors sm:w-auto sm:px-3 sm:py-1.5 sm:gap-1.5 ${
-            tool === 'ellipse'
-              ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400'
-              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-neutral-800'
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
+            tool === 'ellipse' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
           }`}
           title="원형 (5)"
         >
-          <CircleIcon size={18} />
+          <CircleIcon size={16} />
         </button>
       </div>
 
