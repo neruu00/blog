@@ -27,62 +27,67 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const tags = post.tags || [];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-white dark:bg-[#0a0a0a]">
-      <div className="relative z-10 mx-auto max-w-3xl px-6 py-16">
-        <div className="mb-12 flex items-center justify-between">
+    <main className="relative min-h-screen font-sans">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 py-16">
+        <div className="mb-8 flex items-center justify-between">
           <Link
             href="/posts"
-            className="inline-flex items-center text-sm font-medium text-gray-500 transition-colors hover:text-orange-500"
+            className="font-marker hover:text-brand inline-flex items-center text-xl text-slate-500 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            목록으로 돌아가기
+            Back to List
           </Link>
 
           {isAdmin && (
             <div className="flex items-center gap-2">
               <Link
                 href={`/edit/${post.id}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+                className="text-brand hover:bg-brand/10 dark:text-brand inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold uppercase transition-colors"
               >
-                수정하기
+                EDIT
               </Link>
               <DeletePostButton postId={post.id} />
             </div>
           )}
         </div>
 
-        <header className="mb-10">
-          <div className="mb-6 flex flex-wrap gap-2">
-            {tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="rounded-md bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        <div className="relative mb-20 -rotate-1 transform rounded-sm border border-slate-200 bg-white p-10 shadow-xl md:p-14 dark:border-slate-800 dark:bg-slate-900">
+          {/* Document Pin */}
+          <div className="absolute -top-3 left-1/2 z-10 -ml-3 h-6 w-6 rounded-full border-2 border-white/50 bg-red-500 shadow-md"></div>
 
-          <h1 className="mb-8 text-3xl leading-tight font-extrabold tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
-            {post.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-4 border-b border-gray-100 pb-8 text-sm text-gray-600 dark:border-neutral-800 dark:text-neutral-400">
-            <div className="flex items-center gap-1.5">
-              <User className="h-4 w-4" />
-              <span className="font-medium text-gray-900 dark:text-neutral-200">{author}</span>
+          <header className="mb-10">
+            <div className="mb-6 flex flex-wrap gap-2">
+              {tags.map((tag: string) => (
+                <span
+                  key={tag}
+                  className="text-brand rounded-md bg-slate-100 px-3 py-1 font-sans text-xs font-bold tracking-widest uppercase dark:bg-slate-800"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
-            <div className="h-1 w-1 rounded-full bg-gray-300 dark:bg-neutral-700" />
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              <time dateTime={new Date(post.created_at).toISOString()}>{formattedDate}</time>
-            </div>
-          </div>
-        </header>
 
-        <article className="mt-10 min-h-[50vh]">
-          <TiptapViewer content={post.content} />
-        </article>
+            <h1 className="mb-8 text-4xl leading-tight font-extrabold tracking-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white">
+              {post.title}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-4 border-b-2 border-slate-100 pb-8 text-sm font-bold tracking-wide text-slate-500 uppercase dark:border-slate-800">
+              <div className="flex items-center gap-1.5">
+                <User className="text-brand h-4 w-4" />
+                <span className="text-slate-800 dark:text-slate-200">{author}</span>
+              </div>
+              <div className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+              <div className="flex items-center gap-1.5">
+                <Calendar className="text-brand h-4 w-4" />
+                <time dateTime={new Date(post.created_at).toISOString()}>{formattedDate}</time>
+              </div>
+            </div>
+          </header>
+
+          <article className="prose prose-slate dark:prose-invert mt-10 min-h-[50vh] max-w-none">
+            <TiptapViewer content={post.content} />
+          </article>
+        </div>
       </div>
     </main>
   );

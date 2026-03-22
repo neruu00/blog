@@ -1,6 +1,5 @@
 'use client';
 
-import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -38,11 +37,10 @@ export default function DeletePostButton({ postId }: DeletePostButtonProps) {
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+      className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50 dark:bg-red-500/10"
       title="게시글 삭제"
     >
-      <Trash2 className="h-4 w-4" />
-      {isDeleting ? '삭제 중...' : '삭제'}
+      {isDeleting ? 'Deleting...' : 'Delete'}
     </button>
   );
 }

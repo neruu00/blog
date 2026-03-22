@@ -50,23 +50,23 @@ export default async function PostsPage({
   const categories = ['All', ...TAG_DICTIONARY.map((t) => t.name)];
 
   return (
-    <main className="relative min-h-screen bg-gray-50 dark:bg-[#0a0a0a]">
+    <main className="font-sans relative min-h-screen">
       <div className="relative z-10 mx-auto max-w-4xl px-6 py-12">
         {/* 상단 네비게이션 & 타이틀 */}
         <header className="mb-8">
           <Link
             href="/"
-            className="mb-6 inline-flex items-center text-sm font-medium text-gray-500 transition-colors hover:text-orange-500"
+            className="mb-6 inline-flex items-center text-xl font-marker text-slate-500 transition-colors hover:text-brand"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            홈으로 돌아가기
+            Back to Home
           </Link>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            {currentTag === 'All' ? '모든 포스트' : `${currentTag} 포스트`}
-            <span className="ml-2 text-orange-500">.</span>
+          <h1 className="font-marker text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            {currentTag === 'All' ? 'ALL POSTS' : `${currentTag.toUpperCase()} POSTS`}
+            <span className="ml-2 text-brand">.</span>
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-neutral-400">
-            총 {formattedPosts.length}개의 글이 있습니다.
+          <p className="mt-4 font-marker text-xl text-slate-500 dark:text-neutral-400">
+            Total {formattedPosts.length} posts available.
           </p>
         </header>
 
@@ -79,10 +79,10 @@ export default async function PostsPage({
                 key={tag}
                 // 'All'을 누르면 쿼리 파라미터를 지우고 기본 주소로 이동합니다.
                 href={tag === 'All' ? '/posts' : `/posts?tag=${tag}`}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-full px-4 py-1.5 text-sm font-bold transition-colors border-2 ${
                   isActive
-                    ? 'bg-orange-500 text-white shadow-sm'
-                    : 'bg-white text-gray-600 hover:bg-orange-50 hover:text-orange-600 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700 dark:hover:text-orange-400'
+                    ? 'bg-brand border-brand text-white shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-brand hover:text-brand dark:bg-neutral-800 dark:text-slate-300 dark:border-neutral-700 dark:hover:border-brand'
                 }`}
               >
                 {tag}
@@ -92,14 +92,15 @@ export default async function PostsPage({
         </nav>
 
         {/* 게시글 리스트 영역 */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {formattedPosts.length > 0 ? (
-            formattedPosts.map((post) => <PostCard key={post.id} post={post} />)
+            formattedPosts.map((post, index) => <PostCard key={post.id} post={post} index={index} />)
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-neutral-400">
-              <p className="mb-4 text-lg">해당 카테고리에 작성된 게시글이 없습니다.</p>
-              <Link href="/write" className="text-sm font-medium text-orange-500 hover:underline">
-                첫 번째 글 작성하러 가기 ✍️
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-slate-500 dark:text-neutral-400 relative bg-yellow-50 dark:bg-yellow-900/20 shadow-md p-8 transform rotate-1 rounded-sm w-full max-w-md mx-auto">
+               <div className="absolute -top-2 left-1/2 -ml-2 w-4 h-4 rounded-full bg-red-400 shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/40 z-10"></div>
+              <p className="mb-4 text-2xl font-marker font-bold text-slate-800 dark:text-white">No posts in this category.</p>
+              <Link href="/write" className="text-xl font-marker text-brand hover:underline">
+                Write a new post ✍️
               </Link>
             </div>
           )}

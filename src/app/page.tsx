@@ -1,8 +1,7 @@
-import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
+import IDCard from '@/components/IDCard';
 import PostCard from '@/components/PostCard';
-import Tooltip from '@/components/Tooltip';
 import { supabase } from '@/lib/supabase';
 
 export default async function HomePage() {
@@ -27,74 +26,36 @@ export default async function HomePage() {
   }));
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
-      <div className="relative z-10 mx-auto max-w-5xl px-6 py-12">
-        <header className="mb-12 flex items-center justify-between">
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+    <main className="relative min-h-screen overflow-hidden font-sans text-slate-800 dark:text-slate-200">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
+        <header className="mb-16 flex items-center justify-center">
+          <h1 className="font-marker text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             .Blog
           </h1>
         </header>
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-          <aside className="flex flex-col gap-6 md:flex-row lg:col-span-1 lg:flex-col">
-            <div className="flex flex-col justify-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-              <div>
-                <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">우재현</h2>
-                <p className="mb-2 text-sm text-gray-600 dark:text-neutral-400">
-                  Dong-eui University <br />
-                  Applied Software
-                </p>
-              </div>
-
-              <div className="mt-auto flex gap-4 space-y-2 border-t border-gray-100 pt-4 dark:border-neutral-800">
-                <Tooltip content="dnwogus4260@naver.com">
-                  <a
-                    href="mailto:dnwogus4260@naver.com"
-                    className="block text-sm text-gray-700 hover:text-orange-500 hover:underline dark:text-neutral-300"
-                  >
-                    <Mail />
-                  </a>
-                </Tooltip>
-                <Tooltip content="neruu00">
-                  <a
-                    href="https://github.com/neruu00"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block text-sm text-gray-700 hover:text-orange-500 hover:underline dark:text-neutral-300"
-                  >
-                    <Github />
-                  </a>
-                </Tooltip>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-2">
-                {['Next.js', 'React', 'TypeScript', 'Supabase', 'Tailwind'].map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-neutral-800 dark:text-neutral-300"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </aside>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-16">
+          <IDCard />
 
           {/* 우측 메인 영역 (최신 게시물) */}
           <section className="lg:col-span-2">
-            <div className="mb-6 flex items-end justify-between">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">최신 포스트</h2>
+            <div className="mb-10 flex items-center justify-between">
+              <h2 className="font-marker relative text-5xl font-extrabold text-gray-900 dark:text-white">
+                LATEST LOGS
+              </h2>
               <Link
                 href="/posts"
-                className="text-sm font-medium text-orange-500 hover:text-orange-600"
+                className="group relative inline-flex items-center px-2 py-1 font-marker text-2xl font-bold tracking-wide text-brand transition-colors"
+                title="View All Posts"
               >
-                전체 보기 &rarr;
+                <span className="relative z-10">VIEW ALL POSTS</span>
+                <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
               </Link>
             </div>
 
-            <div className="space-y-4">
-              {formattedPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {formattedPosts.map((post, index) => (
+                <PostCard key={post.id} post={post} index={index} />
               ))}
             </div>
           </section>
