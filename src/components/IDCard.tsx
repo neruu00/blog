@@ -34,13 +34,13 @@ export default function IDCard() {
                   className="size-32 object-cover"
                 />
                 <div className="mt-2 flex flex-col items-center text-center">
-                  <p className="text-xxs mb-1 font-sans font-bold tracking-[0.2em] text-slate-500 uppercase">
+                  <p className="mb-1 font-sans text-xs font-bold tracking-[0.2em] text-slate-500 uppercase">
                     Developer
                   </p>
                   <h2 className="mb-1 font-serif text-2xl font-black tracking-widest text-slate-800 uppercase dark:text-slate-100">
                     우재현
                   </h2>
-                  <p className="text-xxs font-mono tracking-widest text-slate-400">neruu00</p>
+                  <p className="font-mono text-xs tracking-widest text-slate-400">neruu00</p>
                 </div>
               </div>
 
