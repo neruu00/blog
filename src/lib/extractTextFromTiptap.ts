@@ -8,7 +8,7 @@ export default function extractTextFromTiptap(content: JSONContent | string | an
   if (typeof content === 'string') {
     try {
       parsedContent = JSON.parse(content);
-    } catch (e) {
+    } catch {
       return content
         .replace(/<[^>]+>/g, ' ')
         .replace(/\s+/g, ' ')
