@@ -12,6 +12,7 @@ import {
   ListOrdered,
   Quote,
   ImageIcon,
+  PenTool,
 } from 'lucide-react';
 
 import { uploadImage } from '@/actions/image';
@@ -144,6 +145,14 @@ export default function Toolbar({ editor }: ToolbarProps) {
         title="이미지 업로드"
       >
         <ImageIcon className="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().insertContent({ type: 'canvas' }).run()}
+        className={getButtonClass(editor.isActive('canvas'))}
+        title="그림 캔버스 삽입"
+      >
+        <PenTool className="h-5 w-5" />
       </button>
       <button
         type="button"
