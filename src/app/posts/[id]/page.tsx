@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -10,12 +11,16 @@ import { supabase } from '@/lib/supabase';
 
 import type { Metadata, ResolvingMetadata } from 'next';
 
+const getPost = cache(async (id: string) => {
+  return supabase.from('posts').select('*').eq('id', id).single();
+});
+
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { id } = await params;
-  const { data: post } = await supabase.from('posts').select('*').eq('id', id).single();
+  const { data: post } = await getPost(id);
 
   if (!post) {
     return {
@@ -45,7 +50,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   const isAdmin = await verifyAdminSession();
 
-  const { data: post, error } = await supabase.from('posts').select('*').eq('id', id).single();
+  const { data: post, error } = await getPost(id);
 
   if (error || !post) notFound();
 
