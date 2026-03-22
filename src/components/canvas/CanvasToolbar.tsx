@@ -1,11 +1,11 @@
-import { MousePointer2, Minus, ArrowUpRight, Square, LocateFixed, Save } from 'lucide-react';
+import { Hand, ArrowUpRight, Minus, MousePointer2, Square, Undo2, LocateFixed, Circle as CircleIcon, Save } from 'lucide-react';
 import { ShapeType } from './types';
 
-const COLORS = ['#000000', '#df4b26', '#3b82f6', '#10b981', '#f59e0b', '#ffffff'];
+const COLORS = ['#000000', '#df4b26', '#3b82f6', '#10b981'];
 
 interface CanvasToolbarProps {
-  tool: Exclude<ShapeType, 'text'> | 'move';
-  setTool: (t: Exclude<ShapeType, 'text'> | 'move') => void;
+  tool: Exclude<ShapeType, 'text'> | 'select';
+  setTool: (t: Exclude<ShapeType, 'text'> | 'select') => void;
   color: string;
   setColor: (c: string) => void;
   onSave?: () => void;
@@ -24,11 +24,11 @@ export function CanvasToolbar({
     <div className="flex flex-wrap gap-2 p-2 border-b border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800/50 items-center">
       <button
         type="button"
-        onClick={() => setTool('move')}
+        onClick={() => setTool('select')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-          tool === 'move' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
+          tool === 'select' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
         }`}
-        title="이동 (1)"
+        title="선택 (1)"
       >
         <MousePointer2 size={16} />
       </button>
@@ -52,30 +52,42 @@ export function CanvasToolbar({
       >
         <ArrowUpRight size={16} />
       </button>
-      <button
-        type="button"
-        onClick={() => setTool('rect')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-          tool === 'rect' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-        }`}
-        title="네모 (4)"
-      >
-        <Square size={16} />
-      </button>
-
-      <div className="w-px h-6 bg-gray-300 dark:bg-neutral-700 mx-1"></div>
-
       <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => setTool('rect')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
+            tool === 'rect' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
+          }`}
+          title="네모 (4)"
+        >
+          <Square size={16} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setTool('ellipse')}
+          className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors sm:w-auto sm:px-3 sm:py-1.5 sm:gap-1.5 ${
+            tool === 'ellipse'
+              ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400'
+              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-neutral-800'
+          }`}
+          title="원형 (5)"
+        >
+          <CircleIcon size={18} />
+        </button>
+      </div>
+
+      <div className="flex items-center gap-1 border-l border-gray-200 dark:border-neutral-700 pl-2 ml-1">
         {COLORS.map((c) => (
           <button
-            type="button"
             key={c}
+            type="button"
             onClick={() => setColor(c)}
-            className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
-              color === c ? 'border-orange-500' : 'border-transparent'
+            className={`w-6 h-6 rounded-full border-2 transition-transform ${
+              color === c ? 'border-gray-500 scale-110' : 'border-transparent hover:scale-105'
             }`}
             style={{ backgroundColor: c }}
-            title={c}
+            title={`색상: ${c}`}
           />
         ))}
         <input

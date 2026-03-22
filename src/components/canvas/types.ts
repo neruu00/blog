@@ -1,4 +1,4 @@
-export type ShapeType = 'rect' | 'straightLine' | 'arrow' | 'text';
+export type ShapeType = 'straightLine' | 'arrow' | 'rect' | 'text' | 'ellipse';
 
 export type Shape = {
   id: string;
@@ -15,4 +15,6 @@ export type Shape = {
   strokeWidth?: number;
   scaleX?: number;
   scaleY?: number;
+  radiusX?: number;
+  radiusY?: number;
 };
