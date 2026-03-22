@@ -1,5 +1,6 @@
-import { Rect, Line, Arrow, Text, Ellipse, Group } from 'react-konva';
 import Konva from 'konva';
+import { Rect, Line, Arrow, Text, Ellipse, Group } from 'react-konva';
+
 import { Shape } from './types';
 
 export interface BaseShapeProps {

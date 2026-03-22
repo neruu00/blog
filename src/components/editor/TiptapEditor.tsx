@@ -7,8 +7,8 @@ import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 import { useState } from 'react';
 
-import Toolbar from './Toolbar';
 import { CanvasExtension } from './extensions/CanvasExtension';
+import Toolbar from './Toolbar';
 
 const lowlight = createLowlight(common);
 

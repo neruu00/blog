@@ -1,6 +1,7 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import CustomCanvas from '../../canvas/CustomCanvas';
 import { Shape } from '../../canvas/types';
 

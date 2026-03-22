@@ -1,5 +1,6 @@
-import { Node, mergeAttributes, ReactNodeViewRenderer } from '@tiptap/react';
 import { NodeSelection } from '@tiptap/pm/state';
+import { Node, mergeAttributes, ReactNodeViewRenderer } from '@tiptap/react';
+
 import CanvasNodeView from './CanvasNodeView';
 
 export const CanvasExtension = Node.create({
