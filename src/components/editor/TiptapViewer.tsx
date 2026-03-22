@@ -6,6 +6,8 @@ import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
+import { CanvasExtension } from './extensions/CanvasExtension';
+
 const lowlight = createLowlight(common);
 
 interface TiptapViewerProps {
@@ -28,6 +30,7 @@ export default function TiptapViewer({ content }: TiptapViewerProps) {
         },
       }),
       Image.configure({ inline: true, allowBase64: true }),
+      CanvasExtension,
     ],
     editorProps: {
       attributes: {
