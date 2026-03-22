@@ -1,5 +1,4 @@
 import { ArrowLeft, Calendar, User } from 'lucide-react';
-import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -8,6 +7,8 @@ import TiptapViewer from '@/components/editor/TiptapViewer';
 import { verifyAdminSession } from '@/lib/auth';
 import extractTextFromTiptap from '@/lib/extractTextFromTiptap';
 import { supabase } from '@/lib/supabase';
+
+import type { Metadata, ResolvingMetadata } from 'next';
 
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> },
