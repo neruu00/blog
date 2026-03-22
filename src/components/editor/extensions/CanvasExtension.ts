@@ -1,4 +1,5 @@
 import { Node, mergeAttributes, ReactNodeViewRenderer } from '@tiptap/react';
+import { NodeSelection } from '@tiptap/pm/state';
 import CanvasNodeView from './CanvasNodeView';
 
 export const CanvasExtension = Node.create({
@@ -42,7 +43,7 @@ export const CanvasExtension = Node.create({
       
       let containsCanvas = false;
       
-      if (selection && 'node' in selection && (selection as any).node?.type.name === 'canvas') {
+      if (selection instanceof NodeSelection && selection.node.type.name === 'canvas') {
         containsCanvas = true;
       } else if (!selection.empty) {
         state.doc.nodesBetween(selection.from, selection.to, (node) => {
