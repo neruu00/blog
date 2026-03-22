@@ -1,7 +1,6 @@
 import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
-import MusicPlayer from '@/components/MusicPlayer';
 import PostCard from '@/components/PostCard';
 import Tooltip from '@/components/Tooltip';
 import { supabase } from '@/lib/supabase';
@@ -34,7 +33,6 @@ export default async function HomePage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             .Blog
           </h1>
-          <MusicPlayer size={52} className="rounded-full! p-2! md:hidden" />
         </header>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
@@ -80,8 +78,6 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-
-            <MusicPlayer className="hidden md:flex" />
           </aside>
 
           {/* 우측 메인 영역 (최신 게시물) */}
