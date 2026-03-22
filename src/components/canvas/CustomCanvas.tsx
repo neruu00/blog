@@ -687,17 +687,6 @@ export default function CustomCanvas({
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextInputValue(e.target.value);
-    
-    if (editingTextId) {
-      const currentShapes = [...history[historyStep]];
-      const index = currentShapes.findIndex(s => s.id === editingTextId);
-      if (index !== -1) {
-        currentShapes[index] = { ...currentShapes[index], text: e.target.value };
-        const newHistory = [...history];
-        newHistory[historyStep] = currentShapes;
-        setHistory(newHistory);
-      }
-    }
   };
 
   const handleColorChange = (newColor: string) => {
@@ -1187,12 +1176,27 @@ export default function CustomCanvas({
               color: color,
             }}
             onBlur={() => {
-              if (!textInputValue.trim()) {
+              if (editingTextId) {
                 const currentShapes = [...history[historyStep]];
-                const filteredShapes = currentShapes.filter(s => s.id !== editingTextId);
-                const newHistory = [...history];
-                newHistory[historyStep] = filteredShapes;
-                setHistory(newHistory);
+                const index = currentShapes.findIndex(s => s.id === editingTextId);
+                
+                if (index !== -1) {
+                  const oldText = currentShapes[index].text || '';
+                  if (!textInputValue.trim()) {
+                    const filteredShapes = currentShapes.filter(s => s.id !== editingTextId);
+                    const newHistory = [...history];
+                    newHistory[historyStep] = filteredShapes;
+                    setHistory(newHistory);
+                  } else if (oldText === '') {
+                    currentShapes[index] = { ...currentShapes[index], text: textInputValue };
+                    const newHistory = [...history];
+                    newHistory[historyStep] = currentShapes;
+                    setHistory(newHistory);
+                  } else if (oldText !== textInputValue) {
+                    currentShapes[index] = { ...currentShapes[index], text: textInputValue };
+                    commitShapes(currentShapes);
+                  }
+                }
               }
               setTool('select');
               setEditingTextId(null);
