@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Geist, Nanum_Pen_Script } from 'next/font/google';
+
 import CursorParticles from '@/components/CursorParticles';
 import WriteLinkButton from '@/components/WriteLinkButton';
 import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
