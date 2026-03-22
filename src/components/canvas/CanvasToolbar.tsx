@@ -13,6 +13,28 @@ interface CanvasToolbarProps {
   onCancel?: () => void;
 }
 
+interface ToolButtonProps {
+  icon: React.ReactNode;
+  title: string;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function ToolButton({ icon, title, isActive, onClick }: ToolButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
+        isActive ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
+      }`}
+      title={title}
+    >
+      {icon}
+    </button>
+  );
+}
+
 export function CanvasToolbar({
   tool,
   setTool,
@@ -23,57 +45,12 @@ export function CanvasToolbar({
 }: CanvasToolbarProps) {
   return (
     <div className="flex flex-wrap gap-2 p-2 border-b border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800/50 items-center">
-      <button
-        type="button"
-        onClick={() => setTool('select')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-          tool === 'select' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-        }`}
-        title="선택 (1)"
-      >
-        <MousePointer2 size={16} />
-      </button>
-      <button
-        type="button"
-        onClick={() => setTool('straightLine')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-          tool === 'straightLine' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-        }`}
-        title="직선 (2)"
-      >
-        <Minus size={16} />
-      </button>
-      <button
-        type="button"
-        onClick={() => setTool('arrow')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-          tool === 'arrow' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-        }`}
-        title="화살표 (3)"
-      >
-        <ArrowUpRight size={16} />
-      </button>
+      <ToolButton icon={<MousePointer2 size={16} />} title="선택 (1)" isActive={tool === 'select'} onClick={() => setTool('select')} />
+      <ToolButton icon={<Minus size={16} />} title="직선 (2)" isActive={tool === 'straightLine'} onClick={() => setTool('straightLine')} />
+      <ToolButton icon={<ArrowUpRight size={16} />} title="화살표 (3)" isActive={tool === 'arrow'} onClick={() => setTool('arrow')} />
       <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={() => setTool('rect')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-            tool === 'rect' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-          }`}
-          title="네모 (4)"
-        >
-          <Square size={16} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setTool('ellipse')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-            tool === 'ellipse' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50 dark:bg-neutral-800 dark:text-gray-300'
-          }`}
-          title="원형 (5)"
-        >
-          <CircleIcon size={16} />
-        </button>
+        <ToolButton icon={<Square size={16} />} title="네모 (4)" isActive={tool === 'rect'} onClick={() => setTool('rect')} />
+        <ToolButton icon={<CircleIcon size={16} />} title="원형 (5)" isActive={tool === 'ellipse'} onClick={() => setTool('ellipse')} />
       </div>
 
       <div className="flex items-center gap-1 border-l border-gray-200 dark:border-neutral-700 pl-2 ml-1">

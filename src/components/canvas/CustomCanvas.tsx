@@ -47,7 +47,6 @@ export default function CustomCanvas({
 
   const [isDraggingEndpoint, setIsDraggingEndpoint] = useState<string | null>(null);
   const [snappedShapeId, setSnappedShapeId] = useState<string | null>(null);
-  const [isTransforming, setIsTransforming] = useState(false);
   const [selectionRect, setSelectionRect] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   const [clipboard, setClipboard] = useState<Shape | null>(null);
   const [hoveredShapeId, setHoveredShapeId] = useState<string | null>(null);
@@ -143,7 +142,7 @@ export default function CustomCanvas({
         if (e.ctrlKey || e.metaKey) {
           if (clipboard) {
             e.preventDefault();
-            const newId = Date.now().toString();
+            const newId = crypto.randomUUID();
             const newShape = { ...clipboard, id: newId };
             if (clipboard.points) newShape.points = [...clipboard.points];
             if (newShape.x !== undefined) newShape.x += 20;
@@ -347,22 +346,19 @@ export default function CustomCanvas({
         newPoints[3] = newY - baseY;
       }
       
-      currentShapes[idx] = { ...s, points: newPoints };
-      
       if (isEndEvent) {
+        currentShapes[idx] = { ...s, points: newPoints };
         commitShapes(currentShapes);
+        setIsDraggingEndpoint(null);
+        setSnappedShapeId(null);
       } else {
-        const newHistory = [...history];
-        newHistory[historyStep] = currentShapes;
-        setHistory(newHistory);
+        const lineNode = layerRef.current?.findOne('#' + shapeId);
+        if (lineNode) {
+          lineNode.setAttr('points', newPoints);
+          lineNode.getLayer()?.batchDraw();
+        }
+        setIsDraggingEndpoint(shapeId);
       }
-    }
-
-    if (isEndEvent) {
-      setIsDraggingEndpoint(null);
-      setSnappedShapeId(null);
-    } else {
-      setIsDraggingEndpoint(shapeId);
     }
   };
 
@@ -449,7 +445,7 @@ export default function CustomCanvas({
     const pos = getRelativePointerPosition(stage);
     if (!pos) return;
 
-    const id = Date.now().toString();
+    const id = crypto.randomUUID();
 
     let newShape: Shape;
     if (tool === 'straightLine' || tool === 'arrow') {
@@ -666,7 +662,7 @@ export default function CustomCanvas({
     const pos = getRelativePointerPosition(stage);
     if (!pos) return;
 
-    const id = Date.now().toString();
+    const id = crypto.randomUUID();
     const newShape: Shape = {
       id,
       type: 'text',
@@ -801,7 +797,6 @@ export default function CustomCanvas({
               const commonProps = {
                 shape, isSelected, isReadOnly, tool, strokeColor, shadowProps, lx, ly,
                 onDragEnd: handleDragEnd,
-                onTransformStart: () => setIsTransforming(true),
                 onTransformEnd: handleTransformEnd,
                 onMouseDown: handleShapeSelect,
                 onMouseEnter: handleMouseEnter,

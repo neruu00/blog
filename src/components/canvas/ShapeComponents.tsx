@@ -13,14 +13,13 @@ export interface BaseShapeProps {
   lx: number;
   ly: number;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
-  onTransformStart: () => void;
   onTransformEnd: (e: Konva.KonvaEventObject<Event>, id: string) => void;
   onMouseDown: (e: Konva.KonvaEventObject<MouseEvent>, id: string) => void;
   onMouseEnter: (e: Konva.KonvaEventObject<MouseEvent>, id: string) => void;
   onMouseLeave: (e: Konva.KonvaEventObject<MouseEvent>) => void;
 }
 
-export const RectShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, shadowProps, onDragEnd, onTransformStart, onTransformEnd, onMouseDown, onMouseEnter, onMouseLeave }: BaseShapeProps) => (
+export const RectShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, shadowProps, onDragEnd, onTransformEnd, onMouseDown, onMouseEnter, onMouseLeave }: BaseShapeProps) => (
   <Rect
     id={shape.id}
     key={shape.id}
@@ -38,7 +37,6 @@ export const RectShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, sh
     cornerRadius={2}
     draggable={!isReadOnly && tool === 'select' && isSelected}
     onDragEnd={(e) => onDragEnd(e, shape.id)}
-    onTransformStart={onTransformStart}
     onTransformEnd={(e) => onTransformEnd(e, shape.id)}
     onMouseDown={(e) => onMouseDown(e, shape.id)}
     onMouseEnter={(e) => onMouseEnter(e, shape.id)}
@@ -48,7 +46,7 @@ export const RectShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, sh
   />
 );
 
-export const EllipseShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, shadowProps, onDragEnd, onTransformStart, onTransformEnd, onMouseDown, onMouseEnter, onMouseLeave }: BaseShapeProps) => (
+export const EllipseShape = ({ shape, isSelected, isReadOnly, tool, strokeColor, shadowProps, onDragEnd, onTransformEnd, onMouseDown, onMouseEnter, onMouseLeave }: BaseShapeProps) => (
   <Ellipse
     id={shape.id}
     key={shape.id}
@@ -65,7 +63,6 @@ export const EllipseShape = ({ shape, isSelected, isReadOnly, tool, strokeColor,
     fill={isSelected ? 'rgba(0,0,0,0)' : undefined}
     draggable={!isReadOnly && tool === 'select' && isSelected}
     onDragEnd={(e) => onDragEnd(e, shape.id)}
-    onTransformStart={onTransformStart}
     onTransformEnd={(e) => onTransformEnd(e, shape.id)}
     onMouseDown={(e) => onMouseDown(e, shape.id)}
     onMouseEnter={(e) => onMouseEnter(e, shape.id)}
@@ -93,7 +90,11 @@ export const LineOrArrowShape = ({ shape, isSelected, isReadOnly, tool, strokeCo
      const dx = p1x - p0x;
      const dy = p1y - p0y;
      const len = Math.hypot(dx, dy);
-     const gap = 30 + (cuttingText.text?.length || 5) * 8;
+     
+     const BASE_GAP = 30;
+     const DEFAULT_TEXT_LENGTH_ESTIMATE = 5;
+     const PER_CHAR_WIDTH_ESTIMATE = 8;
+     const gap = BASE_GAP + (cuttingText.text?.length || DEFAULT_TEXT_LENGTH_ESTIMATE) * PER_CHAR_WIDTH_ESTIMATE;
      
      if (len > gap * 1.5) {
         const ratio = (gap / 2) / len;
