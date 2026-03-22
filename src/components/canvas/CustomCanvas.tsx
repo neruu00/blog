@@ -31,7 +31,7 @@ export default function CustomCanvas({
 }: CustomCanvasProps) {
   const [tool, setTool] = useState<Exclude<ShapeType, 'text'> | 'select'>('select');
   const [color, setColor] = useState('#000000');
-  const [fontSize, setFontSize] = useState(24);
+  const [fontSize, setFontSize] = useState(32);
   
   const [history, setHistory] = useState<Shape[][]>([initialShapes]);
   const [historyStep, setHistoryStep] = useState(0);
@@ -49,6 +49,7 @@ export default function CustomCanvas({
   const [isTransforming, setIsTransforming] = useState(false);
   const [selectionRect, setSelectionRect] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   const [clipboard, setClipboard] = useState<Shape | null>(null);
+  const [hoveredShapeId, setHoveredShapeId] = useState<string | null>(null);
   const isSelecting = useRef(false);
   const isPanning = useRef(false);
   const lastPanPos = useRef({ x: 0, y: 0 });
@@ -178,7 +179,7 @@ export default function CustomCanvas({
     setHistoryStep(newHistory.length - 1);
   };
 
-  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>, shapeId: string) => {
+  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>, shapeId: string, snappedToId?: string | null) => {
     e.cancelBubble = true;
     const node = e.target;
     const currentShapes = [...history[historyStep]];
@@ -186,31 +187,37 @@ export default function CustomCanvas({
     if (index !== -1) {
       const shape = currentShapes[index];
       
-      if (shape.type === 'straightLine' || shape.type === 'arrow') {
+      let updatedShape = { ...shape };
+      if (snappedToId !== undefined) {
+        updatedShape.snappedToId = snappedToId;
+      }
+      
+      if (updatedShape.type === 'straightLine' || updatedShape.type === 'arrow') {
         const nx = node.x();
         const ny = node.y();
-        if (shape.points && (nx !== 0 || ny !== 0)) {
-          currentShapes[index] = { 
-            ...shape, 
+        if (updatedShape.points && (nx !== 0 || ny !== 0)) {
+          updatedShape = { 
+            ...updatedShape, 
             x: 0, 
             y: 0,
             points: [
-              shape.points[0] + nx,
-              shape.points[1] + ny,
-              shape.points[2] + nx,
-              shape.points[3] + ny
+              updatedShape.points[0] + nx,
+              updatedShape.points[1] + ny,
+              updatedShape.points[2] + nx,
+              updatedShape.points[3] + ny
             ]
           };
           node.x(0);
           node.y(0);
         }
       } else {
-        currentShapes[index] = { 
-          ...shape, 
+        updatedShape = { 
+          ...updatedShape, 
           x: node.x(), 
           y: node.y() 
         };
       }
+      currentShapes[index] = updatedShape;
       commitShapes(currentShapes);
     }
   };
@@ -390,6 +397,9 @@ export default function CustomCanvas({
     if (e.evt.button === 2 || e.evt.button === 1) return;
     if (tool === 'select') {
       setSelectedId(id);
+      setHoveredShapeId(null);
+      const stage = e.target.getStage();
+      if (stage) stage.container().style.cursor = '';
       e.cancelBubble = true;
       
       const shape = shapes.find(s => s.id === id);
@@ -403,6 +413,19 @@ export default function CustomCanvas({
       }
     }
   };
+
+  const handleMouseEnter = useCallback((e: Konva.KonvaEventObject<MouseEvent>, id: string) => {
+    if (isReadOnly || selectedId || tool !== 'select') return;
+    setHoveredShapeId(id);
+    const stage = e.target.getStage();
+    if (stage) stage.container().style.cursor = 'pointer';
+  }, [isReadOnly, selectedId, tool]);
+
+  const handleMouseLeave = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
+    setHoveredShapeId(null);
+    const stage = e.target.getStage();
+    if (stage) stage.container().style.cursor = '';
+  }, []);
 
   const handleStageMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     if (isReadOnly) return;
@@ -449,7 +472,17 @@ export default function CustomCanvas({
 
     let newShape: Shape;
     if (tool === 'straightLine' || tool === 'arrow') {
-      newShape = { id, type: tool, x: 0, y: 0, points: [pos.x, pos.y, pos.x, pos.y], stroke: color, strokeWidth: 2 };
+      let startX = pos.x;
+      let startY = pos.y;
+      const snap = findSnapPoint(pos.x, pos.y, id);
+      if (snap) {
+        startX = snap.x;
+        startY = snap.y;
+        setSnappedShapeId(snap.shapeId);
+      } else {
+        setSnappedShapeId(null);
+      }
+      newShape = { id, type: tool, x: 0, y: 0, points: [startX, startY, startX, startY], stroke: color, strokeWidth: 4 };
     } else if (tool === 'rect') {
       newShape = { id, type: 'rect', x: pos.x, y: pos.y, width: 0, height: 0, stroke: color, strokeWidth: 2 };
     } else if (tool === 'ellipse') {
@@ -499,7 +532,14 @@ export default function CustomCanvas({
     let lastShape = { ...currentShapes[currentShapes.length - 1] };
 
     if ((tool === 'straightLine' || tool === 'arrow') && lastShape.points) {
-      lastShape.points = [lastShape.points[0], lastShape.points[1], pos.x, pos.y];
+      const snap = findSnapPoint(pos.x, pos.y, lastShape.id);
+      if (snap) {
+        lastShape.points = [lastShape.points[0], lastShape.points[1], snap.x, snap.y];
+        setSnappedShapeId(snap.shapeId);
+      } else {
+        lastShape.points = [lastShape.points[0], lastShape.points[1], pos.x, pos.y];
+        setSnappedShapeId(null);
+      }
     } else if (tool === 'rect' && lastShape.type === 'rect') {
       lastShape.width = pos.x - (lastShape.x || 0);
       lastShape.height = pos.y - (lastShape.y || 0);
@@ -567,6 +607,7 @@ export default function CustomCanvas({
 
     if (isDrawing.current) {
       isDrawing.current = false;
+      setSnappedShapeId(null);
       
       const currentShapes = [...history[historyStep]];
       const lastShape = currentShapes[currentShapes.length - 1];
@@ -755,48 +796,120 @@ export default function CustomCanvas({
           <Layer ref={layerRef}>
             {shapes.map((shape) => {
               const isSelected = selectedId === shape.id;
+              const isHovered = hoveredShapeId === shape.id && !selectedId && tool === 'select';
               const lx = shape.x || 0;
               const ly = shape.y || 0;
               
               const isSnappedTarget = snappedShapeId === shape.id;
               const strokeColor = isSnappedTarget ? '#22c55e' : shape.stroke;
+
+              const shadowProps = isHovered ? { shadowColor: '#3b82f6', shadowBlur: 10, shadowOpacity: 0.8, shadowOffset: { x: 0, y: 0 } } : {};
               
               if (shape.type === 'straightLine' || shape.type === 'arrow') {
+                let renderAsTwoParts = false;
+                let part1: number[] = [];
+                let part2: number[] = [];
+                
+                const cuttingText = shapes.find(s => s.type === 'text' && s.snappedToId === shape.id);
+                if (cuttingText && shape.points) {
+                   const p0x = shape.points[0];
+                   const p0y = shape.points[1];
+                   const p1x = shape.points[2];
+                   const p1y = shape.points[3];
+                   const dx = p1x - p0x;
+                   const dy = p1y - p0y;
+                   const len = Math.hypot(dx, dy);
+                   const gap = 30 + (cuttingText.text?.length || 5) * 8;
+                   
+                   if (len > gap * 1.5) {
+                      const ratio = (gap / 2) / len;
+                      part1 = [p0x, p0y, p0x + dx*(0.5-ratio), p0y + dy*(0.5-ratio)];
+                      part2 = [p0x + dx*(0.5+ratio), p0y + dy*(0.5+ratio), p1x, p1y];
+                      renderAsTwoParts = true;
+                   }
+                }
+
                 return (
                   <Group key={shape.id}>
                     {shape.type === 'straightLine' ? (
-                      <Line
-                        id={shape.id}
-                        x={lx}
-                        y={ly}
-                        points={shape.points}
-                        stroke={strokeColor}
-                        strokeWidth={shape.strokeWidth}
-                        lineCap="round"
-                        lineJoin="round"
-                        hitStrokeWidth={15}
-                        draggable={!isReadOnly && tool === 'select' && isSelected}
-                        onDragEnd={(e) => handleDragEnd(e, shape.id)}
-                        onMouseDown={(e) => handleShapeSelect(e, shape.id)}
-                      />
+                      <>
+                        <Line
+                          id={shape.id}
+                          x={lx}
+                          y={ly}
+                          points={renderAsTwoParts ? part1 : shape.points}
+                          stroke={strokeColor}
+                          strokeWidth={shape.strokeWidth}
+                          lineCap="round"
+                          lineJoin="round"
+                          hitStrokeWidth={15}
+                          draggable={!isReadOnly && tool === 'select' && isSelected}
+                          onDragEnd={(e) => handleDragEnd(e, shape.id)}
+                          onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                          onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                          onMouseLeave={handleMouseLeave}
+                          {...shadowProps}
+                        />
+                        {renderAsTwoParts && (
+                          <Line
+                            x={lx}
+                            y={ly}
+                            points={part2}
+                            stroke={strokeColor}
+                            strokeWidth={shape.strokeWidth}
+                            lineCap="round"
+                            lineJoin="round"
+                            hitStrokeWidth={15}
+                            draggable={!isReadOnly && tool === 'select' && isSelected}
+                            onDragEnd={(e) => handleDragEnd(e, shape.id)}
+                            onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                            onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                            onMouseLeave={handleMouseLeave}
+                            {...shadowProps}
+                          />
+                        )}
+                      </>
                     ) : (
-                      <Arrow
-                        id={shape.id}
-                        x={lx}
-                        y={ly}
-                        points={shape.points!}
-                        stroke={strokeColor}
-                        strokeWidth={shape.strokeWidth}
-                        fill={strokeColor}
-                        pointerLength={10}
-                        pointerWidth={10}
-                        lineCap="round"
-                        lineJoin="round"
-                        hitStrokeWidth={15}
-                        draggable={!isReadOnly && tool === 'select' && isSelected}
-                        onDragEnd={(e) => handleDragEnd(e, shape.id)}
-                        onMouseDown={(e) => handleShapeSelect(e, shape.id)}
-                      />
+                      <>
+                        {renderAsTwoParts && (
+                          <Line
+                            x={lx}
+                            y={ly}
+                            points={part1}
+                            stroke={strokeColor}
+                            strokeWidth={shape.strokeWidth}
+                            lineCap="round"
+                            lineJoin="round"
+                            hitStrokeWidth={15}
+                            draggable={!isReadOnly && tool === 'select' && isSelected}
+                            onDragEnd={(e) => handleDragEnd(e, shape.id)}
+                            onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                            onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                            onMouseLeave={handleMouseLeave}
+                            {...shadowProps}
+                          />
+                        )}
+                        <Arrow
+                          id={shape.id}
+                          x={lx}
+                          y={ly}
+                          points={renderAsTwoParts ? part2 : shape.points!}
+                          stroke={strokeColor}
+                          strokeWidth={shape.strokeWidth}
+                          fill={strokeColor}
+                          pointerLength={10}
+                          pointerWidth={10}
+                          lineCap="round"
+                          lineJoin="round"
+                          hitStrokeWidth={15}
+                          draggable={!isReadOnly && tool === 'select' && isSelected}
+                          onDragEnd={(e) => handleDragEnd(e, shape.id)}
+                          onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                          onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                          onMouseLeave={handleMouseLeave}
+                          {...shadowProps}
+                        />
+                      </>
                     )}
                   </Group>
                 );
@@ -823,7 +936,10 @@ export default function CustomCanvas({
                     onTransform={(e) => handleTransform(e, shape.id)}
                     onTransformEnd={(e) => { setIsTransforming(false); handleTransformEnd(e, shape.id); }}
                     onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                    onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                    onMouseLeave={handleMouseLeave}
                     hitStrokeWidth={15}
+                    {...shadowProps}
                   />
                 );
               } else if (shape.type === 'ellipse') {
@@ -848,7 +964,10 @@ export default function CustomCanvas({
                     onTransform={(e) => handleTransform(e, shape.id)}
                     onTransformEnd={(e) => { setIsTransforming(false); handleTransformEnd(e, shape.id); }}
                     onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                    onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                    onMouseLeave={handleMouseLeave}
                     hitStrokeWidth={15}
+                    {...shadowProps}
                   />
                 );
               } else if (shape.type === 'text') {
@@ -891,6 +1010,17 @@ export default function CustomCanvas({
                               snapTargetId = s.id;
                               break;
                            }
+                        } else if ((s.type === 'straightLine' || s.type === 'arrow') && s.points) {
+                           const lx = s.x || 0;
+                           const ly = s.y || 0;
+                           const midX = lx + (s.points[0] + s.points[2]) / 2;
+                           const midY = ly + (s.points[1] + s.points[3]) / 2;
+                           if (Math.hypot(cx - midX, cy - midY) < 20) {
+                              cx = midX;
+                              cy = midY;
+                              snapTargetId = s.id;
+                              break;
+                           }
                         }
                       }
                       
@@ -902,10 +1032,17 @@ export default function CustomCanvas({
                          setSnappedShapeId(null);
                       }
                     }}
-                    onDragEnd={(e) => { setSnappedShapeId(null); handleDragEnd(e, shape.id); }}
+                    onDragEnd={(e) => { 
+                      const target = snappedShapeId;
+                      setSnappedShapeId(null); 
+                      handleDragEnd(e, shape.id, target); 
+                    }}
                     onTransformEnd={(e) => handleTransformEnd(e, shape.id)}
                     onMouseDown={(e) => handleShapeSelect(e, shape.id)}
+                    onMouseEnter={(e) => handleMouseEnter(e, shape.id)}
+                    onMouseLeave={handleMouseLeave}
                     hitStrokeWidth={15}
+                    {...shadowProps}
                   />
                 );
               }
@@ -924,15 +1061,16 @@ export default function CustomCanvas({
               />
             )}
 
-            {isDraggingEndpoint && getAllSnapPoints(isDraggingEndpoint).map((p, i) => (
+            {(isDraggingEndpoint || (isDrawing.current && (tool === 'straightLine' || tool === 'arrow'))) && 
+              getAllSnapPoints(isDraggingEndpoint || selectedId || '').map((p, i) => (
               <Circle
                 key={`snap-${i}`}
                 x={p.x}
                 y={p.y}
-                radius={4}
+                radius={4 / stageScale}
                 fill="rgba(59, 130, 246, 0.4)"
                 stroke="rgba(59, 130, 246, 0.8)"
-                strokeWidth={1}
+                strokeWidth={1 / stageScale}
                 listening={false}
               />
             ))}
@@ -969,10 +1107,11 @@ export default function CustomCanvas({
                        name="lineEdgeHandle"
                        x={lx + shape.points[0]}
                        y={ly + shape.points[1]}
-                       radius={6}
+                       radius={6 / stageScale}
                        fill="white"
                        stroke="#3b82f6"
-                       strokeWidth={2}
+                       strokeWidth={2 / stageScale}
+                       hitStrokeWidth={15 / stageScale}
                        draggable
                        onDragStart={(e) => { e.cancelBubble = true; setIsDraggingEndpoint(shape.id); }}
                        onDragMove={(e) => updateEndpoint(e, shape.id, true, false)}
@@ -983,10 +1122,11 @@ export default function CustomCanvas({
                        name="lineEdgeHandle"
                        x={lx + shape.points[2]}
                        y={ly + shape.points[3]}
-                       radius={6}
+                       radius={6 / stageScale}
                        fill="white"
                        stroke="#3b82f6"
-                       strokeWidth={2}
+                       strokeWidth={2 / stageScale}
+                       hitStrokeWidth={15 / stageScale}
                        draggable
                        onDragStart={(e) => { e.cancelBubble = true; setIsDraggingEndpoint(shape.id); }}
                        onDragMove={(e) => updateEndpoint(e, shape.id, false, false)}
@@ -1012,18 +1152,18 @@ export default function CustomCanvas({
           >
             <button
                type="button"
-               onClick={() => handleFontSizeChange(32)}
-               className={`px-2.5 py-1 rounded text-sm font-bold transition-colors ${fontSize === 32 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
+               onClick={() => handleFontSizeChange(48)}
+               className={`px-2.5 py-1 rounded text-sm font-bold transition-colors ${fontSize === 48 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
             >T1</button>
             <button
                type="button"
-               onClick={() => handleFontSizeChange(24)}
-               className={`px-2.5 py-1 rounded text-sm font-semibold transition-colors ${fontSize === 24 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
+               onClick={() => handleFontSizeChange(32)}
+               className={`px-2.5 py-1 rounded text-sm font-semibold transition-colors ${fontSize === 32 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
             >T2</button>
             <button
                type="button"
-               onClick={() => handleFontSizeChange(16)}
-               className={`px-2.5 py-1 rounded text-sm transition-colors ${fontSize === 16 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
+               onClick={() => handleFontSizeChange(24)}
+               className={`px-2.5 py-1 rounded text-sm transition-colors ${fontSize === 24 ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-700'}`}
             >T3</button>
           </div>
         )}

@@ -15,6 +15,7 @@ export type Shape = {
   strokeWidth?: number;
   scaleX?: number;
   scaleY?: number;
+  snappedToId?: string | null;
   radiusX?: number;
   radiusY?: number;
 };
