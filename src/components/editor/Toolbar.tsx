@@ -13,6 +13,7 @@ import {
   Quote,
   ImageIcon,
   PenTool,
+  Heading3,
 } from 'lucide-react';
 
 import { uploadImage } from '@/actions/image';
@@ -85,6 +86,14 @@ export default function Toolbar({ editor }: ToolbarProps) {
         title="Heading 2"
       >
         <Heading2 className="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={getButtonClass(editor.isActive('heading', { level: 3 }))}
+        title="Heading 3"
+      >
+        <Heading3 className="h-5 w-5" />
       </button>
       <div className="mx-1 h-6 w-px bg-gray-200" /> {/* 구분선 */}
       <button

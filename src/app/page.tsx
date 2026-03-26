@@ -9,7 +9,7 @@ export default async function HomePage() {
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(3);
+    .limit(4);
 
   if (error) {
     console.error('게시글을 불러오는 중 에러 발생:', error);
@@ -45,11 +45,11 @@ export default async function HomePage() {
               </h2>
               <Link
                 href="/posts"
-                className="group relative inline-flex items-center px-2 py-1 font-marker text-2xl font-bold tracking-wide text-brand transition-colors"
+                className="group font-marker text-brand relative inline-flex items-center px-2 py-1 text-2xl font-bold tracking-wide transition-colors"
                 title="View All Posts"
               >
                 <span className="relative z-10">VIEW ALL POSTS</span>
-                <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+                <span className="bg-brand absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
               </Link>
             </div>
 
