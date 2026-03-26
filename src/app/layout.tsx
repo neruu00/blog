@@ -42,11 +42,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${nanumPen.variable} font-sans text-slate-900 relative antialiased min-h-screen bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] bg-slate-50 dark:bg-slate-900 dark:text-slate-100`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${nanumPen.variable} relative min-h-screen bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] bg-size-[24px_24px] font-sans text-slate-900 antialiased dark:bg-slate-900 dark:bg-[radial-gradient(#334155_1px,transparent_1px)] dark:text-slate-100`}
+      >
         <CursorParticles />
         <TanstackQueryLayout>
-            {children}
-            <WriteLinkButton />
+          {children}
+          <WriteLinkButton />
         </TanstackQueryLayout>
         <Analytics />
         <SpeedInsights />

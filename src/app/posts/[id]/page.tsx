@@ -17,7 +17,7 @@ const getPost = cache(async (id: string) => {
 
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> },
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const { id } = await params;
   const { data: post } = await getPost(id);
@@ -89,7 +89,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           )}
         </div>
 
-        <div className="relative mb-20 -rotate-1 transform rounded-sm border border-slate-200 bg-white p-10 shadow-xl md:p-14 dark:border-slate-800 dark:bg-slate-900">
+        <div className="relative mb-20 transform rounded-sm border border-slate-200 bg-white p-10 shadow-xl md:p-14 dark:border-slate-800 dark:bg-slate-900">
           {/* Document Pin */}
           <div className="absolute -top-3 left-1/2 z-10 -ml-3 h-6 w-6 rounded-full border-2 border-white/50 bg-red-500 shadow-md"></div>
 
