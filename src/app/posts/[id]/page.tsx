@@ -90,9 +90,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         <div className="relative mb-20 transform rounded-sm border border-slate-200 bg-white p-10 shadow-xl md:p-14 dark:border-slate-800 dark:bg-slate-900">
-          {/* Document Pin */}
-          <div className="absolute -top-3 left-1/2 z-10 -ml-3 h-6 w-6 rounded-full border-2 border-white/50 bg-red-500 shadow-md"></div>
-
           <header className="mb-10">
             <div className="mb-6 flex flex-wrap gap-2">
               {tags.map((tag: string) => (
