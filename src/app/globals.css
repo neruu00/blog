@@ -1,79 +1,64 @@
+/**
+ * @file globals.css
+ * @description 전역 스타일 정의.
+ *              Tailwind CSS custom theme 토큰, Pretendard 폰트,
+ *              Tiptap 에디터 관련 스타일을 포함한다.
+ */
+
+/* Pretendard 폰트 CDN */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
 @import 'tailwindcss';
 
 @plugin '@tailwindcss/typography';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-brand: #00d2ff;
-  --font-sans: var(--font-geist-sans);
+  /* 시맨틱 배경 — 기본 팔레트에 정확히 매칭되지 않는 값 */
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafafa;
+
+  /* 코드 블록 배경 */
+  --color-code-bg: #f8f9fa;
+
+  /* 폰트 */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-marker: var(--font-nanum-pen);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* 기본 body 스타일 */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface);
+  color: theme('colors.gray.900');
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ────────────────────────────────────
+   Tiptap 에디터 스타일
+   ──────────────────────────────────── */
+
+/* 에디터 포커스 아웃라인 제거 */
 .ProseMirror {
   outline: none;
 }
+
+/* 에디터 placeholder 스타일 */
 .ProseMirror p.is-editor-empty:first-child::before {
-  color: #adb5bd;
+  color: theme('colors.gray.400');
   content: attr(data-placeholder);
   float: left;
   height: 0;
   pointer-events: none;
 }
 
-.flip-card {
-  perspective: 1000px;
-}
-
-.flip-card-inner {
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-.flip-card-front, .flip-card-back {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);
-}
-
-/* Tiptap Blockquote Styling */
+/* Blockquote 스타일 */
 .prose blockquote {
-  border-left: 4px solid #f97316;
-  background-color: #fffaf0;
+  border-left: 4px solid theme('colors.orange.500');
+  background-color: theme('colors.orange.50');
   padding: 0 1rem;
   font-style: italic;
-  color: #4b5563;
+  color: theme('colors.gray.600');
   quotes: none;
 }
 
@@ -82,18 +67,10 @@ body {
   content: none !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  .prose blockquote {
-    background-color: #1a1a1a;
-    color: #d1d5db;
-    border-left-color: #fb923c;
-  }
-}
-
-/* Tiptap Inline Code Styling */
+/* Inline Code 스타일 */
 .prose :not(pre) > code {
-  background-color: #f3f4f6;
-  color: #ea580c;
+  background-color: theme('colors.gray.100');
+  color: theme('colors.orange.600');
   padding: 0.2rem 0.4rem !important;
   border-radius: 0.375rem;
   font-weight: 500;
@@ -102,11 +79,4 @@ body {
 .prose :not(pre) > code::before,
 .prose :not(pre) > code::after {
   content: none !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  .prose :not(pre) > code {
-    background-color: #262626;
-    color: #fdba74;
-  }
 }
