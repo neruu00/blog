@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
 
 import { toggleLike } from '@/actions/like';
+import { trackLikeToggle } from '@/lib/utils/analytics';
 import { useToastStore } from '@/stores/useToastStore';
 
 interface LikeButtonProps {
@@ -69,6 +70,9 @@ export default function LikeButton({ postId, initialLikeCount, initialHasLiked }
           count: newCount,
           hasLiked: newHasLiked,
         };
+
+        // GA 커스텀 이벤트 전송
+        trackLikeToggle(postId, newHasLiked);
       } catch (error: any) {
         // 실패 시: 사용자의 화면(uiState)을 기존의 성공했던 기준 상태(syncState)로 롤백
         setUiState({

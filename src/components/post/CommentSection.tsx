@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useTransition } from 'react';
 
 import { createComment, deleteComment } from '@/actions/comment';
+import { trackCommentCreate, trackCommentDelete } from '@/lib/utils/analytics';
 import { formatDateKo } from '@/lib/utils/date';
 import { useToastStore } from '@/stores/useToastStore';
 
@@ -55,6 +56,7 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
         setComments((prev) => [...prev, result.data as unknown as Comment]);
         setContent('');
         addToast('댓글이 작성되었습니다.', 'success');
+        trackCommentCreate(postId);
       } else {
         addToast(result.error || '댓글 작성 실패', 'error');
       }
@@ -69,6 +71,7 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
       if (result.success) {
         setComments((prev) => prev.filter((c) => c.id !== commentId));
         addToast('댓글이 삭제되었습니다.', 'success');
+        trackCommentDelete(postId);
       } else {
         addToast(result.error || '삭제 실패', 'error');
       }
