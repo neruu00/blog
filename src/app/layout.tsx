@@ -9,6 +9,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Geist_Mono } from 'next/font/google';
 import Script from 'next/script';
 
+import Modal from '@/components/ui/Modal';
+import ToastContainer from '@/components/ui/ToastContainer';
 import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
 import AuthProvider from '@/providers/AuthProvider';
 
@@ -42,6 +44,8 @@ export default function RootLayout({
       >
         <AuthProvider>
           <TanstackQueryLayout>{children}</TanstackQueryLayout>
+          <ToastContainer />
+          <Modal />
         </AuthProvider>
         <Analytics />
         <SpeedInsights />
