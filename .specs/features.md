@@ -11,11 +11,13 @@
 - 사이드 **Table of Contents(TOC)**: heading(h1~h3)을 파싱하여 우측에 고정 네비게이션
   - `IntersectionObserver`로 현재 위치 하이라이트
   - 클릭 시 해당 heading으로 스무스 스크롤
-  - 모바일에서는 숨김 또는 드롭다운으로 축소
+  - Tiptap 비동기 렌더링 대기 (Polling 방식으로 DOM 준비 확인)
+  - XL(1280px) 이상에서만 표시
 
-### 카테고리/태그
+### 태그
 - 태그 기반 필터링 (URL searchParams)
-- 카테고리: `tech`, `project`, `portfolio`, `etc`
+- `TagInputField` 자동완성 셀렉터로 태그 입력
+- 사전 정의 태그: Algorithm, Frontend, Backend, Database, Javascript, Typescript, React, Next.js, Java, Python, etc
 
 ---
 
@@ -58,7 +60,7 @@ interface Comment {
 
 ### API
 - `toggleLike(postId)` — 좋아요 토글 (있으면 삭제, 없으면 추가)
-- `getLikeStatus(postId)` — `{ isLiked: boolean, count: number }`
+- `getLikeStatus(postId)` — `{ hasLiked: boolean, count: number }`
 
 ---
 
@@ -66,7 +68,7 @@ interface Comment {
 
 ### 동작
 - 게시글 상세 페이지 진입 시 카운트 +1
-- **중복 방지**: 쿠키에 `viewed_posts` 배열 저장, 동일 게시글은 24시간 내 재카운트 방지
+- `ViewCounter` 클라이언트 컴포넌트에서 Server Action 호출
 - 서버 액션 또는 API Route로 처리
 
 ---
@@ -75,12 +77,12 @@ interface Comment {
 
 ### 구조
 - `/portfolio` 페이지
-- 프로젝트 카드 그리드 레이아웃
-- 각 카드: 썸네일, 제목, 설명, 기술 스택 태그, 링크
+- 프로필 Hero Section (이름, 역할, 이메일, GitHub, 위치)
+- 기술 스택 카드 그리드 (Frontend, Backend & Database, Tools)
+- 프로젝트 경험 리스트 (제목, 기간, 설명, 기술 태그, 외부 링크)
 
-### 링크 방식
-- 외부 사이트 링크 (새 탭)
-- 또는 iframe 임베드 (모달/페이지 내)
+### 데이터 관리
+- 페이지 파일 상단의 상수 배열(`PROFILE`, `SKILLS`, `PROJECTS`)을 수정하여 내용 갱신
 
 ---
 
@@ -105,6 +107,6 @@ const logger = {
 
 ## 7. Google Analytics 4
 
-- `next/script`로 GA 스크립트 로드 (`afterInteractive`)
-- 페이지뷰 자동 추적: `usePathname` + `useSearchParams`
-- 커스텀 이벤트: 게시글 조회, 좋아요, 댓글 작성
+- `next/script`로 GA 스크립트 로드 (`afterInteractive` 전략)
+- 측정 ID: `G-ZL70EZYFER`
+- Vercel Analytics + Speed Insights 병행 운용

@@ -1,11 +1,13 @@
-# 인증 스펙 (Auth.js v4 + Google OAuth)
+# 인증 스펙 (NextAuth v4 + Google OAuth)
 
 ## 1. 인증 방식
-기존 OTP → Google OAuth (next-auth v4)로 전면 교체.
+Google OAuth (next-auth v4) + Supabase Adapter.
 
 ## 2. 파일 구성
-- `lib/auth.ts` — NextAuth 설정 + 헬퍼 (isAdmin, requireAdmin, requireAuth)
+- `lib/auth.ts` — NextAuth 설정 + 헬퍼 (isAdmin, requireAdmin, requireAuth, verifyAdminSession)
 - `app/api/auth/[...nextauth]/route.ts` — NextAuth API Route
+- `providers/AuthProvider.tsx` — SessionProvider 래퍼 (클라이언트)
+- `types/next-auth.d.ts` — NextAuth 타입 확장 (isAdmin 필드)
 
 ## 3. 권한 체계
 
@@ -30,6 +32,11 @@ export async function requireAuth(): Promise<void> {
   const session = await getServerSession(authOptions);
   if (!session) throw new Error('로그인이 필요합니다.');
 }
+
+// 기존 코드 호환용
+export async function verifyAdminSession(): Promise<boolean> {
+  return isAdmin();
+}
 ```
 
 ## 5. 환경 변수
@@ -41,13 +48,7 @@ NEXTAUTH_SECRET=...
 ADMIN_EMAIL=dnwogus4260@naver.com
 ```
 
-## 6. 제거 대상
-- `src/actions/auth.ts` (OTP verifyOTP, logout)
-- `src/app/(auth)/login/page.tsx` (OTP 로그인 UI)
-- `src/components/ConfettiParticles.tsx` (OTP 성공 애니메이션)
-- 기존 `src/lib/auth.ts` (verifyAdminSession, protect → Auth.js 헬퍼로 교체)
-
-## 7. 로그인 UI
+## 6. 로그인 UI
 - `signIn('google')` / `signOut()` 사용
 - 사이드 네비게이션 하단에 로그인/로그아웃 버튼
 - 로그인 시 프로필 이미지 + 이름 표시

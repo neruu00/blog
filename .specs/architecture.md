@@ -26,10 +26,10 @@
 ```
 src/
 ├── actions/              # Server Actions (도메인별 분리)
-│   ├── post.action.ts
-│   ├── comment.action.ts
-│   ├── like.action.ts
-│   └── image.action.ts
+│   ├── post.ts
+│   ├── comment.ts
+│   ├── like.ts
+│   └── image.ts
 │
 ├── app/
 │   ├── (blog)/           # 공개 페이지 그룹 (사이드 네비 레이아웃)
@@ -41,61 +41,65 @@ src/
 │   │   └── portfolio/
 │   │       └── page.tsx          # 포트폴리오
 │   │
-│   ├── (admin)/          # 관리자 전용 (인증 guard)
+│   ├── (protected)/      # 관리자 전용 (인증 guard)
 │   │   ├── layout.tsx    # requireAdmin guard
 │   │   ├── write/page.tsx
-│   │   └── edit/[id]/page.tsx
+│   │   └── edit/[id]/
+│   │       └── _components/EditPostClient.tsx
 │   │
 │   ├── api/
-│   │   ├── auth/[...nextauth]/route.ts  # Auth.js 핸들러
+│   │   ├── auth/[...nextauth]/route.ts  # NextAuth 핸들러
 │   │   └── cron/cleanup-images/route.ts
 │   │
 │   ├── layout.tsx        # Root layout (Providers, Font, GA)
 │   └── globals.css       # Tailwind custom theme 정의
 │
 ├── components/
-│   ├── ui/               # 범용 Compound 컴포넌트
-│   │   ├── Modal/
-│   │   ├── Button/
-│   │   ├── Card/
-│   │   └── Sidebar/
+│   ├── DeletePostButton.tsx  # 게시글 삭제 버튼
 │   ├── post/             # 게시글 도메인 컴포넌트
 │   │   ├── PostCard.tsx
-│   │   ├── PostList.tsx
 │   │   ├── CommentSection.tsx
 │   │   ├── LikeButton.tsx
+│   │   ├── ViewCounter.tsx
 │   │   └── TableOfContents.tsx
 │   ├── editor/           # Tiptap 에디터
 │   │   ├── TiptapEditor.tsx
 │   │   ├── TiptapViewer.tsx
 │   │   ├── Toolbar.tsx
+│   │   ├── TagInputField.tsx
 │   │   └── extensions/
-│   │       ├── MermaidBlock/
-│   │       ├── TreeDiagram/
-│   │       └── StructureBlock/
+│   │       ├── CustomCodeBlock.ts       # Mac 스타일 코드블록 Extension
+│   │       ├── CodeBlockComponent.tsx   # CodeBlock React NodeView
+│   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
+│   │       └── MermaidComponent.tsx     # Mermaid React NodeView
 │   └── layout/           # 레이아웃 컴포넌트
 │       ├── SideNav.tsx
 │       ├── MobileHeader.tsx
 │       └── Footer.tsx
 │
 ├── hooks/
-│   ├── useOptimisticLike.ts
-│   └── useIntersectionObserver.ts
+│   └── useOptimisticLike.ts
+│
+├── layouts/
+│   └── TanstackQueryLayout.tsx  # TanStack Query Provider
 │
 ├── lib/
-│   ├── auth.ts           # Auth.js 설정 + 헬퍼
+│   ├── auth.ts           # NextAuth 설정 + 헬퍼
 │   ├── supabase.ts       # Supabase 클라이언트
 │   ├── logger.ts         # 로깅 유틸리티
 │   └── utils/
-│       ├── tiptap.ts     # Tiptap 텍스트/이미지 추출
+│       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
 │       └── date.ts       # 날짜 포맷팅
+│
+├── providers/
+│   └── AuthProvider.tsx  # NextAuth SessionProvider 래퍼
 │
 ├── schemas/              # Zod 스키마
 │   ├── post.schema.ts
-│   ├── comment.schema.ts
-│   └── auth.schema.ts
+│   └── comment.schema.ts
 │
 ├── stores/               # Zustand 스토어
+│   ├── useLikeStore.ts
 │   ├── useModalStore.ts
 │   ├── useSidebarStore.ts
 │   └── useToastStore.ts
@@ -104,7 +108,8 @@ src/
     ├── post.type.ts
     ├── comment.type.ts
     ├── user.type.ts
-    └── action.type.ts    # ActionResult<T> 통합 반환 타입
+    ├── action.type.ts    # ActionResult<T> 통합 반환 타입
+    └── next-auth.d.ts    # NextAuth 타입 확장
 ```
 
 ---
@@ -113,8 +118,8 @@ src/
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/portfolio` | 사이드 네비게이션 | 불필요 |
-| `(admin)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/portfolio` | SideNav + Footer | 불필요 |
+| `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 |
 | `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 용도별 |
 
 ---
