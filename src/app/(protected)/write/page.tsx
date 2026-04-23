@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { createPost } from '@/actions/post';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
+import { useToastStore } from '@/stores/useToastStore';
 
 export default function WritePage() {
   const [title, setTitle] = useState('');
@@ -15,6 +16,7 @@ export default function WritePage() {
   const [tags, setTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const addToast = useToastStore((state) => state.addToast);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +24,12 @@ export default function WritePage() {
     if (isSubmitting) return;
 
     if (!title.trim()) {
-      alert('제목을 작성해주세요.');
+      addToast('제목을 작성해주세요.', 'error');
       return;
     }
 
     if (!content || (content.content?.length === 1 && !content.content[0].content)) {
-      alert('내용을 작성해주세요.');
+      addToast('내용을 작성해주세요.', 'error');
       return;
     }
 
@@ -41,10 +43,11 @@ export default function WritePage() {
     const result = await createPost(formData);
 
     if (result.success) {
+      addToast('게시글이 성공적으로 발행되었습니다!', 'success');
       router.push(`/posts/${result.postId}`);
       router.refresh();
     } else {
-      alert(result.error);
+      addToast(result.error || '게시글 저장에 실패했습니다.', 'error');
       setIsSubmitting(false);
     }
   };

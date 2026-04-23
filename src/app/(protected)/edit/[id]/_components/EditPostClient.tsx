@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { updatePost } from '@/actions/post';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
+import { useToastStore } from '@/stores/useToastStore';
 
 interface EditPostClientProps {
   post: {
@@ -24,12 +25,13 @@ export default function EditPostClient({ post }: EditPostClientProps) {
   const [tags, setTags] = useState<string[]>(post.tags || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const addToast = useToastStore((state) => state.addToast);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const isEmpty = !content || (content.content?.length === 1 && !content.content[0].content);
     if (!title.trim() || isEmpty) {
-      alert('제목과 내용을 모두 작성해주세요.');
+      addToast('제목과 내용을 모두 작성해주세요.', 'error');
       return;
     }
 
@@ -44,10 +46,11 @@ export default function EditPostClient({ post }: EditPostClientProps) {
     const result = await updatePost(formData);
 
     if (result.success) {
+      addToast('게시글이 수정되었습니다!', 'success');
       router.push(`/posts/${result.postId}`);
       router.refresh();
     } else {
-      alert(result.error);
+      addToast(result.error || '게시글 수정에 실패했습니다.', 'error');
       setIsSubmitting(false);
     }
   };

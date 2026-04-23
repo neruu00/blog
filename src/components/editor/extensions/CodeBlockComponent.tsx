@@ -4,9 +4,11 @@ const LANGUAGES = [
   { value: 'javascript', label: 'JavaScript' },
   { value: 'typescript', label: 'TypeScript' },
   { value: 'java', label: 'Java' },
+  { value: 'python', label: 'Python' },
   { value: 'html', label: 'HTML' },
   { value: 'css', label: 'CSS' },
   { value: 'json', label: 'JSON' },
+  { value: 'sql', label: 'SQL' },
   { value: 'bash', label: 'Bash/Terminal' },
 ];
 
@@ -54,6 +56,7 @@ export default function CodeBlockComponent({ node, updateAttributes, editor }: N
 
       {/* 코드 컨텐츠 */}
       <pre className="m-0 overflow-x-auto bg-transparent p-4 text-sm leading-relaxed text-gray-300 selection:bg-orange-500/30">
+        {/* @ts-expect-error: @tiptap/react의 타입 정의가 'code' 태그를 완벽히 지원하지 않아 생기는 TS 에러 */}
         <NodeViewContent as="code" className={`language-${node.attrs.language}`} />
       </pre>
     </NodeViewWrapper>
