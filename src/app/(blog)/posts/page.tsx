@@ -6,8 +6,9 @@
 
 import Link from 'next/link';
 
-import PostCard from '@/components/post/PostCard';
+import PostList from '@/components/post/PostList';
 import { supabase } from '@/lib/supabase';
+import type { PostCategory } from '@/types/post.type';
 
 const TAG_DICTIONARY = [
   { name: 'Algorithm', keywords: ['알고리즘'] },
@@ -51,7 +52,7 @@ export default async function PostsPage({
     updatedAt: new Date(post.updated_at || post.created_at),
     author: post.author || 'admin',
     tags: post.tags || [],
-    category: post.category || 'tech',
+    category: (post.category || 'tech') as PostCategory,
     viewCount: post.view_count || 0,
     likeCount: post.like_count || 0,
   }));
@@ -89,20 +90,7 @@ export default async function PostsPage({
       </nav>
 
       {/* 게시글 리스트 */}
-      {formattedPosts.length > 0 ? (
-        <div className="flex flex-col divide-y divide-gray-100">
-          {formattedPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-20">
-          <p className="mb-2 text-gray-400">이 카테고리에 글이 없습니다.</p>
-          <Link href="/write" className="text-sm font-medium text-orange-500 hover:underline">
-            새 글 작성하기 →
-          </Link>
-        </div>
-      )}
+      <PostList posts={formattedPosts} />
     </div>
   );
 }
