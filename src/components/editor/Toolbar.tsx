@@ -12,8 +12,8 @@ import {
   ListOrdered,
   Quote,
   ImageIcon,
-  PenTool,
   Heading3,
+  Workflow,
 } from 'lucide-react';
 
 import { uploadImage } from '@/actions/image';
@@ -70,7 +70,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2">
+    <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2 shadow-sm">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -129,24 +129,26 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Code className="h-5 w-5" />
       </button>
-      {editor.isActive('codeBlock') && (
-        <>
-          <select
-            value={editor.getAttributes('codeBlock').language || 'javascript'}
-            onChange={(e) => {
-              editor.chain().focus().setCodeBlock({ language: e.target.value }).run();
-            }}
-            className="ml-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm text-gray-700 transition-colors focus:ring-2 focus:ring-orange-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
-          >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.value} value={lang.value}>
-                {lang.label}
-              </option>
-            ))}
-          </select>
-          <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-neutral-700" />
-        </>
-      )}
+      {/* Mermaid 확장 도구 모음 */}
+      <button
+        type="button"
+        onClick={() =>
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: 'mermaidBlock',
+              attrs: {
+                code: 'graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result 1];\n  B -->|No| D[Result 2];',
+              },
+            })
+            .run()
+        }
+        className={getButtonClass(editor.isActive('mermaidBlock'))}
+        title="Insert Diagram (Mermaid)"
+      >
+        <Workflow className="h-5 w-5" />
+      </button>
       <button
         type="button"
         onClick={handleImageUpload}
@@ -157,20 +159,13 @@ export default function Toolbar({ editor }: ToolbarProps) {
       </button>
       <button
         type="button"
-        onClick={() => editor.chain().focus().insertContent({ type: 'canvas' }).run()}
-        className={getButtonClass(editor.isActive('canvas'))}
-        title="Insert Canvas"
-      >
-        <PenTool className="h-5 w-5" />
-      </button>
-      <button
-        type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={getButtonClass(editor.isActive('blockquote'))}
         title="Blockquote"
       >
         <Quote className="h-5 w-5" />
       </button>
+      <div className="mx-1 h-6 w-px bg-gray-200" /> {/* 구분선 */}
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}

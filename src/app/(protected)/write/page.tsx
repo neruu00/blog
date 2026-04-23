@@ -53,12 +53,12 @@ export default function WritePage() {
     <main className="min-h-screen px-4 py-10 font-sans">
       <form onSubmit={handleSubmit}>
         <div className="mx-auto mb-6 flex max-w-4xl items-center justify-between">
-          <h1 className="text-4xl font-marker font-bold text-brand uppercase">NEW POST</h1>
+          <h1 className="font-marker text-4xl font-bold text-orange-500 uppercase">NEW POST</h1>
           <button
             type="submit"
-            className="rounded-full border-2 border-brand bg-brand px-6 py-2 font-bold uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-transparent hover:text-brand"
+            className="hidden rounded-full border-2 border-orange-500 bg-orange-500 px-6 py-2 font-bold tracking-widest text-white shadow-sm transition-colors hover:bg-white hover:text-orange-500 sm:block"
           >
-            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'PUBLISH'}
+            {isSubmitting ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : '게시하기'}
           </button>
         </div>
 

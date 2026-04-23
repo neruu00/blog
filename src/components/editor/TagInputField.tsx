@@ -102,7 +102,7 @@ export default function TagInputField({ tags, onChange }: TagInputProps) {
       />
 
       {isTagFocused && suggestions.length > 0 && (
-        <ul className="absolute top-full left-0 z-10 mt-2 max-h-48 w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+        <ul className="absolute top-full left-0 z-50 mt-2 max-h-48 w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
           {suggestions.map((tagObj) => (
             <li
               key={tagObj.name}

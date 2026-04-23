@@ -56,13 +56,15 @@ export default function EditPostClient({ post }: EditPostClientProps) {
     <main className="mx-auto max-w-4xl p-6 pt-12 font-sans">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-marker font-bold text-brand dark:text-white uppercase">EDIT POST</h1>
+          <h1 className="font-marker text-4xl font-bold text-orange-500 uppercase dark:text-white">
+            EDIT POST
+          </h1>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex min-w-25 items-center justify-center rounded-full border-2 border-brand bg-brand px-6 py-2.5 font-bold uppercase tracking-widest text-white transition-colors hover:bg-transparent hover:text-brand disabled:bg-slate-400 disabled:border-slate-400 disabled:text-white"
+            className="hidden min-w-25 items-center justify-center rounded-full border-2 border-orange-500 bg-orange-500 px-6 py-2.5 font-bold tracking-widest text-white transition-colors hover:bg-white hover:text-orange-500 disabled:border-slate-400 disabled:bg-slate-400 disabled:text-white sm:flex"
           >
-            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'UPDATE'}
+            {isSubmitting ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : '수정하기'}
           </button>
         </div>
 
