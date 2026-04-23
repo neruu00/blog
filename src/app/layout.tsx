@@ -1,29 +1,24 @@
+/**
+ * @file layout.tsx
+ * @description 루트 레이아웃. Providers(TanStack Query), 폰트, 분석 도구를 설정한다.
+ *              실제 페이지 레이아웃(SideNav, Header 등)은 라우트 그룹별 layout에서 담당.
+ */
+
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Geist, Geist_Mono, Nanum_Pen_Script } from 'next/font/google';
+import { Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 
-import CursorParticles from '@/components/CursorParticles';
-import WriteLinkButton from '@/components/WriteLinkButton';
 import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
+import AuthProvider from '@/providers/AuthProvider';
 
 import type { Metadata } from 'next';
 
 import 'highlight.js/styles/atom-one-dark.css';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const nanumPen = Nanum_Pen_Script({
-  variable: '--font-nanum-pen',
-  weight: '400',
   subsets: ['latin'],
 });
 
@@ -43,15 +38,27 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${nanumPen.variable} relative min-h-screen bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] bg-size-[24px_24px] font-sans text-slate-900 antialiased dark:bg-slate-900 dark:bg-[radial-gradient(#334155_1px,transparent_1px)] dark:text-slate-100`}
+        className={`${geistMono.variable} bg-surface min-h-screen font-sans text-gray-900 antialiased`}
       >
-        <CursorParticles />
-        <TanstackQueryLayout>
-          {children}
-          <WriteLinkButton />
-        </TanstackQueryLayout>
+        <AuthProvider>
+          <TanstackQueryLayout>{children}</TanstackQueryLayout>
+        </AuthProvider>
         <Analytics />
         <SpeedInsights />
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZL70EZYFER"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ZL70EZYFER');
+          `}
+        </Script>
       </body>
     </html>
   );
