@@ -1,14 +1,17 @@
+/**
+ * @file TiptapViewer.tsx
+ * @description Tiptap 에디터 읽기 전용 뷰어 컴포넌트.
+ *              게시글 상세 페이지에서 저장된 JSON 콘텐츠를 렌더링한다.
+ */
+
 'use client';
 
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Image from '@tiptap/extension-image';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { common, createLowlight } from 'lowlight';
 
-import { CanvasExtension } from './extensions/CanvasExtension';
-
-const lowlight = createLowlight(common);
+import { CustomCodeBlock } from './extensions/CustomCodeBlock';
+import { MermaidBlock } from './extensions/MermaidBlock';
 
 interface TiptapViewerProps {
   content: JSONContent;
@@ -23,24 +26,18 @@ export default function TiptapViewer({ content }: TiptapViewerProps) {
       StarterKit.configure({
         codeBlock: false,
       }),
-      CodeBlockLowlight.configure({
-        lowlight,
-        HTMLAttributes: {
-          class: 'hljs',
-        },
-      }),
+      CustomCodeBlock,
       Image.configure({ inline: true, allowBase64: true }),
-      CanvasExtension,
+      MermaidBlock,
     ],
     editorProps: {
       attributes: {
-        class: 'prose prose-orange dark:prose-invert max-w-none w-full focus:outline-none',
+        class: 'prose prose-orange max-w-none w-full focus:outline-none',
       },
     },
   });
 
-  if (!editor)
-    return <div className="min-h-125 animate-pulse rounded-xl bg-gray-100 dark:bg-neutral-800" />;
+  if (!editor) return <div className="min-h-125 animate-pulse rounded-xl bg-gray-100" />;
 
   return <EditorContent editor={editor} />;
 }

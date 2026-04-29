@@ -9,6 +9,11 @@ export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File;
   if (!file) return { success: false, error: '파일이 없습니다.' };
 
+  // 0. 서버 측 유효성 검사 (WebP 형식 강제)
+  if (file.type !== 'image/webp') {
+    return { success: false, error: 'WebP 형식의 이미지만 업로드 가능합니다.' };
+  }
+
   try {
     // 1. Storage에 저장할 고유 파일명 생성
     const fileExt = file.name.split('.').pop();

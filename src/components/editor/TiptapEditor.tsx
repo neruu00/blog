@@ -1,16 +1,13 @@
 'use client';
 
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Image from '@tiptap/extension-image';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { common, createLowlight } from 'lowlight';
 import { useState } from 'react';
 
-import { CanvasExtension } from './extensions/CanvasExtension';
+import { CustomCodeBlock } from './extensions/CustomCodeBlock';
+import { MermaidBlock } from './extensions/MermaidBlock';
 import Toolbar from './Toolbar';
-
-const lowlight = createLowlight(common);
 
 interface TiptapEditorProps {
   content: JSONContent | null;
@@ -27,17 +24,9 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
       StarterKit.configure({
         codeBlock: false,
       }),
-      CodeBlockLowlight.configure({
-        lowlight,
-        HTMLAttributes: {
-          class: 'hljs',
-        },
-        defaultLanguage: 'javascript',
-        enableTabIndentation: true,
-        tabSize: 2,
-      }),
+      CustomCodeBlock,
       Image.configure({ inline: true, allowBase64: true }),
-      CanvasExtension,
+      MermaidBlock,
     ],
     editorProps: {
       attributes: {

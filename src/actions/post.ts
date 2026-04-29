@@ -3,8 +3,9 @@
 import { revalidatePath } from 'next/cache';
 
 import { verifyAdminSession } from '@/lib/auth';
-import extractImageUrlsFromTiptap from '@/lib/extractImageUrlsFromTiptap';
 import { supabase } from '@/lib/supabase';
+import { extractImageUrlsFromTiptap } from '@/lib/utils/tiptap';
+import { postSchema } from '@/schemas/post.schema';
 
 /**
  * SECTION - 게시글 생성
@@ -15,17 +16,7 @@ export async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
-
-  let content;
-  try {
-    content = JSON.parse(contentString);
-  } catch (e) {
-    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
-  }
-
-  if (!title || !content) {
-    return { success: false, error: '제목과 내용을 모두 입력해주세요.' };
-  }
+  const category = (formData.get('category') as string) || 'tech';
 
   let tags: string[] = [];
   try {
@@ -34,10 +25,30 @@ export async function createPost(formData: FormData) {
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
-  const body = {
+  // Zod 검증
+  const validatedFields = postSchema.safeParse({
     title,
-    content,
+    content: contentString,
     tags,
+    category,
+  });
+
+  if (!validatedFields.success) {
+    return { success: false, error: validatedFields.error.issues[0].message };
+  }
+
+  let content;
+  try {
+    content = JSON.parse(validatedFields.data.content);
+  } catch (e) {
+    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
+  }
+
+  const body = {
+    title: validatedFields.data.title,
+    content,
+    tags: validatedFields.data.tags,
+    category: validatedFields.data.category,
     author: 'admin',
   };
 
@@ -88,6 +99,11 @@ export async function updatePost(
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
   const tagsString = formData.get('tags') as string;
+  const category = (formData.get('category') as string) || 'tech';
+
+  if (!postId) {
+    return { success: false, error: '게시글 ID가 누락되었습니다.' };
+  }
 
   let tags: string[] = [];
   try {
@@ -96,15 +112,23 @@ export async function updatePost(
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
-  let content;
-  try {
-    content = JSON.parse(contentString);
-  } catch (e) {
-    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
+  // Zod 검증
+  const validatedFields = postSchema.safeParse({
+    title,
+    content: contentString,
+    tags,
+    category,
+  });
+
+  if (!validatedFields.success) {
+    return { success: false, error: validatedFields.error.issues[0].message };
   }
 
-  if (!postId || !title || !content) {
-    return { success: false, error: '필수 항목이 누락되었습니다.' };
+  let content;
+  try {
+    content = JSON.parse(validatedFields.data.content);
+  } catch (e) {
+    return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
   }
 
   try {
@@ -134,7 +158,13 @@ export async function updatePost(
     // 3. 게시글 업데이트
     const { error: updateError } = await supabase
       .from('posts')
-      .update({ title, content, tags })
+      .update({
+        title: validatedFields.data.title,
+        content,
+        tags: validatedFields.data.tags,
+        category: validatedFields.data.category,
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', postId);
 
     // FALLBACK: 게시글 업데이트 실패 시, 새로 추가된 이미지들은 다시 고아 상태로 롤백 처리
@@ -252,3 +282,18 @@ export async function deletePost(postId: string) {
   }
 }
 // !SECTION - 게시글 삭제
+
+/**
+ * SECTION - 게시글 조회수 증가
+ */
+export async function incrementViewCount(postId: string) {
+  try {
+    const { error } = await supabase.rpc('increment_view_count', { post_id: postId });
+    if (error) throw error;
+    return { success: true };
+  } catch (err) {
+    console.error('조회수 증가 에러:', err);
+    return { success: false, error: '조회수 업데이트 실패' };
+  }
+}
+// !SECTION - 게시글 조회수 증가
