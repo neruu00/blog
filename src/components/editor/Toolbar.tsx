@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { uploadImage } from '@/actions/image';
+import { convertToWebP } from '@/lib/image-converter';
 
 // https://github.com/wooorm/lowlight
 const LANGUAGES = [
@@ -53,17 +54,25 @@ export default function Toolbar({ editor }: ToolbarProps) {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
-      const formData = new FormData();
-      formData.append('file', file);
+      try {
+        // WebP로 변환 (용량 최적화)
+        const webpFile = await convertToWebP(file);
 
-      // 서버 액션 호출하여 업로드
-      const result = await uploadImage(formData);
+        const formData = new FormData();
+        formData.append('file', webpFile);
 
-      if (result.success && result.url) {
-        // 성공 시 에디터 커서 위치에 이미지 삽입
-        editor?.chain().focus().setImage({ src: result.url }).run();
-      } else {
-        alert(result.error);
+        // 서버 액션 호출하여 업로드
+        const result = await uploadImage(formData);
+
+        if (result.success && result.url) {
+          // 성공 시 에디터 커서 위치에 이미지 삽입
+          editor?.chain().focus().setImage({ src: result.url }).run();
+        } else {
+          alert(result.error);
+        }
+      } catch (error) {
+        console.error('이미지 변환/업로드 중 오류:', error);
+        alert('이미지 처리 중 오류가 발생했습니다.');
       }
     };
     input.click();
