@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { deletePost } from '@/actions/post';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
+import { useModalStore } from '@/stores/useModalStore';
 import { useToastStore } from '@/stores/useToastStore';
 
 interface DeletePostButtonProps {
@@ -12,15 +14,13 @@ interface DeletePostButtonProps {
 
 export default function DeletePostButton({ postId }: DeletePostButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { open, close } = useModalStore();
   const router = useRouter();
   const addToast = useToastStore((state) => state.addToast);
 
   const handleDelete = async () => {
-    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-      return;
-    }
-
     setIsDeleting(true);
+    close();
 
     const result = await deletePost(postId);
 
@@ -34,9 +34,23 @@ export default function DeletePostButton({ postId }: DeletePostButtonProps) {
     }
   };
 
+  const openModal = () => {
+    open(
+      <ConfirmDialog
+        title="게시글 삭제"
+        message="정말로 이 게시글을 삭제하시겠습니까?"
+        onConfirm={handleDelete}
+        onCancel={close}
+        confirmText="삭제하기"
+        cancelText="취소"
+        isDanger={true}
+      />,
+    );
+  };
+
   return (
     <button
-      onClick={handleDelete}
+      onClick={openModal}
       disabled={isDeleting}
       className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
       title="게시글 삭제"

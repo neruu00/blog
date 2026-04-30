@@ -45,7 +45,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col border border-gray-200 bg-white shadow-sm transition-all focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-400 dark:border-neutral-800 dark:bg-neutral-900">
+    <div className="mx-auto flex w-full max-w-4xl flex-col bg-white dark:bg-neutral-900">
       <Toolbar editor={editor} />
       <div className="flex-1 cursor-text">
         <EditorContent editor={editor} />

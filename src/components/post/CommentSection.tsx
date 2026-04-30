@@ -6,8 +6,10 @@ import { useSession } from 'next-auth/react';
 import { useState, useTransition } from 'react';
 
 import { createComment, deleteComment } from '@/actions/comment';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { trackCommentCreate, trackCommentDelete } from '@/lib/utils/analytics';
 import { formatDateKo } from '@/lib/utils/date';
+import { useModalStore } from '@/stores/useModalStore';
 import { useToastStore } from '@/stores/useToastStore';
 
 interface CommentUser {
@@ -39,6 +41,8 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
   const [content, setContent] = useState('');
   const [isPending, startTransition] = useTransition();
 
+  const { open, close } = useModalStore();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
@@ -64,18 +68,29 @@ export default function CommentSection({ postId, initialComments }: CommentSecti
   };
 
   const handleDelete = (commentId: string) => {
-    if (!confirm('댓글을 삭제하시겠습니까?')) return;
-
-    startTransition(async () => {
-      const result = await deleteComment(commentId, postId);
-      if (result.success) {
-        setComments((prev) => prev.filter((c) => c.id !== commentId));
-        addToast('댓글이 삭제되었습니다.', 'success');
-        trackCommentDelete(postId);
-      } else {
-        addToast(result.error || '삭제 실패', 'error');
-      }
-    });
+    open(
+      <ConfirmDialog
+        title="댓글 삭제"
+        message="댓글을 삭제하시겠습니까?"
+        onConfirm={() => {
+          close();
+          startTransition(async () => {
+            const result = await deleteComment(commentId, postId);
+            if (result.success) {
+              setComments((prev) => prev.filter((c) => c.id !== commentId));
+              addToast('댓글이 삭제되었습니다.', 'success');
+              trackCommentDelete(postId);
+            } else {
+              addToast(result.error || '삭제 실패', 'error');
+            }
+          });
+        }}
+        onCancel={close}
+        confirmText="삭제하기"
+        cancelText="취소"
+        isDanger={true}
+      />,
+    );
   };
 
   // @ts-ignore
