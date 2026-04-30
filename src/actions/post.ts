@@ -11,7 +11,7 @@ import { postSchema } from '@/schemas/post.schema';
  * SECTION - 게시글 생성
  */
 export async function createPost(formData: FormData) {
-  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
@@ -93,7 +93,7 @@ export async function createPost(formData: FormData) {
 export async function updatePost(
   formData: FormData,
 ): Promise<{ success: true; postId: string } | { success: false; error: string }> {
-  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
@@ -219,7 +219,7 @@ export async function updatePost(
  * SECTION - 게시글 삭제
  */
 export async function deletePost(postId: string) {
-  if (!(await verifyAdminSession())) return { success: false, error: '권한이 유효하지 않습니다.' };
+  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   try {
     // 1. 게시글에 연결된 이미지 URL 조회
