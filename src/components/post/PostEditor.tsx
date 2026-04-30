@@ -69,7 +69,10 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
           title="임시저장 불러오기"
           message="작성 중이던 임시저장 데이터가 있습니다. 불러오시겠습니까?"
           onConfirm={handleRestoreDraft}
-          onCancel={close}
+          onCancel={() => {
+            localStorage.removeItem(DRAFT_KEY);
+            close();
+          }}
           confirmText="불러오기"
           cancelText="무시하기"
         />,

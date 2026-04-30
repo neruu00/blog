@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
@@ -34,7 +35,20 @@ export default async function PostsPage({
 }) {
   const resolveSearchParams = await searchParams;
   const currentTag = resolveSearchParams.tag || 'All';
-  const currentPage = parseInt(resolveSearchParams.page || '1', 10);
+
+  // 페이지 파라미터 유효성 검사 및 리다이렉트
+  const rawPage = resolveSearchParams.page;
+  const parsedPage = parseInt(rawPage || '1', 10);
+
+  if (rawPage && (isNaN(parsedPage) || parsedPage < 1)) {
+    const params = new URLSearchParams();
+    if (currentTag !== 'All') params.set('tag', currentTag);
+    // 잘못된 페이지가 입력되면 해당 파라미터를 제거하고 1페이지로 리다이렉트
+    const queryString = params.toString();
+    redirect(queryString ? `/posts?${queryString}` : '/posts');
+  }
+
+  const currentPage = Math.max(1, parsedPage || 1);
 
   // 페이지 범위 계산
   const from = (currentPage - 1) * POSTS_PER_PAGE;

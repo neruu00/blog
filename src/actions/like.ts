@@ -74,16 +74,19 @@ export async function toggleLike(postId: string, shouldLike: boolean) {
       await supabase.rpc('increment_like_count', { target_post_id: postId });
     } else {
       // 좋아요 삭제
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('likes')
         .delete()
         .eq('post_id', postId)
-        .eq('user_id', session.user.id);
+        .eq('user_id', session.user.id)
+        .select();
 
       if (error) throw error;
 
-      // 비정규화된 like_count 갱신
-      await supabase.rpc('decrement_like_count', { target_post_id: postId });
+      // 실제로 삭제된 데이터가 있는 경우에만 카운트 감소 (멱등성 보장)
+      if (data && data.length > 0) {
+        await supabase.rpc('decrement_like_count', { target_post_id: postId });
+      }
     }
 
     revalidatePath(`/posts/${postId}`);
