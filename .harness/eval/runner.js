@@ -9,12 +9,11 @@ const { execSync } = require('child_process');
 function runCommand(command) {
   try {
     console.log(`\n> Running: ${command}`);
-    const output = execSync(command, { encoding: 'utf-8' });
-    console.log(output);
+    // stdio: 'inherit'을 사용하여 버퍼 제한 없이 실시간으로 출력을 스트리밍합니다.
+    execSync(command, { stdio: 'inherit' });
     return true;
   } catch (error) {
-    console.error(`\n❌ Error during ${command}:`);
-    console.error(error.stdout || error.message);
+    console.error(`\n❌ Error during ${command}`);
     return false;
   }
 }

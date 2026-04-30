@@ -71,7 +71,10 @@ export async function toggleLike(postId: string, shouldLike: boolean) {
       }
 
       // 비정규화된 like_count 갱신
-      await supabase.rpc('increment_like_count', { target_post_id: postId });
+      const { error: rpcError } = await supabase.rpc('increment_like_count', {
+        target_post_id: postId,
+      });
+      if (rpcError) throw rpcError;
     } else {
       // 좋아요 삭제
       const { data, error } = await supabase
@@ -85,7 +88,10 @@ export async function toggleLike(postId: string, shouldLike: boolean) {
 
       // 실제로 삭제된 데이터가 있는 경우에만 카운트 감소 (멱등성 보장)
       if (data && data.length > 0) {
-        await supabase.rpc('decrement_like_count', { target_post_id: postId });
+        const { error: rpcError } = await supabase.rpc('decrement_like_count', {
+          target_post_id: postId,
+        });
+        if (rpcError) throw rpcError;
       }
     }
 

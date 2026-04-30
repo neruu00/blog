@@ -21,8 +21,12 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
-      <p className="mt-2 text-gray-600 dark:text-neutral-400">{message}</p>
+      <h3 id="modal-title" className="text-xl font-bold text-gray-900 dark:text-white">
+        {title}
+      </h3>
+      <p id="modal-description" className="mt-2 text-gray-600 dark:text-neutral-400">
+        {message}
+      </p>
 
       <div className="mt-6 flex justify-end gap-3">
         <button

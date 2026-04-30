@@ -25,7 +25,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         codeBlock: false,
       }),
       CustomCodeBlock,
-      CustomImage.configure({ inline: true, allowBase64: true }),
+      CustomImage.configure({ allowBase64: true }),
       MermaidBlock,
     ],
     editorProps: {
@@ -45,7 +45,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col bg-white dark:bg-neutral-900">
+    <div className="mx-auto flex w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-200 focus-within:border-orange-500/50 focus-within:ring-2 focus-within:ring-orange-500/20 dark:border-neutral-800 dark:bg-neutral-900">
       <Toolbar editor={editor} />
       <div className="flex-1 cursor-text">
         <EditorContent editor={editor} />

@@ -62,15 +62,16 @@ export default function LikeButton({ postId, initialLikeCount, initialHasLiked }
       };
 
       trackLikeToggle(postId, targetHasLiked);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // 실패 시: UI를 마지막으로 성공했던 서버 상태로 롤백
-      // (단, 사용자가 그 사이에 또 클릭했을 수 있으므로 최신 의도를 덮어쓰진 않음)
       setUiState({
         count: syncState.current.count,
         hasLiked: syncState.current.hasLiked,
       });
       latestDesiredHasLiked.current = syncState.current.hasLiked;
-      addToast(error.message, 'error');
+
+      const errorMessage = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+      addToast(errorMessage, 'error');
     } finally {
       isSyncing.current = false;
       // 대기 중에 변경된 사항이 있는지 확인하기 위해 재귀 호출

@@ -133,13 +133,21 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
     if (!postId) return;
     setIsSubmitting(true);
     close();
-    const result = await deletePost(postId);
-    if (result.success) {
-      addToast('게시글이 삭제되었습니다.', 'success');
-      router.push('/posts');
-      router.refresh();
-    } else {
-      addToast(result.error || '삭제에 실패했습니다.', 'error');
+
+    try {
+      const result = await deletePost(postId);
+      if (result.success) {
+        addToast('게시글이 삭제되었습니다.', 'success');
+        router.push('/posts');
+        router.refresh();
+      } else {
+        addToast(result.error || '삭제에 실패했습니다.', 'error');
+        setIsSubmitting(false);
+      }
+    } catch (error: unknown) {
+      console.error('게시글 삭제 에러:', error);
+      const errorMessage = error instanceof Error ? error.message : '삭제 중 오류가 발생했습니다.';
+      addToast(errorMessage, 'error');
       setIsSubmitting(false);
     }
   };
@@ -167,7 +175,18 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
     e.preventDefault();
     if (isSubmitting) return;
 
-    const isEmpty = !content || (content.content?.length === 1 && !content.content[0].content);
+    // 실질적인 콘텐츠가 있는지 재귀적으로 확인하는 헬퍼 함수
+    const hasMeaningfulContent = (node: JSONContent): boolean => {
+      if (node.text && node.text.trim().length > 0) return true;
+      if (node.type && ['image', 'codeBlock', 'mermaidBlock', 'horizontalRule'].includes(node.type))
+        return true;
+      if (node.content && node.content.length > 0) {
+        return node.content.some(hasMeaningfulContent);
+      }
+      return false;
+    };
+
+    const isEmpty = !content || !hasMeaningfulContent(content);
     if (!title.trim() || isEmpty) {
       addToast('제목과 내용을 모두 작성해주세요.', 'error');
       return;
@@ -175,24 +194,39 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
 
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    if (postId) formData.append('postId', postId);
-    formData.append('title', title);
-    formData.append('content', JSON.stringify(content));
-    formData.append('tags', JSON.stringify(tags));
+    try {
+      const formData = new FormData();
+      if (postId) formData.append('postId', postId);
+      formData.append('title', title);
+      formData.append('content', JSON.stringify(content));
+      formData.append('tags', JSON.stringify(tags));
 
-    const result = await onSubmit(formData);
+      const result = await onSubmit(formData);
 
-    if (result.success) {
-      localStorage.removeItem(DRAFT_KEY);
-      addToast(
-        mode === 'create' ? '게시글이 발행되었습니다!' : '게시글이 수정되었습니다!',
-        'success',
-      );
-      router.push(`/posts/${result.postId}`);
-      router.refresh();
-    } else {
-      addToast(result.error || '저장에 실패했습니다.', 'error');
+      if (result.success) {
+        const targetId = result.postId ?? postId;
+
+        if (!targetId) {
+          addToast('게시글 ID를 확인할 수 없습니다.', 'error');
+          setIsSubmitting(false);
+          return;
+        }
+
+        localStorage.removeItem(DRAFT_KEY);
+        addToast(
+          mode === 'create' ? '게시글이 발행되었습니다!' : '게시글이 수정되었습니다!',
+          'success',
+        );
+        router.push(`/posts/${targetId}`);
+        router.refresh();
+      } else {
+        addToast(result.error || '저장에 실패했습니다.', 'error');
+        setIsSubmitting(false);
+      }
+    } catch (error: unknown) {
+      console.error('게시글 저장 에러:', error);
+      const errorMessage = error instanceof Error ? error.message : '저장 중 오류가 발생했습니다.';
+      addToast(errorMessage, 'error');
       setIsSubmitting(false);
     }
   };

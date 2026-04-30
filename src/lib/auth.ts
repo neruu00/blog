@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
       ...session,
       user: {
         ...session.user,
-        id: token.id as string,
+        id: token.id || token.sub,
         isAdmin: session.user?.email === process.env.ADMIN_EMAIL,
       },
     }),

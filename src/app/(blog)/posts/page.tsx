@@ -71,7 +71,15 @@ export default async function PostsPage({
   }
 
   const totalPosts = count || 0;
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
+
+  // 최대 페이지 범위를 초과할 경우 마지막 페이지로 리다이렉트
+  if (currentPage > totalPages && totalPosts > 0) {
+    const params = new URLSearchParams();
+    if (currentTag !== 'All') params.set('tag', currentTag);
+    params.set('page', totalPages.toString());
+    redirect(`/posts?${params.toString()}`);
+  }
 
   const formattedPosts = (posts || []).map((post) => ({
     id: post.id,

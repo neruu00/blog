@@ -17,10 +17,13 @@ export default function ImageComponent({ node }: NodeViewProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // 업로드 중이 아니고 이미 로드된 상태면 초기 로딩 스킵
+    // 소스가 바뀌거나 업로드가 시작되면 로딩 상태 초기화
+    setIsLoaded(false);
+
     if (!uploading && src) {
       const img = new Image();
       img.src = src;
+      img.onload = () => setIsLoaded(true);
       if (img.complete) {
         setIsLoaded(true);
       }
