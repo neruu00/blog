@@ -33,6 +33,51 @@ export default function LikeButton({ postId, initialLikeCount, initialHasLiked }
   // 디바운스를 위한 타이머 참조
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // 시리얼 동기화를 위한 상태 관리
+  const latestDesiredHasLiked = useRef(initialHasLiked);
+  const isSyncing = useRef(false);
+
+  const syncWithServer = async () => {
+    // 1. 이미 통신 중이면 중복 실행 방지
+    if (isSyncing.current) return;
+
+    // 2. 현재 서버 상태(syncState)와 사용자의 최종 의도(latestDesiredHasLiked)가 같으면 종료
+    if (syncState.current.hasLiked === latestDesiredHasLiked.current) return;
+
+    isSyncing.current = true;
+    const targetHasLiked = latestDesiredHasLiked.current;
+    const targetCount = syncState.current.count + (targetHasLiked ? 1 : -1);
+
+    try {
+      const result = await toggleLike(postId, targetHasLiked);
+
+      if (!result.success) {
+        throw new Error(result.error || '좋아요 처리에 실패했습니다.');
+      }
+
+      // 통신 성공 시 기준 상태 최신화
+      syncState.current = {
+        count: targetCount,
+        hasLiked: targetHasLiked,
+      };
+
+      trackLikeToggle(postId, targetHasLiked);
+    } catch (error: any) {
+      // 실패 시: UI를 마지막으로 성공했던 서버 상태로 롤백
+      // (단, 사용자가 그 사이에 또 클릭했을 수 있으므로 최신 의도를 덮어쓰진 않음)
+      setUiState({
+        count: syncState.current.count,
+        hasLiked: syncState.current.hasLiked,
+      });
+      latestDesiredHasLiked.current = syncState.current.hasLiked;
+      addToast(error.message, 'error');
+    } finally {
+      isSyncing.current = false;
+      // 대기 중에 변경된 사항이 있는지 확인하기 위해 재귀 호출
+      syncWithServer();
+    }
+  };
+
   const handleToggle = () => {
     if (!session) {
       addToast('로그인이 필요한 기능입니다.', 'error');
@@ -42,45 +87,19 @@ export default function LikeButton({ postId, initialLikeCount, initialHasLiked }
     const newHasLiked = !uiState.hasLiked;
     const newCount = uiState.count + (newHasLiked ? 1 : -1);
 
-    // 1. 응답에 상관없이 무조건 UI를 즉시 선반영
+    // 1. UI 즉시 반영
     setUiState({
       count: newCount,
       hasLiked: newHasLiked,
     });
 
-    // 2. 디바운싱: 이전 타이머가 있다면 취소 (연타 시 통신을 보류함)
+    // 2. 최종 의도 업데이트
+    latestDesiredHasLiked.current = newHasLiked;
+
+    // 3. 디바운싱
     if (timerRef.current) clearTimeout(timerRef.current);
-
-    // 새로운 타이머 시작 (클릭이 멈추고 500ms 후에 단 한 번만 서버 통신 진행)
-    timerRef.current = setTimeout(async () => {
-      // 만약 500ms 안에 따닥! 눌러서 원래 상태로 돌아왔다면,
-      // 현재 uiState.hasLiked 와 서버 syncState.hasLiked 가 같아지므로 통신 낭비를 막음
-      if (syncState.current.hasLiked === newHasLiked) return;
-
-      try {
-        // 서버 통신 진행
-        const result = await toggleLike(postId, newHasLiked);
-
-        if (!result.success) {
-          throw new Error(result.error || '좋아요 처리에 실패했습니다.');
-        }
-
-        // 통신 성공 시 기준 상태(진실의 원천)를 최신화
-        syncState.current = {
-          count: newCount,
-          hasLiked: newHasLiked,
-        };
-
-        // GA 커스텀 이벤트 전송
-        trackLikeToggle(postId, newHasLiked);
-      } catch (error: any) {
-        // 실패 시: 사용자의 화면(uiState)을 기존의 성공했던 기준 상태(syncState)로 롤백
-        setUiState({
-          count: syncState.current.count,
-          hasLiked: syncState.current.hasLiked,
-        });
-        addToast(error.message, 'error');
-      }
+    timerRef.current = setTimeout(() => {
+      syncWithServer();
     }, 500);
   };
 
