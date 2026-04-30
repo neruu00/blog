@@ -6,9 +6,12 @@
 
 import Link from 'next/link';
 
+import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
 import { supabase } from '@/lib/supabase';
 import type { PostCategory } from '@/types/post.type';
+
+const POSTS_PER_PAGE = 10;
 
 const TAG_DICTIONARY = [
   { name: 'Algorithm', keywords: ['알고리즘'] },
@@ -27,22 +30,34 @@ const TAG_DICTIONARY = [
 export default async function PostsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string }>;
+  searchParams: Promise<{ tag?: string; page?: string }>;
 }) {
   const resolveSearchParams = await searchParams;
   const currentTag = resolveSearchParams.tag || 'All';
+  const currentPage = parseInt(resolveSearchParams.page || '1', 10);
 
-  let query = supabase.from('posts').select('*').order('created_at', { ascending: false });
+  // 페이지 범위 계산
+  const from = (currentPage - 1) * POSTS_PER_PAGE;
+  const to = from + POSTS_PER_PAGE - 1;
+
+  let query = supabase
+    .from('posts')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (currentTag !== 'All') {
     query = query.contains('tags', [currentTag]);
   }
 
-  const { data: posts, error } = await query;
+  const { data: posts, error, count } = await query;
 
   if (error) {
     console.error('게시글을 불러오는 중 에러 발생:', error);
   }
+
+  const totalPosts = count || 0;
+  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
   const formattedPosts = (posts || []).map((post) => ({
     id: post.id,
@@ -66,7 +81,7 @@ export default async function PostsPage({
         <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900">
           {currentTag === 'All' ? '전체 글' : currentTag}
         </h1>
-        <p className="text-sm text-gray-400">총 {formattedPosts.length}개의 글</p>
+        <p className="text-sm text-gray-400">총 {totalPosts}개의 글</p>
       </header>
 
       {/* 태그 필터 */}
@@ -91,6 +106,9 @@ export default async function PostsPage({
 
       {/* 게시글 리스트 */}
       <PostList posts={formattedPosts} />
+
+      {/* 페이지네이션 */}
+      <Pagination currentPage={currentPage} totalPages={totalPages} currentTag={currentTag} />
     </div>
   );
 }
