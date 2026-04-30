@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "agent_id": "blog-architect-agent",
+  "allowed_tools": [
+    {
+      "name": "file_system",
+      "capabilities": ["read", "write", "delete", "list"],
+      "restrictions": ["node_modules/**", ".git/**"]
+    },
+    {
+      "name": "terminal",
+      "capabilities": ["pnpm dev", "pnpm lint", "pnpm test", "pnpm build"],
+      "safe_commands": ["pnpm lint", "pnpm test"]
+    },
+    {
+      "name": "browser",
+      "capabilities": ["navigation", "screenshot", "dom_interaction"],
+      "purpose": "UI/UX validation"
+    }
+  ],
+  "context_boundaries": {
+    "primary": [".specs/", ".agent/rules/"],
+    "secondary": ["src/"]
+  },
+  "evaluation": {
+    "required_before_submission": true,
+    "golden_dataset_path": ".harness/eval/golden-dataset.md"
+  }
+}
