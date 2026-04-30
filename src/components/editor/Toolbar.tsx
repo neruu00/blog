@@ -61,13 +61,45 @@ export default function Toolbar({ editor }: ToolbarProps) {
         const formData = new FormData();
         formData.append('file', webpFile);
 
+        // 1. 업로드 중인 스켈레톤 먼저 삽입
+        // base64로 미리보기 기능을 넣을 수도 있지만, 여기서는 단순 스켈레톤만 표시
+        editor
+          ?.chain()
+          .focus()
+          .setImage({
+            src: '', // 아직 URL이 없음
+            uploading: true,
+          })
+          .run();
+
         // 서버 액션 호출하여 업로드
         const result = await uploadImage(formData);
 
         if (result.success && result.url) {
-          // 성공 시 에디터 커서 위치에 이미지 삽입
-          editor?.chain().focus().setImage({ src: result.url }).run();
+          // 2. 성공 시 스켈레톤을 실제 이미지로 교체
+          // Tiptap의 트랜잭션을 사용하여 현재 로딩 중인 이미지를 찾아 업데이트
+          editor.view.state.doc.descendants((node, pos) => {
+            if (node.type.name === 'image' && node.attrs.uploading === true) {
+              editor
+                .chain()
+                .setNodeSelection(pos)
+                .updateAttributes('image', {
+                  src: result.url,
+                  uploading: false,
+                })
+                .focus()
+                .run();
+              return false; // 중단
+            }
+          });
         } else {
+          // 업로드 실패 시 스켈레톤 제거
+          editor.view.state.doc.descendants((node, pos) => {
+            if (node.type.name === 'image' && node.attrs.uploading === true) {
+              editor.chain().setNodeSelection(pos).deleteSelection().run();
+              return false;
+            }
+          });
           alert(result.error);
         }
       } catch (error) {

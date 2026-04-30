@@ -45,36 +45,54 @@ export async function getLikeStatus(postId: string) {
 
 /**
  * 좋아요 토글 액션 (낙관적 업데이트용)
+ * @param postId 게시글 ID
+ * @param shouldLike 반영하고자 하는 최종 좋아요 상태 (true: 좋아요, false: 좋아요 취소)
  */
-export async function toggleLike(postId: string, currentHasLiked: boolean) {
+export async function toggleLike(postId: string, shouldLike: boolean) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return { success: false, error: '로그인이 필요합니다.' };
     }
 
-    if (currentHasLiked) {
-      // 이미 좋아요 한 상태라면 삭제
-      const { error } = await supabase
-        .from('likes')
-        .delete()
-        .eq('post_id', postId)
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
-
-      // 비정규화된 like_count 갱신
-      await supabase.rpc('decrement_like_count', { target_post_id: postId });
-    } else {
-      // 좋아요 추가
+    if (shouldLike) {
+      // 좋아요 추가 (이미 존재할 경우 에러가 발생할 수 있으므로, 실제 서비스에서는 upsert나 존재 확인 후 처리가 권장됨)
+      // 여기서는 클라이언트의 직렬화된 요청을 신뢰하여 단순 insert 수행
       const { error } = await supabase
         .from('likes')
         .insert({ post_id: postId, user_id: session.user.id });
 
-      if (error) throw error;
+      if (error) {
+        // 이미 좋아요가 되어 있는 경우(23505)는 성공으로 간주하거나 무시할 수 있음
+        if (error.code === '23505') {
+          return { success: true };
+        }
+        throw error;
+      }
 
       // 비정규화된 like_count 갱신
-      await supabase.rpc('increment_like_count', { target_post_id: postId });
+      const { error: rpcError } = await supabase.rpc('increment_like_count', {
+        target_post_id: postId,
+      });
+      if (rpcError) throw rpcError;
+    } else {
+      // 좋아요 삭제
+      const { data, error } = await supabase
+        .from('likes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', session.user.id)
+        .select();
+
+      if (error) throw error;
+
+      // 실제로 삭제된 데이터가 있는 경우에만 카운트 감소 (멱등성 보장)
+      if (data && data.length > 0) {
+        const { error: rpcError } = await supabase.rpc('decrement_like_count', {
+          target_post_id: postId,
+        });
+        if (rpcError) throw rpcError;
+      }
     }
 
     revalidatePath(`/posts/${postId}`);

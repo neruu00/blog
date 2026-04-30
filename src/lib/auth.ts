@@ -21,12 +21,21 @@ export const authOptions: NextAuthOptions = {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   }) as any, // next-auth v4와 @auth/supabase-adapter 호환성
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.id || token.sub,
         isAdmin: session.user?.email === process.env.ADMIN_EMAIL,
       },
     }),
