@@ -1,11 +1,11 @@
 'use client';
 
-import Image from '@tiptap/extension-image';
-import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
+import { useEditor, EditorContent, type JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useState } from 'react';
 
 import { CustomCodeBlock } from './extensions/CustomCodeBlock';
+import { CustomImage } from './extensions/CustomImage';
 import { MermaidBlock } from './extensions/MermaidBlock';
 import Toolbar from './Toolbar';
 
@@ -25,7 +25,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         codeBlock: false,
       }),
       CustomCodeBlock,
-      Image.configure({ inline: true, allowBase64: true }),
+      CustomImage.configure({ inline: true, allowBase64: true }),
       MermaidBlock,
     ],
     editorProps: {
