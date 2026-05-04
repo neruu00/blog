@@ -137,42 +137,40 @@ body {
    ──────────────────────────────────── */
 
 /* 에디터/뷰어 내 테이블 */
-.prose table {
+.prose :where(table) {
   border-collapse: collapse;
   width: 100%;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   font-size: 0.875rem;
 }
 
-.prose table th,
-.prose table td {
-  border: 1px solid theme('colors.gray.200') !important;
+.prose :where(table th, table td) {
+  border: 1px solid #e5e7eb !important; /* gray-200 */
   padding: 0.75rem 1rem !important;
   text-align: left !important;
   vertical-align: middle !important;
-  line-height: 1.2 !important; /* 행간을 줄여 높이 압축 */
+  line-height: 1.2 !important;
 }
 
 /* Tiptap이 셀 내부에 생성하는 p 태그의 마진 제거 */
-.prose table th p,
-.prose table td p {
+.prose :where(table th p, table td p) {
   margin: 0 !important;
 }
 
-.prose table th {
-  background-color: theme('colors.orange.100');
+.prose :where(table th) {
+  background-color: #ffedd5 !important; /* orange-100 */
   font-weight: 600;
-  color: theme('colors.orange.900');
+  color: #7c2d12 !important; /* orange-900 */
   text-align: center !important;
 }
 
-.prose table tr:nth-child(even) td {
-  background-color: theme('colors.gray.50');
+.prose :where(table tr:nth-child(even) td) {
+  background-color: #f9fafb; /* gray-50 */
 }
 
 /* Tiptap 테이블 셀 포커스 */
 .ProseMirror .selectedCell {
-  background-color: theme('colors.orange.100');
+  background-color: #ffedd5 !important; /* orange-100 */
 }
 
 /* 테이블 리사이저 핸들 */
