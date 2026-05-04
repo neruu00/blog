@@ -246,11 +246,15 @@ body {
   }
 
   /* 페이지 나눔 설정 */
-  h1, h2, h3 {
-    page-break-after: avoid;
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
   }
 
-  pre, blockquote, table {
-    page-break-inside: avoid;
+  pre,
+  blockquote,
+  table {
+    break-inside: avoid;
   }
 }

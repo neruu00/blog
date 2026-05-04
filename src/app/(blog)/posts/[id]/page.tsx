@@ -24,6 +24,7 @@ import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
 import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap';
 
+import type { JSONContent } from '@tiptap/react';
 import type { Metadata, ResolvingMetadata } from 'next';
 
 const getPost = cache(async (id: string) => {
@@ -133,7 +134,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
-            <PostExportButtons title={post.title} content={post.content as any} />
+            <PostExportButtons title={post.title} content={post.content as JSONContent} />
             {isAdmin && (
               <>
                 <Link

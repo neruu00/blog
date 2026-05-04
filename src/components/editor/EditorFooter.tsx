@@ -6,12 +6,7 @@
 
 'use client';
 
-import { ArrowLeft, Download, FileText, FileDown, Loader2, Save, Trash2 } from 'lucide-react';
-import { useRef, useState } from 'react';
-
-import { exportToMarkdown, exportToPdf } from '@/lib/export';
-
-import type { JSONContent } from '@tiptap/react';
+import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
 interface EditorFooterProps {
   mode: 'create' | 'edit';
@@ -41,7 +36,8 @@ export default function EditorFooter({
         <button
           type="button"
           onClick={onBack}
-          className="flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          disabled={isSubmitting}
+          className="flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           title="뒤로가기"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -55,7 +51,8 @@ export default function EditorFooter({
         <button
           type="button"
           onClick={onSaveDraft}
-          className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+          disabled={isSubmitting}
+          className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           title="임시저장"
         >
           <Save className="h-4 w-4" />

@@ -49,7 +49,13 @@ export default function Toolbar({ editor }: ToolbarProps) {
   const isInsideTable = editor.isActive('table');
 
   const handleInsertTable = (rows: number, cols: number) => {
-    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+    const sanitizedRows = Math.max(1, Math.min(20, Math.floor(rows) || 1));
+    const sanitizedCols = Math.max(1, Math.min(20, Math.floor(cols) || 1));
+    editor
+      .chain()
+      .focus()
+      .insertTable({ rows: sanitizedRows, cols: sanitizedCols, withHeaderRow: true })
+      .run();
     setIsTableMenuOpen(false);
   };
 
@@ -254,9 +260,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
                         min={1}
                         max={20}
                         value={tableRows}
-                        onChange={(e) =>
-                          setTableRows(Math.max(1, Math.min(20, Number(e.target.value))))
-                        }
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          setTableRows(Number.isNaN(val) ? 1 : Math.max(1, Math.min(20, val)));
+                        }}
                         className="w-full rounded border border-gray-200 px-2 py-1 text-sm focus:border-orange-400 focus:outline-none"
                       />
                     </div>
@@ -267,9 +274,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
                         min={1}
                         max={20}
                         value={tableCols}
-                        onChange={(e) =>
-                          setTableCols(Math.max(1, Math.min(20, Number(e.target.value))))
-                        }
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          setTableCols(Number.isNaN(val) ? 1 : Math.max(1, Math.min(20, val)));
+                        }}
                         className="w-full rounded border border-gray-200 px-2 py-1 text-sm focus:border-orange-400 focus:outline-none"
                       />
                     </div>

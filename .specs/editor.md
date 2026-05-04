@@ -5,8 +5,6 @@
 | 확장 | 용도 | 구현 방식 |
 |---|---|---|
 | StarterKit | 기본 서식 (bold, italic, heading, list 등) | Tiptap 내장 (codeBlock: false로 비활성) |
-| **CustomCodeBlock** | Mac 스타일 코드 블록 + 구문 강조 | `CodeBlockLowlight` 상속 + React NodeView |
-| Image | 이미지 삽입 | Supabase Storage 업로드 |
 | **ShiftedHeading** | SEO 최적화 헤딩 (레벨 +1 시프트) | `Heading` 상속 + `# ` 입력 시 `h2` 파싱 |
 | **CustomTable** | 테이블 (행/열 관리 및 삽입 폼) | `@tiptap/extension-table` TableKit 래핑 |
 | **CustomCodeBlock** | Mac 스타일 코드 블록 + 구문 강조 | `CodeBlockLowlight` 상속 + React NodeView |

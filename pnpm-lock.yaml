@@ -11,9 +11,6 @@ importers:
       '@auth/supabase-adapter':
         specifier: ^1.11.2
         version: 1.11.2(@supabase/supabase-js@2.105.1)
-      '@braintree/sanitize-url':
-        specifier: ^7.1.2
-        version: 7.1.2
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.105.1

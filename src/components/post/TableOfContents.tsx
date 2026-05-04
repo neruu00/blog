@@ -42,7 +42,10 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
       <h3 className="mb-4 text-sm font-semibold text-gray-900">목차</h3>
       <ul className="space-y-2 border-l-2 border-gray-100 pl-4 text-sm text-gray-500">
         {items.map((item, index) => (
-          <li key={`${item.id}-${index}`} style={{ paddingLeft: `${(item.level - 2) * 0.75}rem` }}>
+          <li
+            key={`${item.id}-${index}`}
+            style={{ paddingLeft: `${Math.max(0, item.level - 2) * 0.75}rem` }}
+          >
             <a
               href={`#${item.id}`}
               onClick={(e) => {

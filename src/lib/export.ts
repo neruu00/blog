@@ -132,7 +132,9 @@ function nodeToMarkdown(node: JSONContent, listDepth = 0, orderedIndex = 0): str
         .map((cell) => {
           const cellText = (cell.content ?? [])
             .flatMap((p) => (p.content ?? []).map((n) => nodeToMarkdown(n)))
-            .join('');
+            .join('')
+            .replace(/\|/g, '\\|') // 파이프 이스케이프
+            .replace(/\n/g, '<br>'); // 개행을 <br>로 변환
           return ` ${cellText} `;
         })
         .join('|');
