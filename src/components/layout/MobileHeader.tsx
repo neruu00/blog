@@ -7,21 +7,17 @@
 
 'use client';
 
-import { Home, FileText, Briefcase, PenSquare, Menu, X, LogOut, LogIn } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
 import { useSidebarStore } from '@/stores/useSidebarStore';
 
-/** 모바일 메뉴 항목 (SideNav와 동일) */
-const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/posts', label: 'Posts', icon: FileText },
-  { href: '/portfolio', label: 'Portfolio', icon: Briefcase },
-] as const;
+import AuthButtons from './AuthButtons';
+import NavLinks from './NavLinks';
 
 export default function MobileHeader() {
   const pathname = usePathname();
@@ -46,11 +42,6 @@ export default function MobileHeader() {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
-  };
 
   return (
     <>
@@ -116,57 +107,13 @@ export default function MobileHeader() {
 
         <div className="mx-6 border-t border-gray-100" />
 
-        {/* 메뉴 */}
         <nav className="flex flex-1 flex-col gap-1 px-4 pt-4">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-            const active = isActive(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                  active
-                    ? 'bg-orange-50 text-orange-600'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                {label}
-              </Link>
-            );
-          })}
+          <NavLinks />
         </nav>
 
         {/* 하단 — 로그인/Write 버튼 영역 */}
         <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-4">
-          {/* @ts-ignore - session.user.isAdmin 커스텀 속성 */}
-          {session?.user && (session.user as any).isAdmin && (
-            <Link
-              href="/write"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
-            >
-              <PenSquare className="h-4 w-4" />
-              Write
-            </Link>
-          )}
-
-          {session ? (
-            <button
-              onClick={() => signOut()}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-            >
-              <LogOut className="h-4 w-4" />
-              Log out
-            </button>
-          ) : (
-            <button
-              onClick={() => signIn('google')}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-            >
-              <LogIn className="h-4 w-4" />
-              Log in
-            </button>
-          )}
+          <AuthButtons />
         </div>
       </div>
     </>

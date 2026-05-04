@@ -5,34 +5,16 @@
  *              상단을 최대한 비워 y축으로 넓은 느낌을 제공.
  */
 
-'use client';
-
-import { Home, FileText, Briefcase, PenSquare, LogOut, LogIn } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 
-/** 네비게이션 메뉴 항목 */
-const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/posts', label: 'Posts', icon: FileText },
-  { href: '/portfolio', label: 'Portfolio', icon: Briefcase },
-] as const;
+import { authOptions } from '@/lib/auth';
 
-export default function SideNav() {
-  const pathname = usePathname();
-  const { data: session } = useSession();
+import AuthButtons from './AuthButtons';
+import NavLinks from './NavLinks';
 
-  /**
-   * 현재 경로가 해당 메뉴 항목과 매칭되는지 판별
-   * - Home은 정확히 '/'일 때만 활성
-   * - 나머지는 경로 prefix로 판별
-   */
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
-  };
+export default async function SideNav() {
+  const session = await getServerSession(authOptions);
 
   return (
     <aside className="fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col border-r border-gray-100 bg-white lg:flex">
@@ -61,55 +43,12 @@ export default function SideNav() {
 
       {/* 네비게이션 메뉴 */}
       <nav className="flex flex-1 flex-col gap-1 px-4 pt-6">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = isActive(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-200 ${
-                active
-                  ? 'bg-orange-50 text-orange-600'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <Icon className="h-5 w-5" />
-              {label}
-            </Link>
-          );
-        })}
+        <NavLinks />
       </nav>
 
       {/* 하단 — 로그인/Write 버튼 영역 */}
       <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-4">
-        {/* @ts-ignore - session.user.isAdmin 커스텀 속성 */}
-        {session?.user && (session.user as any).isAdmin && (
-          <Link
-            href="/write"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
-          >
-            <PenSquare className="h-4 w-4" />
-            Write
-          </Link>
-        )}
-
-        {session ? (
-          <button
-            onClick={() => signOut()}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-          >
-            <LogOut className="h-4 w-4" />
-            Log out
-          </button>
-        ) : (
-          <button
-            onClick={() => signIn('google')}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-          >
-            <LogIn className="h-4 w-4" />
-            Log in
-          </button>
-        )}
+        <AuthButtons />
       </div>
 
       {/* 푸터 */}
