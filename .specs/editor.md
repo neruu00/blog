@@ -71,6 +71,7 @@ src/components/editor/
 ├── Toolbar.tsx               # 도구 모음 (Context-aware Table Menu)
 ├── TagInputField.tsx         # 태그 입력 필드
 ├── EditorFooter.tsx          # Fixed 하단 푸터 (작성/수정 페이지)
+├── PostTitleInput.tsx        # 제목 입력 컴포넌트
 └── extensions/
     ├── ShiftedHeading.ts        # Heading 레벨 시프트 Extension
     ├── CustomCodeBlock.ts       # CodeBlockLowlight 상속 Extension
@@ -107,4 +108,11 @@ src/components/editor/
 |---|---|
 | Markdown | JSONContent → Markdown 재귀 변환 + `Blob` 다운로드 |
 
-- **Markdown 변환**: heading(시프트 반영), paragraph, bold/italic/code marks, bulletList, orderedList, blockquote, codeBlock, image, table, superscript/subscript, mermaidBlock 지원.
+## 11. 상태 관리 및 비즈니스 로직
+
+에디터의 상태와 로직은 `PostEditor`에서 분리하여 스토어와 훅으로 관리한다.
+
+- **`useEditorStore` (Zustand)**: 제목(`title`), 본문(`content`), 태그(`tags`), 제출 상태(`isSubmitting`) 전역 관리.
+- **`useDraft` (Hook)**: 로컬 스토리지를 활용한 임시저장(Autosave), 불러오기 로직 캡슐화.
+- **`usePostSubmit` (Hook)**: 유효성 검사 및 서버 액션 호출 로직 캡슐화.
+- **`PostEditor.tsx`**: 위의 스토어와 훅을 조합하여 에디터 UI 구성 (Shell 역할).

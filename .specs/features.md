@@ -6,13 +6,14 @@
 - **작성/수정/삭제**: admin만 가능
 - **열람**: 모든 사용자 (비로그인 포함)
 - 데이터 형식: Tiptap JSONContent로 DB 저장
+- **게시글 목록**: 카테고리별 필터링 및 페이지네이션 지원. 글이 없는 경우 Admin에게만 '새 글 작성' 링크 제공.
 
 ### 게시글 상세 페이지
 - 사이드 **Table of Contents(TOC)**: heading(h2~h4)을 파싱하여 우측에 고정 네비게이션
   - **SEO 대응**: 에디터 본문의 Heading Shift(# -> h2)를 반영하여 파싱 대상 및 계층(h2: L1, h3: L2, h4: L3) 조정
   - `IntersectionObserver`로 현재 위치 하이라이트
   - 클릭 시 해당 heading으로 스무스 스크롤
-  - Tiptap 비동기 렌더링 대기 (Polling 방식으로 DOM 준비 확인)
+  - Tiptap 비동기 렌더링 대기 (MutationObserver 방식으로 DOM 변화 실시간 확인)
   - XL(1280px) 이상에서만 표시
 
 ### 에디터 (Advanced Tiptap)

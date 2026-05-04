@@ -55,11 +55,14 @@ src/
 │   └── globals.css       # Tailwind custom theme 정의
 │
 ├── components/
-│   ├── DeletePostButton.tsx  # 게시글 삭제 버튼
 │   ├── post/             # 게시글 도메인 컴포넌트
 │   │   ├── PostCard.tsx
+│   │   ├── PostList.tsx
 │   │   ├── CommentSection.tsx
+│   │   ├── CommentForm.tsx
+│   │   ├── CommentList.tsx
 │   │   ├── LikeButton.tsx
+│   │   ├── DeletePostButton.tsx
 │   │   ├── ViewCounter.tsx
 │   │   ├── TableOfContents.tsx
 │   │   └── PostExportButtons.tsx  # 게시글 내보내기 버튼
@@ -69,6 +72,7 @@ src/
 │   │   ├── Toolbar.tsx
 │   │   ├── TagInputField.tsx
 │   │   ├── EditorFooter.tsx     # 고정 하단 푸터
+│   │   ├── PostTitleInput.tsx   # 제목 입력 컴포넌트
 │   │   └── extensions/
 │   │       ├── ShiftedHeading.ts        # SEO 헤딩 시프트
 │   │       ├── CustomCodeBlock.ts       # Mac 스타일 코드블록 Extension
@@ -76,13 +80,22 @@ src/
 │   │       ├── CustomTable.ts           # 테이블 관리 Extension
 │   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
 │   │       └── MermaidComponent.tsx     # Mermaid React NodeView
-│   └── layout/           # 레이아웃 컴포넌트
-│       ├── SideNav.tsx
-│       ├── MobileHeader.tsx
-│       └── Footer.tsx
-│
-├── hooks/
-│   └── useOptimisticLike.ts
+│   ├── layout/           # 레이아웃 컴포넌트
+│   │       ├── SideNav.tsx
+│   │       ├── MobileHeader.tsx
+│   │       ├── NavLinks.tsx
+│   │       ├── AuthButtons.tsx
+│   │       └── Footer.tsx
+│   ├── ui/               # 공통 UI 프리미티브
+│   │       ├── TagBadge.tsx
+│   │       └── IconButton.tsx
+│   │
+│   ├── hooks/
+│   │   ├── useOptimisticLike.ts
+│   │   ├── useActiveNav.ts
+│   │   ├── useDraft.tsx
+│   │   ├── usePostSubmit.tsx
+│   │   └── useIntersectionObserver.ts
 │
 ├── layouts/
 │   └── TanstackQueryLayout.tsx  # TanStack Query Provider
@@ -92,9 +105,13 @@ src/
 │   ├── supabase.ts       # Supabase 클라이언트
 │   ├── logger.ts         # 로깅 유틸리티
 │   ├── export.ts         # 게시글 내보내기 유틸 (Markdown)
+│   ├── constants/
+│   │       ├── tags.ts       # 태그 및 페이지네이션 상수
+│   │       └── nav.ts        # 네비게이션 메뉴 상수
 │   └── utils/
 │       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
 │       └── date.ts       # 날짜 포맷팅
+│       └── analytics.ts  # GA4 분석 유틸리티
 │
 ├── providers/
 │   └── AuthProvider.tsx  # NextAuth SessionProvider 래퍼
@@ -107,7 +124,8 @@ src/
 │   ├── useLikeStore.ts
 │   ├── useModalStore.ts
 │   ├── useSidebarStore.ts
-│   └── useToastStore.ts
+│   ├── useToastStore.ts
+│   └── useEditorStore.ts
 │
 └── types/
     ├── post.type.ts
