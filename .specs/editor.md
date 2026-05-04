@@ -8,6 +8,9 @@
 | **CustomCodeBlock** | Mac 스타일 코드 블록 + 구문 강조 | `CodeBlockLowlight` 상속 + React NodeView |
 | Image | 이미지 삽입 | Supabase Storage 업로드 |
 | **MermaidBlock** | 다이어그램 (flowchart, sequence, mindmap) | Tiptap Node Extension + mermaid.js 렌더링 |
+| **CustomTable** | 테이블 (리사이즈 가능) | `@tiptap/extension-table` TableKit 래핑 |
+| **Superscript** | 위 첨자 (`<sup>`) | `@tiptap/extension-superscript` |
+| **Subscript** | 아래 첨자 (`<sub>`) | `@tiptap/extension-subscript` |
 
 ## 2. 제거됨
 
@@ -59,7 +62,16 @@
 }
 ```
 
-## 5. 에디터 파일 구조
+## 5. CustomTable 동작
+
+- `@tiptap/extension-table` 패키지의 `TableKit`을 사용
+- 3×3 헤더 포함 기본 테이블로 삽입 (`insertTable({ rows:3, cols:3, withHeaderRow:true })`)
+- 컬럼 리사이즈 가능 (`resizable: true`)
+- Tab 키로 셀 이동 지원 (Tiptap 내장)
+- TiptapViewer에서도 동일한 익스텐션 등록 (읽기 전용 렌더링)
+- `globals.css`에서 테이블 스타일 정의 (헤더 오렌지, 짝수 행 회색, 셀 포커스 오렌지)
+
+## 6. 에디터 파일 구조
 
 ```
 src/components/editor/
@@ -67,26 +79,50 @@ src/components/editor/
 ├── TiptapViewer.tsx          # 뷰어 (클라이언트, editable: false)
 ├── Toolbar.tsx               # 도구 모음 (sticky top-0)
 ├── TagInputField.tsx         # 태그 입력 필드 (자동완성)
+├── EditorFooter.tsx          # Fixed 하단 푸터 (작성/수정 페이지)
 └── extensions/
     ├── CustomCodeBlock.ts       # CodeBlockLowlight 상속 Extension
     ├── CodeBlockComponent.tsx   # Mac 스타일 CodeBlock NodeView
+    ├── CustomTable.ts           # TableKit 래핑 Extension
     ├── MermaidBlock.tsx         # Mermaid Node Extension
     └── MermaidComponent.tsx     # Mermaid React NodeView
 ```
 
-## 6. 지원 언어 (CodeBlock)
+## 7. 지원 언어 (CodeBlock)
 
 JavaScript, TypeScript, Java, HTML, CSS, JSON, Bash
 
-## 7. 툴바 (Toolbar.tsx)
+## 8. 툴바 (Toolbar.tsx)
 
 | 기능 | 동작 |
 |---|---|
 | H1 / H2 / H3 | 헤딩 토글 |
-| Bold / Italic | 텍스트 서식 |
+| Bold / Italic / Strike | 텍스트 서식 |
+| Superscript / Subscript | 위/아래 첨자 토글 |
 | Bullet / Ordered List | 목록 |
 | Blockquote | 인용구 |
-| Code (인라인) | 인라인 코드 |
 | Code Block | 코드 블록 삽입 |
-| Image | 이미지 업로드 (Supabase Storage) |
 | Diagram | Mermaid 블록 삽입 |
+| Table | 3×3 테이블 삽입 |
+| Image | 이미지 업로드 (Supabase Storage) |
+
+## 9. EditorFooter (작성/수정 페이지 전용)
+
+`position: fixed; bottom: 0` 으로 항상 화면 하단에 고정된다.
+
+| 위치 | 버튼 |
+|---|---|
+| 좌측 | 뒤로가기, 삭제 (edit 모드) |
+| 우측 | 내보내기(PDF/Markdown 드롭다운), 임시저장, 게시하기/수정하기 |
+
+- 페이지 본문에 `pb-24` 적용하여 콘텐츠가 footer에 가리지 않도록 처리
+
+## 10. Export 기능 (`src/lib/export.ts`)
+
+| 형식 | 구현 방식 |
+|---|---|
+| PDF | `window.print()` + `@media print` CSS로 UI 숨김 |
+| Markdown | JSONContent → Markdown 재귀 변환 + `Blob` 다운로드 |
+
+- Markdown 변환: heading, paragraph, bold/italic/code marks, bulletList, orderedList, blockquote, codeBlock, image, table, superscript/subscript, mermaidBlock 지원
+- 외부 라이브러리 불필요

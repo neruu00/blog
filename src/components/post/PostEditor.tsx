@@ -1,12 +1,12 @@
 'use client';
 
 import { JSONContent } from '@tiptap/react';
-import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { deletePost } from '@/actions/post';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import EditorFooter from '@/components/editor/EditorFooter';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 import { useModalStore } from '@/stores/useModalStore';
@@ -232,7 +232,8 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
   };
 
   return (
-    <main className="min-h-screen px-4 py-10 font-sans">
+    // pb-20: Fixed Footer(h-16) + 여유 마진으로 에디터 콘텐츠가 가려지지 않도록 한다
+    <main className="min-h-screen px-4 py-10 pb-24 font-sans">
       <form onSubmit={handleSubmit}>
         <div className="mx-auto mb-8 flex w-full max-w-4xl items-center justify-between">
           <div className="flex-1 space-y-[8px]">
@@ -250,17 +251,6 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
               className="block w-full border-none bg-transparent text-4xl font-bold text-gray-900 placeholder-gray-300 outline-none dark:text-white dark:placeholder:text-neutral-700"
             />
           </div>
-
-          {mode === 'edit' && (
-            <button
-              type="button"
-              onClick={openDeleteModal}
-              className="group flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
-              title="게시글 삭제"
-            >
-              <Trash2 className="h-5 w-5" />
-            </button>
-          )}
         </div>
 
         <div className="mx-auto w-full max-w-4xl space-y-6">
@@ -268,42 +258,13 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
           <TiptapEditor key={editorKey} content={content} onChange={setContent} />
         </div>
 
-        {/* 플로팅 버튼 - 좌측 하단 (뒤로가기) */}
-        <div className="fixed bottom-10 left-10 z-50">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-gray-400 shadow-xl transition-all hover:scale-110 hover:text-gray-900 active:scale-95 dark:bg-neutral-800"
-            title="뒤로가기"
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </button>
-        </div>
-
-        {/* 플로팅 버튼 - 우측 하단 (임시저장 & 제출) */}
-        <div className="fixed right-10 bottom-10 z-50 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleManualSave}
-            className="flex h-14 items-center justify-center rounded-full bg-white px-6 font-bold tracking-widest text-gray-600 shadow-xl transition-all hover:scale-105 hover:bg-gray-50 active:scale-95 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-          >
-            <Save className="mr-2 h-5 w-5" />
-            임시저장
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex h-14 items-center justify-center rounded-full bg-orange-500 px-8 font-bold tracking-widest text-white shadow-xl transition-all hover:scale-105 hover:bg-orange-600 active:scale-95 disabled:bg-gray-400"
-          >
-            {isSubmitting ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
-            ) : mode === 'create' ? (
-              '게시하기'
-            ) : (
-              '수정하기'
-            )}
-          </button>
-        </div>
+        {/* Fixed 하단 푸터 — 뒤로가기, 임시저장, 제출 */}
+        <EditorFooter
+          mode={mode}
+          isSubmitting={isSubmitting}
+          onBack={handleBack}
+          onSaveDraft={handleManualSave}
+        />
       </form>
     </main>
   );

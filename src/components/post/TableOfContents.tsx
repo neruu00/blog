@@ -15,7 +15,8 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
     // Tiptap 렌더링 영역의 헤딩 태그들에 ID 속성 부여
     let attempts = 0;
     const checkInterval = setInterval(() => {
-      const headings = document.querySelectorAll('.prose h1, .prose h2, .prose h3');
+      // ShiftedHeading: # → h2, ## → h3, ### → h4 이므로 h2~h4를 대상으로 함
+      const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
 
       if (headings.length === 0 && attempts < 20) {
         attempts++;
@@ -41,7 +42,7 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
       <h3 className="mb-4 text-sm font-semibold text-gray-900">목차</h3>
       <ul className="space-y-2 border-l-2 border-gray-100 pl-4 text-sm text-gray-500">
         {items.map((item, index) => (
-          <li key={`${item.id}-${index}`} style={{ paddingLeft: `${(item.level - 1) * 0.75}rem` }}>
+          <li key={`${item.id}-${index}`} style={{ paddingLeft: `${(item.level - 2) * 0.75}rem` }}>
             <a
               href={`#${item.id}`}
               onClick={(e) => {

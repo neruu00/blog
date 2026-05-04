@@ -16,6 +16,7 @@ import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
 import CommentSection from '@/components/post/CommentSection';
 import LikeButton from '@/components/post/LikeButton';
+import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
 import { verifyAdminSession } from '@/lib/auth';
@@ -131,17 +132,20 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             />
           </div>
 
-          {isAdmin && (
-            <div className="mt-16 flex justify-end gap-3 border-t border-gray-100 pt-6">
-              <Link
-                href={`/edit/${post.id}`}
-                className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-              >
-                수정
-              </Link>
-              <DeletePostButton postId={post.id} />
-            </div>
-          )}
+          <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
+            <PostExportButtons title={post.title} content={post.content as any} />
+            {isAdmin && (
+              <>
+                <Link
+                  href={`/edit/${post.id}`}
+                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                >
+                  수정
+                </Link>
+                <DeletePostButton postId={post.id} />
+              </>
+            )}
+          </div>
 
           <CommentSection postId={post.id} initialComments={initialComments as any} />
         </article>
