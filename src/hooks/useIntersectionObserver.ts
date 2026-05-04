@@ -43,22 +43,31 @@ export function useIntersectionObserver(
       { rootMargin, threshold },
     );
 
-    // DOM이 준비될 때까지 polling
-    let attempts = 0;
-    const checkInterval = setInterval(() => {
+    const tryObserve = () => {
       const elements = elementIds
         .map((id) => document.getElementById(id))
         .filter(Boolean) as HTMLElement[];
 
-      if (elements.length > 0 || attempts > 20) {
-        clearInterval(checkInterval);
+      if (elements.length > 0) {
         elements.forEach((el) => observerRef.current?.observe(el));
+        return true;
       }
-      attempts++;
-    }, 100);
+      return false;
+    };
+
+    let mutationObserver: MutationObserver | null = null;
+
+    if (!tryObserve()) {
+      mutationObserver = new MutationObserver(() => {
+        if (tryObserve()) {
+          mutationObserver?.disconnect();
+        }
+      });
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
 
     return () => {
-      clearInterval(checkInterval);
+      mutationObserver?.disconnect();
       observerRef.current?.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

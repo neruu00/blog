@@ -8,13 +8,13 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
 import { getLikeStatus } from '@/actions/like';
-import DeletePostButton from '@/components/DeletePostButton';
 import TiptapViewer from '@/components/editor/TiptapViewer';
 import CommentSection from '@/components/post/CommentSection';
+import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
@@ -59,6 +59,28 @@ export async function generateMetadata(
   };
 }
 
+async function PostLikeSection({ postId }: { postId: string }) {
+  const likeStatus = await getLikeStatus(postId);
+  const initialLikeCount = likeStatus.success ? likeStatus.count || 0 : 0;
+  const initialHasLiked = likeStatus.success ? likeStatus.hasLiked || false : false;
+
+  return (
+    <LikeButton
+      postId={postId}
+      initialLikeCount={initialLikeCount}
+      initialHasLiked={initialHasLiked}
+    />
+  );
+}
+
+async function PostCommentSection({ postId }: { postId: string }) {
+  const commentsResponse = await getComments(postId);
+  const initialComments =
+    commentsResponse.success && commentsResponse.data ? commentsResponse.data : [];
+
+  return <CommentSection postId={postId} initialComments={initialComments} />;
+}
+
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const isAdmin = await verifyAdminSession();
@@ -67,16 +89,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   if (error || !post) notFound();
 
   const tocItems = extractTocFromTiptap(post.content);
-
-  const [likeStatus, commentsResponse] = await Promise.all([
-    getLikeStatus(post.id),
-    getComments(post.id),
-  ]);
-
-  const initialLikeCount = likeStatus.success ? likeStatus.count || 0 : 0;
-  const initialHasLiked = likeStatus.success ? likeStatus.hasLiked || false : false;
-  const initialComments =
-    commentsResponse.success && commentsResponse.data ? commentsResponse.data : [];
 
   return (
     <>
@@ -126,11 +138,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="mt-12 flex justify-center">
-            <LikeButton
-              postId={post.id}
-              initialLikeCount={initialLikeCount}
-              initialHasLiked={initialHasLiked}
-            />
+            <Suspense
+              fallback={<div className="h-10 w-24 animate-pulse rounded-full bg-gray-100" />}
+            >
+              <PostLikeSection postId={post.id} />
+            </Suspense>
           </div>
 
           <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
@@ -148,7 +160,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </div>
 
-          <CommentSection postId={post.id} initialComments={initialComments as any} />
+          <Suspense
+            fallback={<div className="mt-16 h-32 w-full animate-pulse rounded-xl bg-gray-100" />}
+          >
+            <PostCommentSection postId={post.id} />
+          </Suspense>
         </article>
 
         <div className="hidden xl:block">

@@ -12,27 +12,34 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
   useEffect(() => {
     if (items.length === 0) return;
 
-    // Tiptap 렌더링 영역의 헤딩 태그들에 ID 속성 부여
-    let attempts = 0;
-    const checkInterval = setInterval(() => {
-      // ShiftedHeading: # → h2, ## → h3, ### → h4 이므로 h2~h4를 대상으로 함
+    const trySetIds = () => {
       const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
-
-      if (headings.length === 0 && attempts < 20) {
-        attempts++;
-        return;
+      if (headings.length > 0) {
+        headings.forEach((heading, index) => {
+          if (items[index]) {
+            heading.id = items[index].id;
+            (heading as HTMLElement).style.scrollMarginTop = '100px';
+          }
+        });
+        return true;
       }
-      clearInterval(checkInterval);
+      return false;
+    };
 
-      headings.forEach((heading, index) => {
-        if (items[index]) {
-          heading.id = items[index].id;
-          (heading as HTMLElement).style.scrollMarginTop = '100px';
+    let mutationObserver: MutationObserver | null = null;
+
+    if (!trySetIds()) {
+      mutationObserver = new MutationObserver(() => {
+        if (trySetIds()) {
+          mutationObserver?.disconnect();
         }
       });
-    }, 100);
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
 
-    return () => clearInterval(checkInterval);
+    return () => {
+      mutationObserver?.disconnect();
+    };
   }, [items]);
 
   if (items.length === 0) return null;
