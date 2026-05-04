@@ -8,11 +8,17 @@
 - 데이터 형식: Tiptap JSONContent로 DB 저장
 
 ### 게시글 상세 페이지
-- 사이드 **Table of Contents(TOC)**: heading(h1~h3)을 파싱하여 우측에 고정 네비게이션
+- 사이드 **Table of Contents(TOC)**: heading(h2~h4)을 파싱하여 우측에 고정 네비게이션
+  - **SEO 대응**: 에디터 본문의 Heading Shift(# -> h2)를 반영하여 파싱 대상 및 계층(h2: L1, h3: L2, h4: L3) 조정
   - `IntersectionObserver`로 현재 위치 하이라이트
   - 클릭 시 해당 heading으로 스무스 스크롤
   - Tiptap 비동기 렌더링 대기 (Polling 방식으로 DOM 준비 확인)
   - XL(1280px) 이상에서만 표시
+
+### 에디터 (Advanced Tiptap)
+- **Heading Shift**: 검색 엔진 최적화를 위해 본문 내 `#` 입력 시 `<h2>`로 자동 변환 (1페이지 1H1 원칙 준수)
+- **Advanced Table**: 행/열 개수를 지정하여 테이블을 삽입하고, 테이블 내부에서 행/열을 추가·삭제할 수 있는 관리 도구 제공
+- **Export**: 게시글 상세 페이지에서 Markdown 형식으로 콘텐츠 내보내기 지원
 
 ### 태그
 - 태그 기반 필터링 (URL searchParams)

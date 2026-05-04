@@ -100,3 +100,161 @@ body {
   animation: slide-in 0.3s ease-out;
 }
 
+/* ────────────────────────────────────
+   본문 헤딩 스타일 (ShiftedHeading 오프셋)
+   # → <h2>, ## → <h3>, ### → <h4> 이므로
+   h2가 시각적으로 가장 크게 보이도록 스타일 재정의
+   ──────────────────────────────────── */
+
+/* 사용자 인식 H1 → 실제 <h2> */
+.prose h2 {
+  font-size: 1.875rem !important; /* text-3xl */
+  font-weight: 800 !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.25rem !important;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid theme('colors.gray.100');
+}
+
+/* 사용자 인식 H2 → 실제 <h3> */
+.prose h3 {
+  font-size: 1.5rem !important; /* text-2xl */
+  font-weight: 700 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* 사용자 인식 H3 → 실제 <h4> */
+.prose h4 {
+  font-size: 1.25rem !important; /* text-xl */
+  font-weight: 700 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* ────────────────────────────────────
+   테이블 스타일
+   ──────────────────────────────────── */
+
+/* 에디터/뷰어 내 테이블 */
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.prose table th,
+.prose table td {
+  border: 1px solid theme('colors.gray.200') !important;
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  line-height: 1.2 !important; /* 행간을 줄여 높이 압축 */
+}
+
+/* Tiptap이 셀 내부에 생성하는 p 태그의 마진 제거 */
+.prose table th p,
+.prose table td p {
+  margin: 0 !important;
+}
+
+.prose table th {
+  background-color: theme('colors.orange.100');
+  font-weight: 600;
+  color: theme('colors.orange.900');
+  text-align: center !important;
+}
+
+.prose table tr:nth-child(even) td {
+  background-color: theme('colors.gray.50');
+}
+
+/* Tiptap 테이블 셀 포커스 */
+.ProseMirror .selectedCell {
+  background-color: theme('colors.orange.100');
+}
+
+/* 테이블 리사이저 핸들 */
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: theme('colors.orange.400');
+  pointer-events: none;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
+
+/* ────────────────────────────────────
+   @media print — PDF Export 스타일
+   ──────────────────────────────────── */
+
+@media print {
+  /* 사이드 네비게이션 숨김 */
+  nav,
+  aside,
+  [data-sidebar],
+  .sidebar {
+    display: none !important;
+  }
+
+  /* 에디터 툴바 숨김 */
+  [data-toolbar],
+  .editor-toolbar {
+    display: none !important;
+  }
+
+  /* 플로팅/고정 버튼 및 푸터 숨김 */
+  [data-editor-footer],
+  .editor-footer {
+    display: none !important;
+  }
+
+  /* 댓글, TOC, 좋아요 버튼 숨김 */
+  [data-comments],
+  [data-toc],
+  [data-like-button] {
+    display: none !important;
+  }
+
+  /* 본문 최대 너비 해제, 마진/패딩 최소화 */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .prose {
+    max-width: 100% !important;
+  }
+
+  /* 코드블록 프린트 대비 */
+  pre,
+  code {
+    white-space: pre-wrap !important;
+    word-break: break-all;
+  }
+
+  /* 페이지 나눔 설정 */
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  pre,
+  blockquote,
+  table {
+    break-inside: avoid;
+  }
+}

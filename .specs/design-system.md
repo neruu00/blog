@@ -55,10 +55,28 @@
 | 용도 | 클래스 | 예시 |
 |---|---|---|
 | 페이지 제목 | `text-3xl font-bold` | 게시글 제목 |
-| 섹션 제목 | `text-xl font-semibold` | 카테고리 헤딩 |
+| 본문 제목 (H1 대응 h2) | `text-2xl font-bold` | 에디터 내 # 헤딩 |
+| 본문 부제목 (H2 대응 h3) | `text-xl font-bold` | 에디터 내 ## 헤딩 |
+| 본문 소제목 (H3 대응 h4) | `text-lg font-bold` | 에디터 내 ### 헤딩 |
 | 본문 | `text-base` | 게시글 본문 |
 | 캡션/메타 | `text-sm text-gray-500` | 날짜, 태그 |
 | 작은 텍스트 | `text-xs text-gray-400` | 카운터, 힌트 |
+
+---
+
+## 4. 에디터 전용 스타일
+
+### 테이블 (Table)
+- **헤더 (`th`)**: `bg-orange-100`, `text-orange-900`, `text-center`, `font-semibold`
+- **셀 (`td`)**: `py-1` (높이 약 24px 목표), `text-gray-900`, `vertical-align: middle`
+- **줄무늬**: 짝수 행 `bg-gray-50`
+- **포커스**: 선택된 셀 `bg-orange-100`
+
+### 에디터 푸터 (Fixed Footer)
+- `position: fixed; bottom: 0`, `z-index: 50`
+- `bg-white/80 backdrop-blur-md border-t border-gray-200`
+- 에디터 하단에 `pb-24`를 두어 콘텐츠가 푸터에 가려지지 않도록 보장
+
 
 ---
 

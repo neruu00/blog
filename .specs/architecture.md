@@ -61,15 +61,19 @@ src/
 │   │   ├── CommentSection.tsx
 │   │   ├── LikeButton.tsx
 │   │   ├── ViewCounter.tsx
-│   │   └── TableOfContents.tsx
+│   │   ├── TableOfContents.tsx
+│   │   └── PostExportButtons.tsx  # 게시글 내보내기 버튼
 │   ├── editor/           # Tiptap 에디터
 │   │   ├── TiptapEditor.tsx
 │   │   ├── TiptapViewer.tsx
 │   │   ├── Toolbar.tsx
 │   │   ├── TagInputField.tsx
+│   │   ├── EditorFooter.tsx     # 고정 하단 푸터
 │   │   └── extensions/
+│   │       ├── ShiftedHeading.ts        # SEO 헤딩 시프트
 │   │       ├── CustomCodeBlock.ts       # Mac 스타일 코드블록 Extension
 │   │       ├── CodeBlockComponent.tsx   # CodeBlock React NodeView
+│   │       ├── CustomTable.ts           # 테이블 관리 Extension
 │   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
 │   │       └── MermaidComponent.tsx     # Mermaid React NodeView
 │   └── layout/           # 레이아웃 컴포넌트
@@ -87,6 +91,7 @@ src/
 │   ├── auth.ts           # NextAuth 설정 + 헬퍼
 │   ├── supabase.ts       # Supabase 클라이언트
 │   ├── logger.ts         # 로깅 유틸리티
+│   ├── export.ts         # 게시글 내보내기 유틸 (Markdown)
 │   └── utils/
 │       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
 │       └── date.ts       # 날짜 포맷팅
