@@ -36,11 +36,12 @@ export const useEditorStore = create<EditorState>((set) => ({
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
   incrementEditorKey: () => set((state) => ({ editorKey: state.editorKey + 1 })),
   setInitialData: (data) =>
-    set({
+    set((state) => ({
       title: data.title || '',
       content: data.content || null,
       tags: data.tags || [],
-    }),
+      editorKey: state.editorKey + 1,
+    })),
   reset: () =>
     set({
       title: '',

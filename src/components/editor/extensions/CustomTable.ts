@@ -11,8 +11,10 @@ import { TableKit } from '@tiptap/extension-table';
  * TiptapEditor / TiptapViewer의 extensions 배열에 추가한다.
  */
 export const CustomTable = TableKit.configure({
-  resizable: true,
-  HTMLAttributes: {
-    class: 'table-auto border-collapse w-full',
+  table: {
+    resizable: true,
+    HTMLAttributes: {
+      class: 'table-auto border-collapse w-full',
+    },
   },
 });
