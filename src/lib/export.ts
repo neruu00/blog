@@ -1,28 +1,10 @@
 /**
  * @file export.ts
  * @description 게시글 Export 유틸리티.
- *              - exportToPdf: window.print()를 활용한 PDF 내보내기
  *              - exportToMarkdown: JSONContent → Markdown 변환 후 .md 파일 다운로드
  */
 
 import type { JSONContent } from '@tiptap/react';
-
-// ─────────────────────────────────────────────
-// PDF Export
-// ─────────────────────────────────────────────
-
-/**
- * 현재 페이지를 PDF로 내보낸다.
- * globals.css의 @media print 스타일이 적용되어 에디터 UI를 숨기고 본문만 출력한다.
- * @param title - 브라우저 탭 제목 (PDF 파일명에 영향)
- */
-export function exportToPdf(title: string): void {
-  const originalTitle = document.title;
-  document.title = title;
-  window.print();
-  // print 다이얼로그가 닫힌 후 원래 제목으로 복원
-  document.title = originalTitle;
-}
 
 // ─────────────────────────────────────────────
 // Markdown Export — JSONContent → Markdown 변환
