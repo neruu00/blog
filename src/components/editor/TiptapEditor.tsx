@@ -1,12 +1,16 @@
 'use client';
 
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
 import { useEditor, EditorContent, type JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useState } from 'react';
 
 import { CustomCodeBlock } from './extensions/CustomCodeBlock';
 import { CustomImage } from './extensions/CustomImage';
+import { CustomTable } from './extensions/CustomTable';
 import { MermaidBlock } from './extensions/MermaidBlock';
+import { ShiftedHeading } from './extensions/ShiftedHeading';
 import Toolbar from './Toolbar';
 
 interface TiptapEditorProps {
@@ -23,10 +27,16 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     extensions: [
       StarterKit.configure({
         codeBlock: false,
+        // ShiftedHeading으로 대체하므로 StarterKit 내장 Heading 비활성화
+        heading: false,
       }),
+      ShiftedHeading,
       CustomCodeBlock,
       CustomImage.configure({ allowBase64: true }),
       MermaidBlock,
+      CustomTable,
+      Superscript,
+      Subscript,
     ],
     editorProps: {
       attributes: {

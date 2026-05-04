@@ -7,11 +7,15 @@
 'use client';
 
 import Image from '@tiptap/extension-image';
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import { CustomCodeBlock } from './extensions/CustomCodeBlock';
+import { CustomTable } from './extensions/CustomTable';
 import { MermaidBlock } from './extensions/MermaidBlock';
+import { ShiftedHeading } from './extensions/ShiftedHeading';
 
 interface TiptapViewerProps {
   content: JSONContent;
@@ -25,10 +29,16 @@ export default function TiptapViewer({ content }: TiptapViewerProps) {
     extensions: [
       StarterKit.configure({
         codeBlock: false,
+        // ShiftedHeading으로 대체하므로 StarterKit 내장 Heading 비활성화
+        heading: false,
       }),
+      ShiftedHeading,
       CustomCodeBlock,
       Image.configure({ inline: true, allowBase64: true }),
       MermaidBlock,
+      CustomTable,
+      Superscript,
+      Subscript,
     ],
     editorProps: {
       attributes: {
