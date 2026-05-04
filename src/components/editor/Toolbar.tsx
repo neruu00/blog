@@ -14,7 +14,11 @@ import {
   ImageIcon,
   Heading3,
   Workflow,
+  Table,
+  Superscript,
+  Subscript,
 } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 import { uploadImage } from '@/actions/image';
 import { convertToWebP } from '@/lib/image-converter';
@@ -35,7 +39,19 @@ interface ToolbarProps {
 }
 
 export default function Toolbar({ editor }: ToolbarProps) {
+  const [isTableMenuOpen, setIsTableMenuOpen] = useState(false);
+  const tableMenuRef = useRef<HTMLDivElement>(null);
+  const [tableRows, setTableRows] = useState(3);
+  const [tableCols, setTableCols] = useState(3);
+
   if (!editor) return null;
+
+  const isInsideTable = editor.isActive('table');
+
+  const handleInsertTable = (rows: number, cols: number) => {
+    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+    setIsTableMenuOpen(false);
+  };
 
   // 버튼 스타일을 통합 관리하는 헬퍼 함수
   const getButtonClass = (isActive: boolean) =>
@@ -112,26 +128,29 @@ export default function Toolbar({ editor }: ToolbarProps) {
 
   return (
     <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2 shadow-sm">
-      <button
-        type="button"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={getButtonClass(editor.isActive('heading', { level: 1 }))}
-        title="Heading 1"
-      >
-        <Heading1 className="h-5 w-5" />
-      </button>
+      {/* H1 버튼 — 사용자에게는 H1로 보이나 내부적으로 level: 2 (ShiftedHeading) */}
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={getButtonClass(editor.isActive('heading', { level: 2 }))}
-        title="Heading 2"
+        title="Heading 1"
       >
-        <Heading2 className="h-5 w-5" />
+        <Heading1 className="h-5 w-5" />
       </button>
+      {/* H2 버튼 — 내부적으로 level: 3 */}
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         className={getButtonClass(editor.isActive('heading', { level: 3 }))}
+        title="Heading 2"
+      >
+        <Heading2 className="h-5 w-5" />
+      </button>
+      {/* H3 버튼 — 내부적으로 level: 4 */}
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+        className={getButtonClass(editor.isActive('heading', { level: 4 }))}
         title="Heading 3"
       >
         <Heading3 className="h-5 w-5" />
@@ -162,6 +181,24 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <Strikethrough className="h-5 w-5" />
       </button>
       <div className="mx-1 h-6 w-px bg-gray-200" />
+      {/* Superscript / Subscript */}
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleSuperscript().run()}
+        className={getButtonClass(editor.isActive('superscript'))}
+        title="Superscript (위 첨자)"
+      >
+        <Superscript className="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleSubscript().run()}
+        className={getButtonClass(editor.isActive('subscript'))}
+        title="Subscript (아래 첨자)"
+      >
+        <Subscript className="h-5 w-5" />
+      </button>
+      <div className="mx-1 h-6 w-px bg-gray-200" />
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
@@ -190,6 +227,114 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Workflow className="h-5 w-5" />
       </button>
+      {/* 테이블 관리 드롭다운 */}
+      <div className="relative" ref={tableMenuRef}>
+        <button
+          type="button"
+          onClick={() => setIsTableMenuOpen(!isTableMenuOpen)}
+          className={getButtonClass(isInsideTable)}
+          title="Table Menu"
+        >
+          <Table className="h-5 w-5" />
+        </button>
+
+        {isTableMenuOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setIsTableMenuOpen(false)} />
+            <div className="absolute top-full left-0 z-50 mt-1 w-52 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+              {/* 테이블 밖: 삽입 폼만 표시 */}
+              {!isInsideTable && (
+                <>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-400">테이블 삽입</div>
+                  <div className="flex items-center gap-2 px-2 pb-2">
+                    <div className="flex flex-1 flex-col gap-1">
+                      <label className="text-xs text-gray-400">행</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={tableRows}
+                        onChange={(e) =>
+                          setTableRows(Math.max(1, Math.min(20, Number(e.target.value))))
+                        }
+                        className="w-full rounded border border-gray-200 px-2 py-1 text-sm focus:border-orange-400 focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1">
+                      <label className="text-xs text-gray-400">열</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={tableCols}
+                        onChange={(e) =>
+                          setTableCols(Math.max(1, Math.min(20, Number(e.target.value))))
+                        }
+                        className="w-full rounded border border-gray-200 px-2 py-1 text-sm focus:border-orange-400 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="px-2 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => handleInsertTable(tableRows, tableCols)}
+                      className="w-full rounded-md bg-orange-500 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
+                    >
+                      생성하기
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* 테이블 안: 행/열 관리 + 삭제만 표시 */}
+              {isInsideTable && (
+                <>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-400">행/열 관리</div>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().addRowAfter().run()}
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    아래에 행 추가
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().addColumnAfter().run()}
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    오른쪽에 열 추가
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().deleteRow().run()}
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    행 삭제
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().deleteColumn().run()}
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    열 삭제
+                  </button>
+                  <div className="my-1 h-px bg-gray-100" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      editor.chain().focus().deleteTable().run();
+                      setIsTableMenuOpen(false);
+                    }}
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-red-500 hover:bg-red-50"
+                  >
+                    테이블 삭제
+                  </button>
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
       <button
         type="button"
         onClick={handleImageUpload}
