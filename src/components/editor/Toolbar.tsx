@@ -18,7 +18,7 @@ import {
   Superscript,
   Subscript,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { uploadImage } from '@/actions/image';
 import { convertToWebP } from '@/lib/image-converter';
@@ -40,7 +40,6 @@ interface ToolbarProps {
 
 export default function Toolbar({ editor }: ToolbarProps) {
   const [isTableMenuOpen, setIsTableMenuOpen] = useState(false);
-  const tableMenuRef = useRef<HTMLDivElement>(null);
   const [tableRows, setTableRows] = useState(3);
   const [tableCols, setTableCols] = useState(3);
 
@@ -234,7 +233,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <Workflow className="h-5 w-5" />
       </button>
       {/* 테이블 관리 드롭다운 */}
-      <div className="relative" ref={tableMenuRef}>
+      <div className="relative">
         <button
           type="button"
           onClick={() => setIsTableMenuOpen(!isTableMenuOpen)}
