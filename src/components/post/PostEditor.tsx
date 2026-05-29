@@ -31,7 +31,8 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
   useEffect(() => {
     setInitialData(initialData || {});
     return () => reset();
-  }, [initialData, setInitialData, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 마운트 시 단 한 번만 실행
 
   const { saveDraft, handleManualSave, isChanged, DRAFT_KEY } = useDraft({
     mode,

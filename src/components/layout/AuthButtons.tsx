@@ -4,8 +4,15 @@ import { LogIn, LogOut, PenSquare } from 'lucide-react';
 import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
-export default function AuthButtons() {
-  const { data: session } = useSession();
+import type { Session } from 'next-auth';
+
+interface AuthButtonsProps {
+  session?: Session | null;
+}
+
+export default function AuthButtons({ session: serverSession }: AuthButtonsProps) {
+  const { data: clientSession } = useSession();
+  const session = serverSession !== undefined ? serverSession : clientSession;
 
   return (
     <div className="flex flex-col gap-2">

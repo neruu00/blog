@@ -33,12 +33,17 @@ export default function CommentList({ postId, comments }: CommentListProps) {
         onConfirm={() => {
           close();
           startTransition(async () => {
-            const result = await deleteComment(commentId, postId);
-            if (result.success) {
-              addToast('댓글이 삭제되었습니다.', 'success');
-              trackCommentDelete(postId);
-            } else {
-              addToast(result.error || '삭제 실패', 'error');
+            try {
+              const result = await deleteComment(commentId, postId);
+              if (result.success) {
+                addToast('댓글이 삭제되었습니다.', 'success');
+                trackCommentDelete(postId);
+              } else {
+                addToast(result.error || '삭제 실패', 'error');
+              }
+            } catch (error) {
+              console.error('댓글 삭제 중 오류 발생:', error);
+              addToast('댓글 삭제 중 오류가 발생했습니다.', 'error');
             }
           });
         }}

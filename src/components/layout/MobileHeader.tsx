@@ -113,7 +113,7 @@ export default function MobileHeader() {
 
         {/* 하단 — 로그인/Write 버튼 영역 */}
         <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-4">
-          <AuthButtons />
+          <AuthButtons session={session} />
         </div>
       </div>
     </>

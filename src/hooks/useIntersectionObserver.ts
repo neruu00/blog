@@ -63,7 +63,9 @@ export function useIntersectionObserver(
           mutationObserver?.disconnect();
         }
       });
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
+      // 성능 최적화: document.body 전체 대신 실제 렌더링 영역(article 등) 감시
+      const targetNode = document.querySelector('article') || document.body;
+      mutationObserver.observe(targetNode, { childList: true, subtree: true });
     }
 
     return () => {
