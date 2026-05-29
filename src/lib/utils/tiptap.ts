@@ -90,25 +90,37 @@ export interface TocItem {
 /**
  * Tiptap JSON 데이터에서 heading 노드를 추출하여 목차 아이템 배열을 반환한다.
  */
-export function extractTocFromTiptap(json: any): TocItem[] {
+export function extractTocFromTiptap(json: JSONContent | unknown): TocItem[] {
   if (!json || typeof json !== 'object') return [];
 
   const toc: TocItem[] = [];
+  const idMap = new Map<string, number>();
 
-  const traverse = (node: any) => {
+  const traverse = (node: JSONContent) => {
     if (node.type === 'heading' && node.attrs?.level) {
-      const text = node.content?.map((c: any) => c.text).join('') || '';
+      const text = node.content?.map((c) => c.text).join('') || '';
       if (text) {
         // ID 생성 규칙: 영문, 숫자, 한글만 남기고 공백은 하이픈으로 변경
-        let id = text
+        let baseId = text
           .toLowerCase()
           .replace(/[^a-z0-9가-힣\s]/g, '')
           .trim()
           .replace(/\s+/g, '-');
-        if (!id) {
+
+        if (!baseId) {
           // 특수문자만 있는 경우를 대비해 해시코드나 임의 문자열 사용
-          id = `heading-${Math.random().toString(36).substr(2, 9)}`;
+          baseId = `heading-${Math.random().toString(36).substring(2, 9)}`;
         }
+
+        let id = baseId;
+        if (idMap.has(baseId)) {
+          const count = idMap.get(baseId)! + 1;
+          idMap.set(baseId, count);
+          id = `${baseId}-${count}`;
+        } else {
+          idMap.set(baseId, 0);
+        }
+
         toc.push({ id, text, level: node.attrs.level });
       }
     }
@@ -118,6 +130,6 @@ export function extractTocFromTiptap(json: any): TocItem[] {
     }
   };
 
-  traverse(json);
+  traverse(json as JSONContent);
   return toc;
 }

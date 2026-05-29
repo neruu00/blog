@@ -6,7 +6,7 @@
 import { JSONContent } from '@tiptap/react';
 
 /** 게시글 카테고리 */
-export type PostCategory = 'tech' | 'project' | 'portfolio' | 'etc';
+export type PostCategory = 'tech' | 'project' | 'etc';
 
 /** 게시글 데이터 타입 */
 export interface Post {

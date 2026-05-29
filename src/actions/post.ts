@@ -6,11 +6,12 @@ import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { extractImageUrlsFromTiptap } from '@/lib/utils/tiptap';
 import { postSchema } from '@/schemas/post.schema';
+import type { ActionResult, PostActionResult } from '@/types/action.type';
 
 /**
  * SECTION - 게시글 생성
  */
-export async function createPost(formData: FormData) {
+export async function createPost(formData: FormData): Promise<PostActionResult> {
   if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const title = formData.get('title') as string;
@@ -79,7 +80,7 @@ export async function createPost(formData: FormData) {
     }
 
     revalidatePath('/posts');
-    return { success: true, postId: newPost.id };
+    return { success: true, data: { postId: newPost.id } };
   } catch (err) {
     console.error('게시글 생성 중 오류 발생:', err);
     return { success: false, error: '게시글 저장에 실패했습니다.' };
@@ -90,9 +91,7 @@ export async function createPost(formData: FormData) {
 /**
  * SECTION - 게시글 수정
  */
-export async function updatePost(
-  formData: FormData,
-): Promise<{ success: true; postId: string } | { success: false; error: string }> {
+export async function updatePost(formData: FormData): Promise<PostActionResult> {
   if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const postId = formData.get('postId') as string;
@@ -207,7 +206,7 @@ export async function updatePost(
     revalidatePath('/posts');
     revalidatePath('/');
 
-    return { success: true, postId };
+    return { success: true, data: { postId } };
   } catch (err) {
     console.error('게시글 수정 에러:', err);
     return { success: false, error: '게시글 수정에 실패했습니다.' };
@@ -218,7 +217,7 @@ export async function updatePost(
 /**
  * SECTION - 게시글 삭제
  */
-export async function deletePost(postId: string) {
+export async function deletePost(postId: string): Promise<ActionResult> {
   if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   try {
@@ -286,7 +285,7 @@ export async function deletePost(postId: string) {
 /**
  * SECTION - 게시글 조회수 증가
  */
-export async function incrementViewCount(postId: string) {
+export async function incrementViewCount(postId: string): Promise<ActionResult> {
   try {
     const { error } = await supabase.rpc('increment_view_count', { post_id: postId });
     if (error) throw error;

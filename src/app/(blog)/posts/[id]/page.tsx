@@ -6,19 +6,20 @@
  */
 
 import { ArrowLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
 import { getLikeStatus } from '@/actions/like';
-import DeletePostButton from '@/components/DeletePostButton';
-import TiptapViewer from '@/components/editor/TiptapViewer';
 import CommentSection from '@/components/post/CommentSection';
+import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
+import TagBadge from '@/components/ui/TagBadge';
 import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
@@ -26,6 +27,26 @@ import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap'
 
 import type { JSONContent } from '@tiptap/react';
 import type { Metadata, ResolvingMetadata } from 'next';
+
+/**
+ * TiptapViewer는 Tiptap 런타임 전체를 포함하는 heavy bundle이다.
+ * dynamic import로 분리하여 게시글 목록 등 다른 페이지의 초기 번들에서 제외한다.
+ * SEO를 위해 ssr: true 를 유지하고 클라이언트에서 Hydration만 지연한다.
+ */
+const TiptapViewer = dynamic(() => import('@/components/editor/TiptapViewer'), {
+  ssr: true,
+  loading: () => (
+    <div className="space-y-3 py-4">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="h-4 animate-pulse rounded bg-gray-100"
+          style={{ width: `${85 - i * 5}%` }}
+        />
+      ))}
+    </div>
+  ),
+});
 
 const getPost = cache(async (id: string) => {
   return supabase.from('posts').select('*').eq('id', id).single();
@@ -59,6 +80,28 @@ export async function generateMetadata(
   };
 }
 
+async function PostLikeSection({ postId }: { postId: string }) {
+  const likeStatus = await getLikeStatus(postId);
+  const initialLikeCount = likeStatus.success ? likeStatus.count || 0 : 0;
+  const initialHasLiked = likeStatus.success ? likeStatus.hasLiked || false : false;
+
+  return (
+    <LikeButton
+      postId={postId}
+      initialLikeCount={initialLikeCount}
+      initialHasLiked={initialHasLiked}
+    />
+  );
+}
+
+async function PostCommentSection({ postId }: { postId: string }) {
+  const commentsResponse = await getComments(postId);
+  const initialComments =
+    commentsResponse.success && commentsResponse.data ? commentsResponse.data : [];
+
+  return <CommentSection postId={postId} initialComments={initialComments} />;
+}
+
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const isAdmin = await verifyAdminSession();
@@ -67,16 +110,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   if (error || !post) notFound();
 
   const tocItems = extractTocFromTiptap(post.content);
-
-  const [likeStatus, commentsResponse] = await Promise.all([
-    getLikeStatus(post.id),
-    getComments(post.id),
-  ]);
-
-  const initialLikeCount = likeStatus.success ? likeStatus.count || 0 : 0;
-  const initialHasLiked = likeStatus.success ? likeStatus.hasLiked || false : false;
-  const initialComments =
-    commentsResponse.success && commentsResponse.data ? commentsResponse.data : [];
 
   return (
     <>
@@ -110,12 +143,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {post.tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600"
-                  >
-                    #{tag}
-                  </span>
+                  <TagBadge key={tag} tag={tag} variant="solid" />
                 ))}
               </div>
             )}
@@ -126,11 +154,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="mt-12 flex justify-center">
-            <LikeButton
-              postId={post.id}
-              initialLikeCount={initialLikeCount}
-              initialHasLiked={initialHasLiked}
-            />
+            <Suspense
+              fallback={<div className="h-10 w-24 animate-pulse rounded-full bg-gray-100" />}
+            >
+              <PostLikeSection postId={post.id} />
+            </Suspense>
           </div>
 
           <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
@@ -148,7 +176,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </div>
 
-          <CommentSection postId={post.id} initialComments={initialComments as any} />
+          <Suspense
+            fallback={<div className="mt-16 h-32 w-full animate-pulse rounded-xl bg-gray-100" />}
+          >
+            <PostCommentSection postId={post.id} />
+          </Suspense>
         </article>
 
         <div className="hidden xl:block">

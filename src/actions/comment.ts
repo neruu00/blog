@@ -6,11 +6,13 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { commentSchema, type CommentInput } from '@/schemas/comment.schema';
+import type { ActionResult } from '@/types/action.type';
+import type { Comment } from '@/types/comment.type';
 
 /**
  * 게시글의 댓글 목록 조회
  */
-export async function getComments(postId: string) {
+export async function getComments(postId: string): Promise<ActionResult<Comment[]>> {
   try {
     const { data, error } = await supabase
       .from('comments')
@@ -47,7 +49,7 @@ export async function getComments(postId: string) {
 /**
  * 댓글 작성
  */
-export async function createComment(input: CommentInput) {
+export async function createComment(input: CommentInput): Promise<ActionResult<Comment>> {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -95,7 +97,7 @@ export async function createComment(input: CommentInput) {
 /**
  * 댓글 삭제
  */
-export async function deleteComment(commentId: string, postId: string) {
+export async function deleteComment(commentId: string, postId: string): Promise<ActionResult> {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -113,7 +115,6 @@ export async function deleteComment(commentId: string, postId: string) {
       return { success: false, error: '댓글을 찾을 수 없습니다.' };
     }
 
-    // @ts-ignore
     const isAdmin = session.user.isAdmin;
 
     if (comment.user_id !== session.user.id && !isAdmin) {

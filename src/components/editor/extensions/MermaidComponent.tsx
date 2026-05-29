@@ -175,13 +175,16 @@ export default function MermaidComponent(props: NodeViewProps) {
             spellCheck={false}
           />
         ) : (
-          <div className="flex min-h-[150px] items-center justify-center overflow-x-auto bg-transparent">
+          <div className="flex min-h-[150px] w-full items-center justify-center overflow-x-auto bg-transparent">
             {error ? (
               <div className="w-full rounded-lg bg-red-50 p-4 font-mono text-sm whitespace-pre-wrap text-red-500">
                 {error}
               </div>
             ) : (
-              <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+              <div
+                className="flex w-full justify-center [&>svg]:h-auto [&>svg]:w-full [&>svg]:max-w-full"
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+              />
             )}
           </div>
         )}

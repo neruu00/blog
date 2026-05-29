@@ -9,24 +9,10 @@ import { redirect } from 'next/navigation';
 
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
+import { verifyAdminSession } from '@/lib/auth';
+import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
 import type { PostCategory } from '@/types/post.type';
-
-const POSTS_PER_PAGE = 10;
-
-const TAG_DICTIONARY = [
-  { name: 'Algorithm', keywords: ['알고리즘'] },
-  { name: 'Frontend', keywords: ['프론트엔드', '프론트', 'fe'] },
-  { name: 'Backend', keywords: ['백엔드', 'be'] },
-  { name: 'Database', keywords: ['데이터베이스', 'db'] },
-  { name: 'Javascript', keywords: ['자바스크립트', 'js'] },
-  { name: 'Typescript', keywords: ['타입스크립트', 'ts'] },
-  { name: 'React', keywords: ['리액트'] },
-  { name: 'Next.js', keywords: ['넥스트'] },
-  { name: 'Java', keywords: ['자바'] },
-  { name: 'Python', keywords: ['파이썬'] },
-  { name: 'etc', keywords: ['기타'] },
-];
 
 export default async function PostsPage({
   searchParams,
@@ -81,6 +67,8 @@ export default async function PostsPage({
     redirect(`/posts?${params.toString()}`);
   }
 
+  const isAdmin = await verifyAdminSession();
+
   const formattedPosts = (posts || []).map((post) => ({
     id: post.id,
     title: post.title,
@@ -127,7 +115,7 @@ export default async function PostsPage({
       </nav>
 
       {/* 게시글 리스트 */}
-      <PostList posts={formattedPosts} />
+      <PostList posts={formattedPosts} isAdmin={isAdmin} />
 
       {/* 페이지네이션 */}
       <Pagination currentPage={currentPage} totalPages={totalPages} currentTag={currentTag} />

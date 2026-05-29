@@ -96,7 +96,6 @@
 │   ─────    │                                         │
 │   Home     │                                         │
 │   Posts    │                                         │
-│   Portfolio│                                         │
 │            │                                         │
 │            │              Footer                     │
 └────────────┴─────────────────────────────────────────┘
@@ -121,37 +120,47 @@
 - 로고 / 프로필 아바타
 - Home
 - Posts
-- Portfolio
 - (Admin인 경우) Write 버튼
 
 ---
 
 ## 5. 컴포넌트 스타일 기준
 
-### 버튼
-| 종류 | 스타일 |
-|---|---|
-| Primary | `bg-orange-500 text-white hover:bg-orange-600` |
-| Secondary | `bg-white border border-gray-200 text-gray-900 hover:bg-gray-50` |
-| Ghost | `text-gray-500 hover:text-orange-500 hover:bg-orange-50` |
-| Danger | `bg-red-500 text-white hover:bg-red-600` |
+### 버튼 (Buttons)
+| 종류 | 스타일 | 예시 |
+|---|---|---|
+| Primary | `bg-orange-500 text-white hover:bg-orange-600` | 발행, 수정 |
+| Secondary | `bg-white border border-gray-200 text-gray-900 hover:bg-gray-50` | 취소 |
+| Ghost | `text-gray-500 hover:text-orange-500 hover:bg-orange-50` | 메뉴 |
+| Danger | `bg-red-500 text-white hover:bg-red-600` | 삭제 |
+| **IconButton** | `p-2 rounded-lg transition-colors` (ghost/danger) | 툴바, 삭제 아이콘 |
 
-### 카드
+### 카드 (Cards)
 ```
 bg-white border border-gray-200 rounded-lg shadow-sm
 hover:shadow-md transition-shadow duration-200
 ```
 
-### 입력 필드
+### 입력 필드 (Inputs)
 ```
 bg-white border border-gray-200 rounded-lg px-4 py-2
 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none
 ```
 
-### 태그/뱃지
-```
-bg-orange-50 text-orange-600 text-xs font-medium px-2.5 py-0.5 rounded-full
-```
+### 태그/뱃지 (TagBadge)
+- **Primary** (`variant="primary"`): `bg-orange-50 text-orange-600` — PostCard 태그
+- **Solid** (`variant="solid"`): `bg-gray-100 text-gray-600` — 게시글 상세 태그
+- **Default** (`variant="default"`): `bg-gray-50 text-gray-500` — 보조
+- **스타일**: `text-xs font-medium px-2.5 py-1 rounded-full`
+- `tag` prop에 `#` 접두사가 없으면 자동으로 붙여 표시
+
+### 드롭다운 (DropdownMenu)
+- Context 기반 합성 컴포넌트 패턴 (`DropdownMenu` + `DropdownMenu.Item`)
+- 외부 클릭(`mousedown`) 및 ESC 키 감지로 자동 닫기
+- `align` prop: `'left' | 'right'` (패널 좌우 정렬)
+- `direction` prop: `'up' | 'down'` (패널 상하 위치)
+- 현재 사용처: `PostExportButtons`
+
 
 ---
 

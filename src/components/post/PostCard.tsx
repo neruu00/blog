@@ -8,6 +8,7 @@
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
+import TagBadge from '@/components/ui/TagBadge';
 import { formatDateKo } from '@/lib/utils/date';
 import { extractTextFromTiptap } from '@/lib/utils/tiptap';
 import type { Post } from '@/types/post.type';
@@ -28,12 +29,7 @@ export default function PostCard({ post }: PostCardProps) {
         {post.tags.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-600"
-              >
-                {tag}
-              </span>
+              <TagBadge key={tag} tag={tag} variant="primary" />
             ))}
           </div>
         )}
