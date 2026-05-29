@@ -1,23 +1,18 @@
 'use client';
 
-import { JSONContent } from '@tiptap/react';
 import { useEffect } from 'react';
 
 import EditorFooter from '@/components/editor/EditorFooter';
 import PostTitleInput from '@/components/editor/PostTitleInput';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
-import { useDraft } from '@/hooks/useDraft';
+import { useDraft, type DraftInitialData } from '@/hooks/useDraft';
 import { usePostSubmit } from '@/hooks/usePostSubmit';
 import { useEditorStore } from '@/stores/useEditorStore';
 
 interface PostEditorProps {
   mode: 'create' | 'edit';
-  initialData?: {
-    title: string;
-    content: JSONContent | null;
-    tags: string[];
-  };
+  initialData?: DraftInitialData;
   postId?: string;
   onSubmit: (
     formData: FormData,

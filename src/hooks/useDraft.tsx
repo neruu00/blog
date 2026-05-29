@@ -1,5 +1,6 @@
 'use client';
 
+import { JSONContent } from '@tiptap/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
@@ -7,10 +8,16 @@ import { useEditorStore } from '@/stores/useEditorStore';
 import { useModalStore } from '@/stores/useModalStore';
 import { useToastStore } from '@/stores/useToastStore';
 
+export interface DraftInitialData {
+  title: string;
+  content: JSONContent | null;
+  tags: string[];
+}
+
 interface UseDraftProps {
   mode: 'create' | 'edit';
   postId?: string;
-  initialData?: any;
+  initialData?: DraftInitialData;
 }
 
 export function useDraft({ mode, postId, initialData }: UseDraftProps) {
