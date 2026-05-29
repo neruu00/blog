@@ -35,7 +35,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
         setContent('');
         addToast('댓글이 작성되었습니다.', 'success');
         trackCommentCreate(postId);
-      } else {
+      } else if (!result.success) {
         addToast(result.error || '댓글 작성 실패', 'error');
       }
     });

@@ -19,7 +19,8 @@
 ### 에디터 (Advanced Tiptap)
 - **Heading Shift**: 검색 엔진 최적화를 위해 본문 내 `#` 입력 시 `<h2>`로 자동 변환 (1페이지 1H1 원칙 준수)
 - **Advanced Table**: 행/열 개수를 지정하여 테이블을 삽입하고, 테이블 내부에서 행/열을 추가·삭제할 수 있는 관리 도구 제공
-- **Export**: 게시글 상세 페이지에서 Markdown 형식으로 콘텐츠 내보내기 지원
+- **Export**: 게시글 상세 페이지에서 Markdown 형식으로 콘텐츠 내보내기 지원 (`DropdownMenu` 프리미티브 활용)
+- **TiptapViewer 번들 분리**: `next/dynamic`으로 Lazy Load (ssr: true — SSR은 유지하여 SEO 무영향, Hydration만 지연)
 
 ### 태그
 - 태그 기반 필터링 (URL searchParams)

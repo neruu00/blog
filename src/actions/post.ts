@@ -80,7 +80,7 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     }
 
     revalidatePath('/posts');
-    return { success: true, postId: newPost.id };
+    return { success: true, data: { postId: newPost.id } };
   } catch (err) {
     console.error('게시글 생성 중 오류 발생:', err);
     return { success: false, error: '게시글 저장에 실패했습니다.' };
@@ -206,7 +206,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     revalidatePath('/posts');
     revalidatePath('/');
 
-    return { success: true, postId };
+    return { success: true, data: { postId } };
   } catch (err) {
     console.error('게시글 수정 에러:', err);
     return { success: false, error: '게시글 수정에 실패했습니다.' };

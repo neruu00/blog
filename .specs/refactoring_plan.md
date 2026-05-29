@@ -187,7 +187,7 @@ export function usePostSubmit(mode, postId, onSubmit) { ... }
 
 > 반복되는 UI 패턴을 추상화하여 재사용 가능한 컴포넌트 생성
 
-#### [NEW] `src/components/ui/DropdownMenu.tsx`
+#### [NEW] `src/components/ui/DropdownMenu.tsx` ✅ 완료
 현재 `PostExportButtons`, `Toolbar`에 중복된 드롭다운(오버레이 + 패널) 패턴을 추상화
 
 ```tsx
@@ -200,7 +200,7 @@ export function usePostSubmit(mode, postId, onSubmit) { ... }
 #### [NEW] `src/components/ui/IconButton.tsx`
 Toolbar 및 여러 곳에서 반복되는 `p-2 rounded-lg transition-colors` 버튼 패턴 추상화
 
-#### [NEW] `src/components/ui/TagBadge.tsx`
+#### [NEW] `src/components/ui/TagBadge.tsx` ✅ 완료
 `PostCard`, `posts/[id]/page.tsx` 등 여러 곳에서 반복되는 태그 뱃지 UI 추상화
 
 ```tsx
@@ -249,9 +249,9 @@ return (
 #### 7-2. TiptapViewer Dynamic Import 적용
 
 ```tsx
-// TiptapViewer는 heavy bundle → 동적 로드
+// TiptapViewer는 heavy bundle → 동적 로드 ✅ 완료
 const TiptapViewer = dynamic(() => import('@/components/editor/TiptapViewer'), {
-  ssr: false,
+  ssr: true,  // SEO를 위해 SSR 유지, Hydration만 지연
   loading: () => <ContentSkeleton />,
 });
 ```

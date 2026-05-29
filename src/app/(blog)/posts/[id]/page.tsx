@@ -6,19 +6,20 @@
  */
 
 import { ArrowLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
 import { getLikeStatus } from '@/actions/like';
-import TiptapViewer from '@/components/editor/TiptapViewer';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
+import TagBadge from '@/components/ui/TagBadge';
 import { verifyAdminSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
@@ -26,6 +27,26 @@ import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap'
 
 import type { JSONContent } from '@tiptap/react';
 import type { Metadata, ResolvingMetadata } from 'next';
+
+/**
+ * TiptapViewer는 Tiptap 런타임 전체를 포함하는 heavy bundle이다.
+ * dynamic import로 분리하여 게시글 목록 등 다른 페이지의 초기 번들에서 제외한다.
+ * SEO를 위해 ssr: true 를 유지하고 클라이언트에서 Hydration만 지연한다.
+ */
+const TiptapViewer = dynamic(() => import('@/components/editor/TiptapViewer'), {
+  ssr: true,
+  loading: () => (
+    <div className="space-y-3 py-4">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="h-4 animate-pulse rounded bg-gray-100"
+          style={{ width: `${85 - i * 5}%` }}
+        />
+      ))}
+    </div>
+  ),
+});
 
 const getPost = cache(async (id: string) => {
   return supabase.from('posts').select('*').eq('id', id).single();
@@ -122,12 +143,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {post.tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600"
-                  >
-                    #{tag}
-                  </span>
+                  <TagBadge key={tag} tag={tag} variant="solid" />
                 ))}
               </div>
             )}

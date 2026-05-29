@@ -19,7 +19,9 @@ interface PostEditorProps {
     tags: string[];
   };
   postId?: string;
-  onSubmit: (formData: FormData) => Promise<{ success: boolean; postId?: string; error?: string }>;
+  onSubmit: (
+    formData: FormData,
+  ) => Promise<{ success: boolean; data?: { postId?: string }; error?: string }>;
 }
 
 export default function PostEditor({ mode, initialData, postId, onSubmit }: PostEditorProps) {

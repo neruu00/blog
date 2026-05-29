@@ -14,7 +14,9 @@ interface UsePostSubmitProps {
   postId?: string;
   DRAFT_KEY: string;
   isChanged: boolean;
-  onSubmit: (formData: FormData) => Promise<{ success: boolean; postId?: string; error?: string }>;
+  onSubmit: (
+    formData: FormData,
+  ) => Promise<{ success: boolean; data?: { postId?: string }; error?: string }>;
 }
 
 export function usePostSubmit({
@@ -119,7 +121,7 @@ export function usePostSubmit({
       const result = await onSubmit(formData);
 
       if (result.success) {
-        const targetId = result.postId ?? postId;
+        const targetId = result.data?.postId ?? postId;
 
         if (!targetId) {
           addToast('게시글 ID를 확인할 수 없습니다.', 'error');

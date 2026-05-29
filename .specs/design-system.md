@@ -150,10 +150,18 @@ focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none
 ```
 
 ### 태그/뱃지 (TagBadge)
-- **Primary**: `bg-orange-50 text-orange-600` (활성/포인트)
-- **Solid**: `bg-gray-100 text-gray-600` (일반 카드)
-- **Default**: `bg-gray-50 text-gray-500` (보조)
-- **스타일**: `text-xs font-medium px-2.5 py-0.5 rounded-full`
+- **Primary** (`variant="primary"`): `bg-orange-50 text-orange-600` — PostCard 태그
+- **Solid** (`variant="solid"`): `bg-gray-100 text-gray-600` — 게시글 상세 태그
+- **Default** (`variant="default"`): `bg-gray-50 text-gray-500` — 보조
+- **스타일**: `text-xs font-medium px-2.5 py-1 rounded-full`
+- `tag` prop에 `#` 접두사가 없으면 자동으로 붙여 표시
+
+### 드롭다운 (DropdownMenu)
+- Context 기반 합성 컴포넌트 패턴 (`DropdownMenu` + `DropdownMenu.Item`)
+- 외부 클릭(`mousedown`) 및 ESC 키 감지로 자동 닫기
+- `align` prop: `'left' | 'right'` (패널 좌우 정렬)
+- `direction` prop: `'up' | 'down'` (패널 상하 위치)
+- 현재 사용처: `PostExportButtons`
 
 
 ---

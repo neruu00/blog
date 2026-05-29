@@ -87,15 +87,16 @@ src/
 │   │       ├── AuthButtons.tsx
 │   │       └── Footer.tsx
 │   ├── ui/               # 공통 UI 프리미티브
-│   │       ├── TagBadge.tsx
-│   │       └── IconButton.tsx
-│   │
-│   ├── hooks/
-│   │   ├── useOptimisticLike.ts
-│   │   ├── useActiveNav.ts
-│   │   ├── useDraft.tsx
-│   │   ├── usePostSubmit.tsx
-│   │   └── useIntersectionObserver.ts
+│   │       ├── TagBadge.tsx        # 태그 뱃지 (variant: primary/solid/default)
+│   │       ├── IconButton.tsx      # 아이콘 버튼
+│   │       └── DropdownMenu.tsx    # 드롭다운 메뉴 (Context 기반, ESC/외부클릭 닫기)
+│
+├── hooks/
+│   ├── useOptimisticLike.ts
+│   ├── useActiveNav.ts          # isActive 판별 훅 (SideNav/MobileHeader 공유)
+│   ├── useDraft.tsx             # 임시저장 로드/저장/자동저장 훅
+│   ├── usePostSubmit.tsx        # 게시글 제출 + 삭제 로직 훅
+│   └── useIntersectionObserver.ts  # TOC 활성 항목 감지 (MutationObserver 기반)
 │
 ├── layouts/
 │   └── TanstackQueryLayout.tsx  # TanStack Query Provider
