@@ -38,7 +38,7 @@ src/
 │   │   ├── posts/
 │   │   │   ├── page.tsx          # 게시글 목록
 │   │   │   └── [id]/page.tsx     # 게시글 상세
-│   │   └── portfolio/
+
 │   │       └── page.tsx          # 포트폴리오
 │   │
 │   ├── (protected)/      # 관리자 전용 (인증 guard)
@@ -142,7 +142,7 @@ src/
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/portfolio` | SideNav + Footer | 불필요 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]` | SideNav + Footer | 불필요 |
 | `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 |
 | `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 용도별 |
 

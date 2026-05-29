@@ -81,20 +81,7 @@ interface Comment {
 
 ---
 
-## 5. 포트폴리오 (Portfolio)
-
-### 구조
-- `/portfolio` 페이지
-- 프로필 Hero Section (이름, 역할, 이메일, GitHub, 위치)
-- 기술 스택 카드 그리드 (Frontend, Backend & Database, Tools)
-- 프로젝트 경험 리스트 (제목, 기간, 설명, 기술 태그, 외부 링크)
-
-### 데이터 관리
-- 페이지 파일 상단의 상수 배열(`PROFILE`, `SKILLS`, `PROJECTS`)을 수정하여 내용 갱신
-
----
-
-## 6. 로깅
+## 5. 로깅
 
 ### 서버 (logger.ts)
 ```typescript
@@ -113,7 +100,7 @@ const logger = {
 
 ---
 
-## 7. Google Analytics 4
+## 6. Google Analytics 4
 
 - `next/script`로 GA 스크립트 로드 (`afterInteractive` 전략)
 - 측정 ID: `G-ZL70EZYFER`
