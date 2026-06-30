@@ -3,9 +3,10 @@
  * @description 사이드바 및 모바일 헤더 네비게이션 상수
  */
 
-import { Home, FileText } from 'lucide-react';
+import { FileText, Home, Newspaper } from 'lucide-react';
 
 export const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/posts', label: 'Posts', icon: FileText },
+  { href: '/news', label: 'News', icon: Newspaper },
 ] as const;

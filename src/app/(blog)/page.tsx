@@ -1,25 +1,30 @@
 /**
  * @file page.tsx
  * @description 블로그 홈페이지.
- *              프로필 인사말과 최신 게시글 목록을 표시한다.
+ *              프로필 인사말, 최신 게시글, 최신 기술 뉴스를 표시한다.
  *              velog 스타일의 화이트 모던 디자인.
  */
 
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
+import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
+import { type TechNews, type TechNewsSource } from '@/types/tech-news.type';
 
 export default async function HomePage() {
-  const { data: posts, error } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(6);
+  const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =
+    await Promise.all([
+      supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(6),
+      supabase.from('tech_news').select('*').order('published_at', { ascending: false }).limit(5),
+    ]);
 
-  if (error) {
-    console.error('게시글을 불러오는 중 에러 발생:', error);
+  if (postsError) {
+    console.error('게시글을 불러오는 중 에러 발생:', postsError);
+  }
+  if (newsError) {
+    console.error('뉴스를 불러오는 중 에러 발생:', newsError);
   }
 
   // PostCard props 규격에 맞게 데이터 가공
@@ -36,6 +41,16 @@ export default async function HomePage() {
     likeCount: post.like_count || 0,
   }));
 
+  const newsList: TechNews[] = (newsRows ?? []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    originalUrl: row.original_url,
+    content: row.content,
+    source: row.source as TechNewsSource,
+    publishedAt: new Date(row.published_at),
+    createdAt: new Date(row.created_at),
+  }));
+
   return (
     <div className="mx-auto max-w-3xl">
       {/* 인사말 섹션 */}
@@ -47,7 +62,7 @@ export default async function HomePage() {
       </section>
 
       {/* 최신 게시글 */}
-      <section>
+      <section className="mb-16">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">최신 글</h2>
           <Link
@@ -68,6 +83,33 @@ export default async function HomePage() {
         ) : (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-20">
             <p className="text-gray-400">아직 작성된 글이 없습니다.</p>
+          </div>
+        )}
+      </section>
+
+      {/* 최신 기술 뉴스 */}
+      <section>
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">최신 기술 뉴스</h2>
+          <Link
+            href="/news"
+            className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
+          >
+            전체 보기
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+
+        {newsList.length > 0 ? (
+          <div className="flex flex-col divide-y divide-gray-100">
+            {newsList.map((news) => (
+              <NewsCard key={news.id} news={news} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-16">
+            <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
+            <p className="mt-1 text-sm text-gray-300">Cron Job이 실행되면 자동으로 채워집니다.</p>
           </div>
         )}
       </section>
