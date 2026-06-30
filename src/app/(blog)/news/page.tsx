@@ -47,6 +47,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
   if (error) {
     console.error('[news] 뉴스 목록 조회 실패:', error);
+    throw new Error('뉴스 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 
   const newsList: TechNews[] = (rows ?? []).map((row) => ({
