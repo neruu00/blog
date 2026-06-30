@@ -62,7 +62,9 @@ export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
       .map((item) => ({
         title: item.title ?? '',
         link: item.link ?? '',
-        description: stripHtml(item.contentSnippet ?? item.summary ?? item.content ?? ''),
+        description: item.contentSnippet
+          ? item.contentSnippet.trim().slice(0, 1500)
+          : stripHtml(item.summary ?? item.content ?? ''),
         publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
       }));
   } catch (error) {
