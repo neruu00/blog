@@ -10,6 +10,16 @@ import OpenAI from 'openai';
 const MAX_RETRIES = 3;
 const RETRY_BASE_DELAY_MS = 2000; // 2초 → 4초 → 8초 (지수 백오프)
 
+let openaiClient: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    // 빌드 타임 평가를 방지하기 위해 최초 호출 시에만 초기화한다.
+    openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return openaiClient;
+}
+
 /**
  * 기사 제목과 설명을 받아 구조화된 마크다운 요약을 반환한다.
  * Rate limit(429) 발생 시 지수 백오프로 최대 MAX_RETRIES회 재시도한다.
@@ -19,8 +29,7 @@ const RETRY_BASE_DELAY_MS = 2000; // 2초 → 4초 → 8초 (지수 백오프)
  * @returns 마크다운 형식의 요약 문자열
  */
 export async function summarizeToMarkdown(title: string, description: string): Promise<string> {
-  // 빌드 타임 평가를 방지하기 위해 런타임에서 클라이언트를 초기화한다.
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = getOpenAIClient();
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
