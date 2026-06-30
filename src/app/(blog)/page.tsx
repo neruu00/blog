@@ -17,14 +17,20 @@ export default async function HomePage() {
   const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =
     await Promise.all([
       supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(6),
-      supabase.from('tech_news').select('*').order('published_at', { ascending: false }).limit(5),
+      supabase
+        .from('tech_news')
+        .select('id, title, source, published_at')
+        .order('published_at', { ascending: false })
+        .limit(5),
     ]);
 
   if (postsError) {
     console.error('게시글을 불러오는 중 에러 발생:', postsError);
+    throw new Error('게시글을 불러오는 중 오류가 발생했습니다.');
   }
   if (newsError) {
     console.error('뉴스를 불러오는 중 에러 발생:', newsError);
+    throw new Error('뉴스를 불러오는 중 오류가 발생했습니다.');
   }
 
   // PostCard props 규격에 맞게 데이터 가공
@@ -41,14 +47,11 @@ export default async function HomePage() {
     likeCount: post.like_count || 0,
   }));
 
-  const newsList: TechNews[] = (newsRows ?? []).map((row) => ({
+  const newsList = (newsRows ?? []).map((row) => ({
     id: row.id,
     title: row.title,
-    originalUrl: row.original_url,
-    content: row.content,
     source: row.source as TechNewsSource,
     publishedAt: new Date(row.published_at),
-    createdAt: new Date(row.created_at),
   }));
 
   return (

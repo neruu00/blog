@@ -11,7 +11,7 @@ import { formatDateKo } from '@/lib/utils/date';
 import { TECH_NEWS_SOURCE_LABELS, type TechNews } from '@/types/tech-news.type';
 
 interface NewsCardProps {
-  news: TechNews;
+  news: Pick<TechNews, 'id' | 'title' | 'source' | 'publishedAt'>;
 }
 
 export default function NewsCard({ news }: NewsCardProps) {

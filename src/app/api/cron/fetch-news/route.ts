@@ -38,6 +38,9 @@ export async function GET(req: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  const startTime = Date.now();
+  const MAX_RUN_TIME = 250000; // 250초 (Vercel 300초 제한 대비 여유분)
+
   // 날짜 필터 기준 계산
   const sinceDate = resolveSinceDate(req.url);
 
@@ -66,6 +69,12 @@ export async function GET(req: Request) {
     }
 
     for (const item of items) {
+      // 시간 제한 체크 (타임아웃 방지)
+      if (Date.now() - startTime > MAX_RUN_TIME) {
+        console.warn('[fetch-news] 최대 실행 시간 초과, 남은 피드 처리를 중단합니다.');
+        return NextResponse.json({ ...results, timeout: true });
+      }
+
       // 날짜 필터: sinceDate 이전 기사는 LLM 호출 없이 스킵
       if (item.publishedAt < sinceDate) {
         results.dateSkipped++;

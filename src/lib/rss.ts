@@ -59,14 +59,17 @@ export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
 
     return feed.items
       .filter((item) => item.link && item.title)
-      .map((item) => ({
-        title: item.title ?? '',
-        link: item.link ?? '',
-        description: item.contentSnippet
-          ? item.contentSnippet.trim().slice(0, 1500)
-          : stripHtml(item.summary ?? item.content ?? ''),
-        publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
-      }));
+      .map((item) => {
+        const parsedDate = item.pubDate ? new Date(item.pubDate) : new Date();
+        return {
+          title: item.title ?? '',
+          link: item.link ?? '',
+          description: item.contentSnippet
+            ? item.contentSnippet.trim().slice(0, 1500)
+            : stripHtml(item.summary ?? item.content ?? ''),
+          publishedAt: isNaN(parsedDate.getTime()) ? new Date() : parsedDate,
+        };
+      });
   } catch (error) {
     console.error(`[RSS] 피드 파싱 실패: ${url}`, error);
     return [];

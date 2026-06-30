@@ -35,7 +35,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   // 선택된 소스 또는 전체 뉴스 조회
   let query = supabase
     .from('tech_news')
-    .select('*')
+    .select('id, title, source, published_at')
     .order('published_at', { ascending: false })
     .limit(50);
 
@@ -50,14 +50,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     throw new Error('뉴스 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 
-  const newsList: TechNews[] = (rows ?? []).map((row) => ({
+  const newsList = (rows ?? []).map((row) => ({
     id: row.id,
     title: row.title,
-    originalUrl: row.original_url,
-    content: row.content,
     source: row.source as TechNewsSource,
     publishedAt: new Date(row.published_at),
-    createdAt: new Date(row.created_at),
   }));
 
   return (
@@ -75,6 +72,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/news"
+            aria-current={!activeSource ? 'page' : undefined}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               !activeSource
                 ? 'bg-orange-500 text-white'
@@ -87,6 +85,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
             <Link
               key={src}
               href={`/news?source=${src}`}
+              aria-current={activeSource === src ? 'page' : undefined}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 activeSource === src
                   ? 'bg-orange-500 text-white'

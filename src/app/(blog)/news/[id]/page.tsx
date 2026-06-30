@@ -56,6 +56,16 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   // Chrome Dev 블로그 한국어 URL 생성
   const chromeKoreanUrl = getChromeKoreanUrl(news.source, news.originalUrl);
 
+  let isValidOriginalUrl = false;
+  try {
+    const urlObj = new URL(news.originalUrl);
+    if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+      isValidOriginalUrl = true;
+    }
+  } catch (e) {
+    // URL parsing failed
+  }
+
   return (
     <div className="mx-auto max-w-3xl">
       {/* 뒤로 가기 */}
@@ -103,15 +113,17 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         <p className="mb-4 text-sm font-medium text-gray-500">원문 읽기</p>
         <div className="flex flex-wrap gap-3">
           {/* 원본 (영어) 링크 */}
-          <a
-            href={news.originalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-orange-300 hover:text-orange-600"
-          >
-            <ExternalLink className="h-4 w-4" />
-            원본 뉴스 보러가기
-          </a>
+          {isValidOriginalUrl && (
+            <a
+              href={news.originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-orange-300 hover:text-orange-600"
+            >
+              <ExternalLink className="h-4 w-4" />
+              원본 뉴스 보러가기
+            </a>
+          )}
 
           {/* Chrome Dev 블로그 한국어 버전 */}
           {chromeKoreanUrl && (
@@ -140,7 +152,7 @@ function getChromeKoreanUrl(source: TechNewsSource, originalUrl: string): string
 
   try {
     const url = new URL(originalUrl);
-    if (!url.hostname.includes('developer.chrome.com')) return null;
+    if (url.hostname !== 'developer.chrome.com') return null;
 
     // /en/ 경로가 있으면 /ko/ 로 치환
     if (url.pathname.includes('/en/')) {
