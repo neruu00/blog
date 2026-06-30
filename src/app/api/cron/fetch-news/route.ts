@@ -41,6 +41,13 @@ export async function GET(req: Request) {
   // 날짜 필터 기준 계산
   const sinceDate = resolveSinceDate(req.url);
 
+  // 중복 체크를 위한 기존 URL 일괄 조회 (N+1 쿼리 방지)
+  const { data: existingNews } = await supabase
+    .from('tech_news')
+    .select('original_url')
+    .gte('published_at', sinceDate.toISOString());
+  const existingUrls = new Set(existingNews?.map((r) => r.original_url) ?? []);
+
   const results = {
     sinceDate: sinceDate.toISOString(),
     processed: 0,
@@ -67,13 +74,7 @@ export async function GET(req: Request) {
 
       try {
         // URL 중복 체크: 이미 저장된 기사는 스킵
-        const { data: existing } = await supabase
-          .from('tech_news')
-          .select('id')
-          .eq('original_url', item.link)
-          .maybeSingle();
-
-        if (existing) {
+        if (existingUrls.has(item.link)) {
           results.skipped++;
           continue;
         }
