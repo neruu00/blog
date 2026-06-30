@@ -33,7 +33,8 @@ const DEFAULT_SINCE_DAYS = 2;
 export async function GET(req: Request) {
   // 보안: Vercel Cron 또는 수동 테스트 요청인지 검증
   const authHeader = req.headers.get('Authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
