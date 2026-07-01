@@ -8,7 +8,7 @@
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-//import EyePoster from '@/components/layout/EyePoster';
+import EyePoster from '@/components/layout/EyePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
@@ -72,7 +72,9 @@ export default async function HomePage() {
         </div>
 
         {/* 눈동자 포스터 */}
-        <div className="col-span-1">{/* <EyePoster /> */}</div>
+        <div className="col-span-1">
+          <EyePoster />
+        </div>
 
         {/* 최신 기술 뉴스 */}
         <div className="col-span-3">
