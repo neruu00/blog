@@ -106,28 +106,36 @@ body {
    h2가 시각적으로 가장 크게 보이도록 스타일 재정의
    ──────────────────────────────────── */
 
-/* 사용자 인식 H1 → 실제 <h2> */
-.prose h2 {
-  font-size: 1.875rem !important; /* text-3xl */
+/* 마크다운 최상위 헤딩 (h1) */
+.prose h1 {
+  font-size: 1.5rem !important; /* text-2xl */
   font-weight: 800 !important;
   margin-top: 2.5rem !important;
   margin-bottom: 1.25rem !important;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid theme('colors.gray.100');
+  border-bottom: none !important;
+}
+
+/* 사용자 인식 H1 → 실제 <h2> */
+.prose h2 {
+  font-size: 1.25rem !important; /* text-xl */
+  font-weight: 700 !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.25rem !important;
+  border-bottom: none !important;
 }
 
 /* 사용자 인식 H2 → 실제 <h3> */
 .prose h3 {
-  font-size: 1.5rem !important; /* text-2xl */
-  font-weight: 700 !important;
+  font-size: 1.125rem !important; /* text-lg */
+  font-weight: 600 !important;
   margin-top: 2rem !important;
   margin-bottom: 1rem !important;
 }
 
 /* 사용자 인식 H3 → 실제 <h4> */
 .prose h4 {
-  font-size: 1.25rem !important; /* text-xl */
-  font-weight: 700 !important;
+  font-size: 1rem !important; /* text-base */
+  font-weight: 600 !important;
   margin-top: 1.5rem !important;
   margin-bottom: 0.75rem !important;
 }
