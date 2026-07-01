@@ -1,44 +1,58 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function EyePoster() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [leftEyePos, setLeftEyePos] = useState({ x: 0, y: 0 });
-  const [rightEyePos, setRightEyePos] = useState({ x: 0, y: 0 });
-
   const leftEyeRef = useRef<HTMLDivElement>(null);
   const rightEyeRef = useRef<HTMLDivElement>(null);
+  const leftPupilRef = useRef<HTMLDivElement>(null);
+  const rightPupilRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const getEyeOffset = (eyeRef: React.RefObject<HTMLDivElement | null>) => {
-        if (!eyeRef.current) return { x: 0, y: 0 };
-        const rect = eyeRef.current.getBoundingClientRect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-        // 각 눈의 실제 중심값
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+      rafRef.current = requestAnimationFrame(() => {
+        const getEyeOffset = (eyeRef: React.RefObject<HTMLDivElement | null>) => {
+          if (!eyeRef.current) return { x: 0, y: 0 };
+          const rect = eyeRef.current.getBoundingClientRect();
 
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        const angle = Math.atan2(dy, dx);
+          // 각 눈의 실제 중심값
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
 
-        // 눈동자가 움직일 수 있는 최대 반경 (2px)
-        const distance = Math.min(Math.hypot(dx, dy) * 0.05, 2);
+          const dx = e.clientX - centerX;
+          const dy = e.clientY - centerY;
+          const angle = Math.atan2(dy, dx);
 
-        return {
-          x: Math.cos(angle) * distance,
-          y: Math.sin(angle) * distance,
+          // 눈동자가 움직일 수 있는 최대 반경 (2px)
+          const distance = Math.min(Math.hypot(dx, dy) * 0.05, 2);
+
+          return {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+          };
         };
-      };
 
-      setLeftEyePos(getEyeOffset(leftEyeRef));
-      setRightEyePos(getEyeOffset(rightEyeRef));
+        const leftPos = getEyeOffset(leftEyeRef);
+        const rightPos = getEyeOffset(rightEyeRef);
+
+        if (leftPupilRef.current) {
+          leftPupilRef.current.style.transform = `translate(${leftPos.x}px, ${leftPos.y}px)`;
+        }
+        if (rightPupilRef.current) {
+          rightPupilRef.current.style.transform = `translate(${rightPos.x}px, ${rightPos.y}px)`;
+        }
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
@@ -75,9 +89,10 @@ export default function EyePoster() {
           >
             {/* 눈동자 (실제 움직이는 타겟) */}
             <div
+              ref={leftPupilRef}
               className="absolute top-[1.5px] left-[14px] flex size-8 items-center justify-center rounded-full bg-black transition-transform duration-75 ease-out"
               style={{
-                transform: `translate(${leftEyePos.x}px, ${leftEyePos.y}px)`,
+                transform: `translate(0px, 0px)`,
               }}
             >
               {/* 안쪽 흰 동공 */}
@@ -103,9 +118,10 @@ export default function EyePoster() {
             }}
           >
             <div
+              ref={rightPupilRef}
               className="absolute top-[1.5px] left-[14px] flex size-8 items-center justify-center rounded-full bg-black transition-transform duration-75 ease-out"
               style={{
-                transform: `translate(${rightEyePos.x}px, ${rightEyePos.y}px)`,
+                transform: `translate(0px, 0px)`,
               }}
             >
               <div className="size-3 rounded-full bg-gray-50" />

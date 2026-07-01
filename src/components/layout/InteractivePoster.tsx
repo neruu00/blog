@@ -1,16 +1,18 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export default function InteractivePoster() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 }); // 퍼센트
+  const cardRef = useRef<HTMLDivElement>(null);
+  const holoRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!containerRef.current) return;
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || !cardRef.current || !holoRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -24,50 +26,54 @@ export default function InteractivePoster() {
     const rotateX = -centerY * 30; // 위로 갈수록 튀어나오게 (음수 y -> 양수 rotateX)
     const rotateY = centerX * 30; // 오른쪽으로 갈수록 튀어나오게 (양수 x -> 양수 rotateY)
 
-    setRotation({ x: rotateX, y: rotateY });
+    const posX = (x / rect.width) * 100;
+    const posY = (y / rect.height) * 100;
 
-    // 마우스 위치 (퍼센트)
-    setMousePos({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    rafRef.current = requestAnimationFrame(() => {
+      if (cardRef.current) {
+        cardRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      }
+      if (holoRef.current) {
+        holoRef.current.style.backgroundPosition = `${posX}% ${posY}%`;
+      }
     });
   }, []);
 
-  useEffect(() => {
-    const element = containerRef.current;
-    if (!element) return;
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
 
-    const onMouseEnter = () => setIsHovered(true);
-    const onMouseLeave = () => {
-      setIsHovered(false);
-      setRotation({ x: 0, y: 0 });
-      setMousePos({ x: 50, y: 50 });
-    };
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-    element.addEventListener('mousemove', handleMouseMove);
-    element.addEventListener('mouseenter', onMouseEnter);
-    element.addEventListener('mouseleave', onMouseLeave);
-
-    return () => {
-      element.removeEventListener('mousemove', handleMouseMove);
-      element.removeEventListener('mouseenter', onMouseEnter);
-      element.removeEventListener('mouseleave', onMouseLeave);
-    };
-  }, [handleMouseMove]);
+    rafRef.current = requestAnimationFrame(() => {
+      if (cardRef.current) {
+        cardRef.current.style.transform = `rotateX(0deg) rotateY(0deg)`;
+      }
+      if (holoRef.current) {
+        holoRef.current.style.backgroundPosition = `50% 50%`;
+      }
+    });
+  };
 
   return (
     <div
       ref={containerRef}
       className="relative h-64 cursor-pointer transition-transform duration-200 ease-out"
-      style={{
-        perspective: '1000px',
-      }}
+      style={{ perspective: '1000px' }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div
+        ref={cardRef}
         className="relative h-full w-full overflow-hidden transition-all duration-200 ease-out"
         style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
           transformStyle: 'preserve-3d',
+          transform: 'rotateX(0deg) rotateY(0deg)',
         }}
       >
         <Image
@@ -80,6 +86,7 @@ export default function InteractivePoster() {
 
         {/* Holofoil Rare Effect */}
         <div
+          ref={holoRef}
           className={`absolute inset-0 z-10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
           style={{
             background: `linear-gradient(
@@ -94,7 +101,7 @@ export default function InteractivePoster() {
               transparent 90%
             )`,
             backgroundSize: '300% 300%',
-            backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
+            backgroundPosition: `50% 50%`,
             mixBlendMode: 'color-dodge',
           }}
         />
