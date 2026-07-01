@@ -1,13 +1,15 @@
 /**
  * @file page.tsx
  * @description 블로그 홈페이지.
- *              프로필 인사말, 최신 게시글, 최신 기술 뉴스를 표시한다.
- *              velog 스타일의 화이트 모던 디자인.
+ *              인사말, 마우스 커서 트래킹 눈동자 포스터 및 빈 포스터 영역,
+ *              최신 기술 뉴스(5개), 최신 게시글을 표시한다.
  */
 
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
+import EyePoster from '@/components/layout/EyePoster';
+import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
@@ -33,7 +35,6 @@ export default async function HomePage() {
     throw new Error('뉴스를 불러오는 중 오류가 발생했습니다.');
   }
 
-  // PostCard props 규격에 맞게 데이터 가공
   const formattedPosts = (posts || []).map((post) => ({
     id: post.id,
     title: post.title,
@@ -55,18 +56,58 @@ export default async function HomePage() {
   }));
 
   return (
-    <div className="mx-auto max-w-3xl">
-      {/* 인사말 섹션 */}
-      <section className="mb-16">
+    <div className="mx-auto max-w-5xl">
+      {/* 1. 인사말 섹션 */}
+      <section className="mb-12">
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-gray-900">안녕하세요 👋</h1>
         <p className="text-lg leading-relaxed text-gray-500">
           개발하며 배운 것들을 기록하는 블로그입니다.
         </p>
       </section>
 
-      {/* 최신 게시글 */}
-      <section className="mb-16">
-        <div className="mb-8 flex items-center justify-between">
+      {/* 2. 포스터 섹션 (2/3 눈동자 포스터, 1/3 빈 공간 포스터) */}
+      <section className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-5">
+        {/* 빈 포스터 영역에 InteractivePoster 적용 */}
+        <div className="col-span-1">
+          <InteractivePoster />
+        </div>
+
+        {/* 눈동자 포스터 */}
+        <div className="col-span-1">
+          <EyePoster />
+        </div>
+
+        {/* 최신 기술 뉴스 */}
+        <div className="col-span-3">
+          <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
+            <h2 className="text-xl font-semibold text-gray-900">최신 기술 뉴스</h2>
+            <Link
+              href="/news"
+              className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
+            >
+              전체 보기
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+
+          {newsList.length > 0 ? (
+            <div className="flex flex-col divide-y divide-gray-100 border-0 bg-white">
+              {newsList.map((news) => (
+                <NewsCard key={news.id} news={news} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-12">
+              <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
+              <p className="mt-1 text-sm text-gray-300">Cron Job이 실행되면 자동으로 채워집니다.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 3. 최신 글 섹션 */}
+      <section>
+        <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
           <h2 className="text-xl font-semibold text-gray-900">최신 글</h2>
           <Link
             href="/posts"
@@ -86,33 +127,6 @@ export default async function HomePage() {
         ) : (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-20">
             <p className="text-gray-400">아직 작성된 글이 없습니다.</p>
-          </div>
-        )}
-      </section>
-
-      {/* 최신 기술 뉴스 */}
-      <section>
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">최신 기술 뉴스</h2>
-          <Link
-            href="/news"
-            className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
-          >
-            전체 보기
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-
-        {newsList.length > 0 ? (
-          <div className="flex flex-col divide-y divide-gray-100">
-            {newsList.map((news) => (
-              <NewsCard key={news.id} news={news} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-16">
-            <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
-            <p className="mt-1 text-sm text-gray-300">Cron Job이 실행되면 자동으로 채워집니다.</p>
           </div>
         )}
       </section>

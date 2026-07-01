@@ -1,8 +1,8 @@
 /**
  * @file NewsCard.tsx
  * @description 기술 뉴스 카드 컴포넌트.
- *              PostCard와 동일한 스타일 언어를 사용하며,
- *              소스 뱃지, 제목, 발행일을 표시한다.
+ *              높이를 최소화한 콤팩트 한 줄 레이아웃.
+ *              [백지/소스 뱃지] [뉴스 제목] [날짜] 형태로 배치.
  */
 
 import Link from 'next/link';
@@ -18,24 +18,24 @@ export default function NewsCard({ news }: NewsCardProps) {
   const sourceLabel = TECH_NEWS_SOURCE_LABELS[news.source];
 
   return (
-    <article className="group py-6 first:pt-0 last:pb-0">
-      <Link href={`/news/${news.id}`} className="block">
-        {/* 소스 뱃지 */}
-        <div className="mb-2">
-          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600">
+    <article className="group py-3 first:pt-0 last:pb-0">
+      <Link href={`/news/${news.id}`} className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3 overflow-hidden">
+          {/* 소스 뱃지 (미니멀 스퀘어 형태) */}
+          <span className="shrink-0 rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600">
             {sourceLabel}
           </span>
+
+          {/* 제목 */}
+          <h3 className="truncate text-sm font-medium text-gray-800 transition-colors group-hover:text-orange-500">
+            {news.title}
+          </h3>
         </div>
 
-        {/* 제목 */}
-        <h3 className="mb-3 text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-500">
-          {news.title}
-        </h3>
-
-        {/* 메타 정보 */}
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          <time dateTime={news.publishedAt.toISOString()}>{formatDateKo(news.publishedAt)}</time>
-        </div>
+        {/* 날짜 */}
+        <time dateTime={news.publishedAt.toISOString()} className="shrink-0 text-xs text-gray-400">
+          {formatDateKo(news.publishedAt)}
+        </time>
       </Link>
     </article>
   );

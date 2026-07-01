@@ -87,7 +87,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         </div>
 
         {/* 제목 */}
-        <h1 className="mb-4 text-2xl leading-snug font-bold tracking-tight text-gray-900">
+        <h1 className="mb-4 text-xl leading-snug font-bold tracking-tight text-gray-900">
           {news.title}
         </h1>
 

@@ -128,7 +128,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
         <ViewCounter postId={post.id} />
         <article className="mx-auto max-w-3xl flex-1">
           <header className="mb-10 text-center">
-            <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <h1 className="mb-4 text-2xl leading-snug font-bold tracking-tight text-gray-900">
               {post.title}
             </h1>
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
@@ -143,7 +143,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {post.tags.map((tag: string) => (
-                  <TagBadge key={tag} tag={tag} variant="solid" />
+                  <TagBadge key={tag} tag={tag} variant="primary" />
                 ))}
               </div>
             )}
