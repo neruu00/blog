@@ -9,6 +9,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 import EyePoster from '@/components/layout/EyePoster';
+import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
@@ -66,9 +67,9 @@ export default async function HomePage() {
 
       {/* 2. 포스터 섹션 (2/3 눈동자 포스터, 1/3 빈 공간 포스터) */}
       <section className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-5">
-        {/* 빈 포스터 */}
-        <div className="relative col-span-1 flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-gray-400 select-none">
-          <span className="text-sm font-medium"> Poster</span>
+        {/* 빈 포스터 영역에 InteractivePoster 적용 */}
+        <div className="col-span-1">
+          <InteractivePoster />
         </div>
 
         {/* 눈동자 포스터 */}

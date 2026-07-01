@@ -44,7 +44,7 @@ export default function EyePoster() {
   return (
     <div
       ref={containerRef}
-      className="relative flex h-64 flex-col items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-gray-100 p-6 shadow-sm select-none"
+      className="relative flex h-64 flex-col items-center justify-between overflow-hidden border border-gray-200 bg-gray-100 p-6 shadow-sm select-none"
     >
       <div className="mt-4 flex gap-6">
         <svg className="absolute h-0 w-0">
