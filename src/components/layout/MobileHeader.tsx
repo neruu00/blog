@@ -16,8 +16,10 @@ import { useEffect } from 'react';
 
 import { useSidebarStore } from '@/stores/useSidebarStore';
 
-import AuthButtons from './AuthButtons';
+import BlogOwnerProfile from './BlogOwnerProfile';
+import LoginButton from './LoginButton';
 import NavLinks from './NavLinks';
+import ProfileButton from './ProfileButton';
 
 export default function MobileHeader() {
   const pathname = usePathname();
@@ -85,24 +87,8 @@ export default function MobileHeader() {
         </div>
 
         {/* 프로필 */}
-        <div className="flex flex-col items-center px-6 pb-6">
-          <div className="relative mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-orange-100 bg-orange-50">
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                alt={session.user.name || '프로필'}
-                fill
-                className="object-cover"
-                sizes="64px"
-              />
-            ) : (
-              <span className="text-xl font-bold text-orange-300">N</span>
-            )}
-          </div>
-          <h2 className="text-lg font-bold text-gray-900">
-            {session?.user?.name || 'neruu00.log'}
-          </h2>
-          <p className="text-sm text-gray-400">Developer Blog</p>
+        <div className="px-6 pt-2 pb-6">
+          <BlogOwnerProfile />
         </div>
 
         <div className="mx-6 border-t border-gray-100" />
@@ -111,9 +97,11 @@ export default function MobileHeader() {
           <NavLinks />
         </nav>
 
-        {/* 하단 — 로그인/Write 버튼 영역 */}
-        <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-4">
-          <AuthButtons session={session} />
+        {/* 하단 푸터 / 로그인 영역 */}
+        <div className="flex flex-col gap-1 border-t border-gray-100 pt-2 pb-2">
+          <div className="px-2">
+            {session ? <ProfileButton session={session} /> : <LoginButton />}
+          </div>
         </div>
       </div>
     </>
