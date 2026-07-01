@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 import Tooltip from '@/components/ui/Tooltip';
@@ -32,16 +32,6 @@ export default function BlogOwnerProfile() {
           >
             <Mail className="h-4 w-4" />
           </Link>
-        </Tooltip>
-
-        <Tooltip text="LinkedIn" position="top">
-          <button
-            type="button"
-            className="flex h-8 w-8 cursor-default items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900"
-            aria-label="LinkedIn"
-          >
-            <Linkedin className="h-4 w-4" />
-          </button>
         </Tooltip>
       </div>
     </div>
