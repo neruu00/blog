@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export default function InteractivePoster() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -9,7 +9,11 @@ export default function InteractivePoster() {
   const holoRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
 
-  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current || !cardRef.current || !holoRef.current) return;
@@ -41,12 +45,7 @@ export default function InteractivePoster() {
     });
   }, []);
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
   const handleMouseLeave = () => {
-    setIsHovered(false);
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
     rafRef.current = requestAnimationFrame(() => {
@@ -62,10 +61,9 @@ export default function InteractivePoster() {
   return (
     <div
       ref={containerRef}
-      className="relative h-64 cursor-pointer transition-transform duration-200 ease-out"
+      className="group relative h-64 cursor-pointer transition-transform duration-200 ease-out"
       style={{ perspective: '1000px' }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div
@@ -87,7 +85,7 @@ export default function InteractivePoster() {
         {/* Holofoil Rare Effect */}
         <div
           ref={holoRef}
-          className={`absolute inset-0 z-10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+          className="absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{
             background: `linear-gradient(
               115deg,

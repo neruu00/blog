@@ -20,7 +20,7 @@ export default function NewsCard({ news }: NewsCardProps) {
   return (
     <article className="group py-3 first:pt-0 last:pb-0">
       <Link href={`/news/${news.id}`} className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 overflow-hidden">
+        <div className="flex min-w-0 items-center gap-3 overflow-hidden">
           {/* 소스 뱃지 (미니멀 스퀘어 형태) */}
           <span className="shrink-0 rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600">
             {sourceLabel}
