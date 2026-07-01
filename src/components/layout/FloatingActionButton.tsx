@@ -8,11 +8,11 @@ import { useSession } from 'next-auth/react';
 import Tooltip from '@/components/ui/Tooltip';
 
 export default function FloatingActionButton() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
 
-  // 현재 경로가 글쓰기 페이지면 아무 플로팅 버튼도 보여주지 않음
-  if (pathname === '/write') {
+  // 세션 로딩 중이거나 현재 경로가 글쓰기 페이지면 아무 플로팅 버튼도 보여주지 않음
+  if (status === 'loading' || pathname === '/write') {
     return null;
   }
 

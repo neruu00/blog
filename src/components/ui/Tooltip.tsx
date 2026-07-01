@@ -24,7 +24,7 @@ export default function Tooltip({
     <div className={`group relative flex items-center justify-center ${className}`}>
       {children}
       <div
-        className={`pointer-events-none absolute z-50 rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 ${positionClasses[position]}`}
+        className={`pointer-events-none absolute z-50 rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 ${positionClasses[position]}`}
       >
         {text}
       </div>
