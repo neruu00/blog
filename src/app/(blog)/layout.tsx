@@ -6,6 +6,7 @@
  *              Main 콘텐츠는 max-w-3xl (768px)로 중앙 정렬.
  */
 
+import FloatingActionButton from '@/components/layout/FloatingActionButton';
 import Footer from '@/components/layout/Footer';
 import MobileHeader from '@/components/layout/MobileHeader';
 import SideNav from '@/components/layout/SideNav';
@@ -18,6 +19,9 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
 
       {/* 모바일 상단 헤더 (lg 미만에서만 표시) */}
       <MobileHeader />
+
+      {/* 권한별 액션 플로팅 버튼 (글쓰기 / 이슈제보) */}
+      <FloatingActionButton />
 
       {/* 메인 콘텐츠 영역 */}
       <div className="min-h-screen lg:pl-64">
