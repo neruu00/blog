@@ -2,7 +2,7 @@
  * @file page.tsx
  * @description 블로그 홈페이지.
  *              인사말, 마우스 커서 트래킹 눈동자 포스터 및 빈 포스터 영역,
- *              최신 기술 뉴스(10개), 최신 게시글을 표시한다.
+ *              최신 기술 뉴스(5개), 최신 게시글을 표시한다.
  */
 
 import { ArrowRight } from 'lucide-react';
