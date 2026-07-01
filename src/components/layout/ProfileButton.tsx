@@ -13,8 +13,19 @@ export default function ProfileButton({ session }: { session: Session }) {
         className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-50 hover:text-gray-900"
         onClick={() => signOut()}
       >
-        <div className="relative size-10 overflow-hidden rounded-full border border-gray-100 bg-gray-50">
-          <Image src={session.user.image!} alt={session.user.name!} fill className="object-cover" />
+        <div className="relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-gray-100 bg-gray-50">
+          {session.user.image ? (
+            <Image
+              src={session.user.image}
+              alt={session.user.name || '프로필'}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <span className="text-xs font-bold text-gray-400">
+              {session.user.name?.[0]?.toUpperCase() || 'U'}
+            </span>
+          )}
         </div>
         <div className="min-w-0 flex-1 text-left">
           <p className="truncate text-sm font-medium text-gray-900">{session.user.name}</p>
