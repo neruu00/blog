@@ -138,7 +138,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>·</span>
               <span>{post.author || 'neruu00'}</span>
               <span>·</span>
-              <span>조회수 {(post.view_count || 0) + 1}</span>
+              <span>조회수 {post.view_count || 0}</span>
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
