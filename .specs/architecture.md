@@ -11,8 +11,9 @@
 | DB | Supabase (PostgreSQL) |
 | Auth | next-auth v4 (Google OAuth) |
 | Editor | Tiptap + Mermaid |
-| Server State | TanStack Query v5 |
+| Server State | Server Action + `revalidatePath` + `useOptimistic` |
 | Client State | Zustand |
+| 뉴스 수집 | rss-parser + OpenAI gpt-4o-mini (Vercel Cron) |
 | Validation | Zod |
 | Analytics | GA4 + Vercel Analytics |
 | Icons | Lucide React |
@@ -21,120 +22,22 @@
 
 ---
 
-## 2. 디렉토리 구조
+## 2. 코드 구조
 
-```
-src/
-├── actions/              # Server Actions (도메인별 분리)
-│   ├── post.ts
-│   ├── comment.ts
-│   ├── like.ts
-│   └── image.ts
-│
-├── app/
-│   ├── (blog)/           # 공개 페이지 그룹 (사이드 네비 레이아웃)
-│   │   ├── layout.tsx    # SideNav + Main 영역
-│   │   ├── page.tsx      # 홈
-│   │   ├── posts/
-│   │   │   ├── page.tsx          # 게시글 목록
-│   │   │   └── [id]/page.tsx     # 게시글 상세
+**구조의 원본은 코드다** — 전체 목록이 필요하면 `find src -type f`를 실행하라. 파일 단위 트리를 문서에 옮겨 적지 않는다: 과거 이 문서의 트리는 삭제된 파일을 품은 채 이틀 사이 두 번 어긋났다. 아래는 길을 잃었을 때의 진입점만 적는다.
 
-│   │       └── page.tsx          # 포트폴리오
-│   │
-│   ├── (protected)/      # 관리자 전용 (인증 guard)
-│   │   ├── layout.tsx    # requireAdmin guard
-│   │   ├── write/page.tsx
-│   │   └── edit/[id]/
-│   │       └── _components/EditPostClient.tsx
-│   │
-│   ├── api/
-│   │   ├── auth/[...nextauth]/route.ts  # NextAuth 핸들러
-│   │   └── cron/cleanup-images/route.ts
-│   │
-│   ├── layout.tsx        # Root layout (Providers, Font, GA)
-│   └── globals.css       # Tailwind custom theme 정의
-│
-├── components/
-│   ├── post/             # 게시글 도메인 컴포넌트
-│   │   ├── PostCard.tsx
-│   │   ├── PostList.tsx
-│   │   ├── CommentSection.tsx
-│   │   ├── CommentForm.tsx
-│   │   ├── CommentList.tsx
-│   │   ├── LikeButton.tsx
-│   │   ├── DeletePostButton.tsx
-│   │   ├── ViewCounter.tsx
-│   │   ├── TableOfContents.tsx
-│   │   └── PostExportButtons.tsx  # 게시글 내보내기 버튼
-│   ├── editor/           # Tiptap 에디터
-│   │   ├── TiptapEditor.tsx
-│   │   ├── TiptapViewer.tsx
-│   │   ├── Toolbar.tsx
-│   │   ├── TagInputField.tsx
-│   │   ├── EditorFooter.tsx     # 고정 하단 푸터
-│   │   ├── PostTitleInput.tsx   # 제목 입력 컴포넌트
-│   │   └── extensions/
-│   │       ├── ShiftedHeading.ts        # SEO 헤딩 시프트
-│   │       ├── CustomCodeBlock.ts       # Mac 스타일 코드블록 Extension
-│   │       ├── CodeBlockComponent.tsx   # CodeBlock React NodeView
-│   │       ├── CustomTable.ts           # 테이블 관리 Extension
-│   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
-│   │       └── MermaidComponent.tsx     # Mermaid React NodeView
-│   ├── layout/           # 레이아웃 컴포넌트
-│   │       ├── SideNav.tsx
-│   │       ├── MobileHeader.tsx
-│   │       ├── NavLinks.tsx
-│   │       ├── AuthButtons.tsx
-│   │       └── Footer.tsx
-│   ├── ui/               # 공통 UI 프리미티브
-│   │       ├── TagBadge.tsx        # 태그 뱃지 (variant: primary/solid/default)
-│   │       ├── IconButton.tsx      # 아이콘 버튼
-│   │       └── DropdownMenu.tsx    # 드롭다운 메뉴 (Context 기반, ESC/외부클릭 닫기)
-│
-├── hooks/
-│   ├── useOptimisticLike.ts
-│   ├── useActiveNav.ts          # isActive 판별 훅 (SideNav/MobileHeader 공유)
-│   ├── useDraft.tsx             # 임시저장 로드/저장/자동저장 훅
-│   ├── usePostSubmit.tsx        # 게시글 제출 + 삭제 로직 훅
-│   └── useIntersectionObserver.ts  # TOC 활성 항목 감지 (MutationObserver 기반)
-│
-├── layouts/
-│   └── TanstackQueryLayout.tsx  # TanStack Query Provider
-│
-├── lib/
-│   ├── auth.ts           # NextAuth 설정 + 헬퍼
-│   ├── supabase.ts       # Supabase 클라이언트
-│   ├── logger.ts         # 로깅 유틸리티
-│   ├── export.ts         # 게시글 내보내기 유틸 (Markdown)
-│   ├── constants/
-│   │       ├── tags.ts       # 태그 및 페이지네이션 상수
-│   │       └── nav.ts        # 네비게이션 메뉴 상수
-│   └── utils/
-│       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
-│       └── date.ts       # 날짜 포맷팅
-│       └── analytics.ts  # GA4 분석 유틸리티
-│
-├── providers/
-│   └── AuthProvider.tsx  # NextAuth SessionProvider 래퍼
-│
-├── schemas/              # Zod 스키마
-│   ├── post.schema.ts
-│   └── comment.schema.ts
-│
-├── stores/               # Zustand 스토어
-│   ├── useLikeStore.ts
-│   ├── useModalStore.ts
-│   ├── useSidebarStore.ts
-│   ├── useToastStore.ts
-│   └── useEditorStore.ts
-│
-└── types/
-    ├── post.type.ts
-    ├── comment.type.ts
-    ├── user.type.ts
-    ├── action.type.ts    # ActionResult<T> 통합 반환 타입
-    └── next-auth.d.ts    # NextAuth 타입 확장
-```
+| 영역 | 위치 | 비고 |
+|---|---|---|
+| 페이지 라우트 | `src/app/(blog)/`, `src/app/(protected)/` | 그룹별 권한은 §3 |
+| API · 크론 | `src/app/api/` | NextAuth, fetch-news, cleanup-images |
+| SEO 메타 라우트 | `src/app/` — `sitemap.ts`, `robots.ts`, `feed.xml/` | 1h ISR |
+| 서버 액션 | `src/actions/` | post / comment / like / image, 도메인별 1파일 |
+| 도메인 로직 | `src/lib/` | auth, supabase(service_role), rss, llm, export, image-converter |
+| 상수 | `src/lib/constants/` | tags, nav, site(SITE_URL) |
+| 컴포넌트 | `src/components/` | 분류 기준은 `AGENTS.md` 컴포넌트 섹션 |
+| 상태 | `src/stores/` (Zustand), `src/hooks/` | |
+| 검증 · 타입 | `src/schemas/` (Zod), `src/types/` | `ActionResult<T>`는 `action.type.ts` |
+| 미들웨어 | `src/middleware.ts` | `/write`, `/edit` 경로 가드 |
 
 ---
 
@@ -142,9 +45,10 @@ src/
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]` | SideNav + Footer | 불필요 |
-| `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 |
-| `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 용도별 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]` | SideNav + Footer | 불필요 |
+| `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 (`middleware.ts` + 서버 액션 이중 검증) |
+| `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 크론은 `CRON_SECRET` Bearer 검증 |
+| 메타 | `/sitemap.xml`, `/robots.txt`, `/feed.xml` | 없음 | 불필요 (1h ISR) |
 
 ---
 
@@ -154,8 +58,12 @@ src/
 [사용자] → [Server Component] → [Supabase] → [SSR 렌더링]
                                                     │
 [사용자] → [Client Component] → [Server Action] → [Supabase]
-                │                                      │
-                └── [TanStack Query] ← 캐싱/낙관적 업데이트
+                │                       │
+                │                       └── revalidatePath → RSC 재생성
                 │
-                └── [Zustand] ← 전역 UI 상태
+                ├── [useOptimistic] ← 낙관적 업데이트 (React 19 네이티브)
+                └── [Zustand] ← 전역 UI 상태 (모달/토스트/사이드바)
+
+[Vercel Cron] → [fetch-news] → [RSS 6종] → [gpt-4o-mini] → [tech_news]
+             └→ [cleanup-images] → 24h 경과 고아 이미지 삭제
 ```

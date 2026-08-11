@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { verifyAdminSession } from '@/lib/auth';
+import { isAdmin } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { extractImageUrlsFromTiptap } from '@/lib/utils/tiptap';
 import { postSchema } from '@/schemas/post.schema';
@@ -12,7 +12,7 @@ import type { ActionResult, PostActionResult } from '@/types/action.type';
  * SECTION - 게시글 생성
  */
 export async function createPost(formData: FormData): Promise<PostActionResult> {
-  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
+  if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const title = formData.get('title') as string;
   const contentString = formData.get('content') as string;
@@ -92,7 +92,7 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
  * SECTION - 게시글 수정
  */
 export async function updatePost(formData: FormData): Promise<PostActionResult> {
-  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
+  if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   const postId = formData.get('postId') as string;
   const title = formData.get('title') as string;
@@ -218,7 +218,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
  * SECTION - 게시글 삭제
  */
 export async function deletePost(postId: string): Promise<ActionResult> {
-  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
+  if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   try {
     // 1. 게시글에 연결된 이미지 URL 조회

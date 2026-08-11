@@ -1,26 +1,21 @@
 /**
  * @file TagBadge.tsx
- * @description 해시태그를 표시하는 공통 UI 프리미티브 컴포넌트.
+ * @description 사이트 전역 공용 뱃지. 게시글 기술 태그와 뉴스 소스 라벨이 공유한다.
+ *              스타일은 하나다 — 컴팩트 스퀘어, 주황 소프트 배경 (플랫 원칙).
  */
 
 interface TagBadgeProps {
   tag: string;
-  variant?: 'default' | 'solid' | 'primary';
+  /** 해시(#) 접두사 표시 여부 — 기술 태그는 기본 true, 뉴스 소스 라벨은 false */
+  hash?: boolean;
 }
 
-export default function TagBadge({ tag, variant = 'default' }: TagBadgeProps) {
-  const baseClasses = 'rounded-full px-2.5 py-1 text-xs font-medium';
-  let variantClasses = 'bg-gray-50 text-gray-500'; // default
-
-  if (variant === 'solid') {
-    variantClasses = 'bg-gray-100 text-gray-600';
-  } else if (variant === 'primary') {
-    variantClasses = 'bg-orange-50 text-orange-600';
-  }
+export default function TagBadge({ tag, hash = true }: TagBadgeProps) {
+  const label = hash && !tag.startsWith('#') ? `#${tag}` : tag;
 
   return (
-    <span className={`${baseClasses} ${variantClasses}`}>
-      {tag.startsWith('#') ? tag : `#${tag}`}
+    <span className="shrink-0 rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600">
+      {label}
     </span>
   );
 }

@@ -5,7 +5,6 @@
  *              admin인 경우 수정/삭제 버튼을 표시한다.
  */
 
-import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,6 +12,7 @@ import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
 import { getLikeStatus } from '@/actions/like';
+import BackLink from '@/components/common/BackLink';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
@@ -20,7 +20,7 @@ import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
 import TagBadge from '@/components/ui/TagBadge';
-import { verifyAdminSession } from '@/lib/auth';
+import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
 import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap';
@@ -104,7 +104,7 @@ async function PostCommentSection({ postId }: { postId: string }) {
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const isAdmin = await verifyAdminSession();
+  const isAdmin = await checkIsAdmin();
   const { data: post, error } = await getPost(id);
 
   if (error || !post) notFound();
@@ -114,15 +114,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       {/* 상단 네비게이션 */}
-      <div className="mb-8 flex items-center justify-between">
-        <Link
-          href="/posts"
-          className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-600"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          목록으로
-        </Link>
-      </div>
+      <BackLink href="/posts">목록으로</BackLink>
 
       <div className="relative flex xl:gap-8">
         <ViewCounter postId={post.id} />
@@ -138,18 +130,18 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>·</span>
               <span>{post.author || 'neruu00'}</span>
               <span>·</span>
-              <span>조회수 {(post.view_count || 0) + 1}</span>
+              <span>조회수 {post.view_count || 0}</span>
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {post.tags.map((tag: string) => (
-                  <TagBadge key={tag} tag={tag} variant="primary" />
+                  <TagBadge key={tag} tag={tag} />
                 ))}
               </div>
             )}
           </header>
 
-          <div className="prose prose-lg prose-orange max-w-none text-gray-700">
+          <div className="prose prose-lg prose-orange max-w-none text-gray-900">
             <TiptapViewer content={post.content} />
           </div>
 
@@ -167,7 +159,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <>
                 <Link
                   href={`/edit/${post.id}`}
-                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-200"
                 >
                   수정
                 </Link>

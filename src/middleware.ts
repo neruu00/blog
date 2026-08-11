@@ -4,7 +4,8 @@ import { withAuth } from 'next-auth/middleware';
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
-    const isAdmin = token?.email === process.env.ADMIN_EMAIL;
+    // fail-closed: ADMIN_EMAIL 미설정 시 아무도 통과하지 못한다 (isAdmin()과 동일 원칙)
+    const isAdmin = !!process.env.ADMIN_EMAIL && token?.email === process.env.ADMIN_EMAIL;
 
     // 관리자 권한이 필요한 경로에 접근했지만 관리자가 아닌 경우
     if (!isAdmin) {

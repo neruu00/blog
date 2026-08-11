@@ -30,7 +30,7 @@ export default function PostExportButtons({ title, content }: PostExportButtonsP
       trigger={
         <button
           type="button"
-          className="flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+          className="flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
           title="내보내기"
         >
           <Download className="h-4 w-4" />

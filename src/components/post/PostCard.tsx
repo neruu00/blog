@@ -29,7 +29,7 @@ export default function PostCard({ post }: PostCardProps) {
         {post.tags.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
-              <TagBadge key={tag} tag={tag} variant="primary" />
+              <TagBadge key={tag} tag={tag} />
             ))}
           </div>
         )}
@@ -45,7 +45,7 @@ export default function PostCard({ post }: PostCardProps) {
         {/* 메타 정보 */}
         <div className="flex items-center gap-3 text-xs text-gray-400">
           <time dateTime={post.createdAt.toISOString()}>{formatDateKo(post.createdAt)}</time>
-          <span className="text-gray-200">·</span>
+          <span className="text-gray-400">·</span>
           <span className="flex items-center gap-1">
             <Eye className="h-3.5 w-3.5" />
             {post.viewCount}

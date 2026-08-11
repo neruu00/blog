@@ -5,15 +5,23 @@
  *              최신 기술 뉴스(5개), 최신 게시글을 표시한다.
  */
 
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-
+import EmptyState from '@/components/common/EmptyState';
+import SectionHeader from '@/components/common/SectionHeader';
 import EyePoster from '@/components/layout/EyePoster';
 import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
-import { type TechNews, type TechNewsSource } from '@/types/tech-news.type';
+import { mapNewsListRow, mapPostRow } from '@/lib/utils/mappers';
+
+/**
+ * 세션·쿠키 의존이 없어 정적 재생성이 가능하다. 5분 ISR —
+ * 새 글/뉴스는 최대 5분 지연으로 반영되고, 그동안 DB 조회가 발생하지 않는다.
+ * supabase-js의 내부 fetch는 캐시 옵션이 없어 그대로 두면 라우트가 동적으로
+ * 남기 때문에 force-static으로 fetch 캐싱까지 강제해야 revalidate가 동작한다.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =
@@ -35,25 +43,8 @@ export default async function HomePage() {
     throw new Error('뉴스를 불러오는 중 오류가 발생했습니다.');
   }
 
-  const formattedPosts = (posts || []).map((post) => ({
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    createdAt: new Date(post.created_at),
-    updatedAt: new Date(post.updated_at || post.created_at),
-    author: post.author || 'admin',
-    tags: post.tags || [],
-    category: post.category || 'tech',
-    viewCount: post.view_count || 0,
-    likeCount: post.like_count || 0,
-  }));
-
-  const newsList = (newsRows ?? []).map((row) => ({
-    id: row.id,
-    title: row.title,
-    source: row.source as TechNewsSource,
-    publishedAt: new Date(row.published_at),
-  }));
+  const formattedPosts = (posts || []).map(mapPostRow);
+  const newsList = (newsRows ?? []).map(mapNewsListRow);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -79,16 +70,7 @@ export default async function HomePage() {
 
         {/* 최신 기술 뉴스 */}
         <div className="col-span-3">
-          <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
-            <h2 className="text-xl font-semibold text-gray-900">최신 기술 뉴스</h2>
-            <Link
-              href="/news"
-              className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
-            >
-              전체 보기
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
+          <SectionHeader title="최신 기술 뉴스" href="/news" />
 
           {newsList.length > 0 ? (
             <div className="flex flex-col divide-y divide-gray-100 border-0 bg-white">
@@ -97,26 +79,16 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-12">
-              <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
-              <p className="mt-1 text-sm text-gray-300">Cron Job이 실행되면 자동으로 채워집니다.</p>
-            </div>
+            <EmptyState message="뉴스가 아직 수집되지 않았습니다.">
+              <p className="text-sm text-gray-400">Cron Job이 실행되면 자동으로 채워집니다.</p>
+            </EmptyState>
           )}
         </div>
       </section>
 
       {/* 3. 최신 글 섹션 */}
       <section>
-        <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
-          <h2 className="text-xl font-semibold text-gray-900">최신 글</h2>
-          <Link
-            href="/posts"
-            className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
-          >
-            전체 보기
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
+        <SectionHeader title="최신 글" href="/posts" />
 
         {formattedPosts.length > 0 ? (
           <div className="flex flex-col divide-y divide-gray-100">
@@ -125,9 +97,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-20">
-            <p className="text-gray-400">아직 작성된 글이 없습니다.</p>
-          </div>
+          <EmptyState message="아직 작성된 글이 없습니다." />
         )}
       </section>
     </div>

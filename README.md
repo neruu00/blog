@@ -16,7 +16,7 @@
 | **게시글 CRUD** | 작성/수정/삭제 (Admin), 태그 필터링, 조회수 (쿠키 중복 방지) |
 | **댓글 시스템** | Google 로그인 사용자 전용, 1단 대댓글, 실시간 토스트 알림 |
 | **좋아요** | 낙관적 업데이트 + 디바운싱, 사용자당 게시글당 1회 |
-| **포트폴리오** | 프로필, 기술 스택, 프로젝트 경험 카드 레이아웃 |
+| **기술 뉴스** | RSS 6개 소스 수집 + GPT-4o-mini 한국어 요약, Vercel Cron 일 1회 자동 갱신 |
 | **애널리틱스** | GA4 커스텀 이벤트 (좋아요, 댓글, 조회수) + Vercel Analytics |
 | **UI 시스템** | 커스텀 전역 Modal 및 Toast 알림 |
 
@@ -30,7 +30,7 @@
 | Database | Supabase (PostgreSQL) |
 | Auth | NextAuth v4 (Google OAuth) |
 | Editor | Tiptap + Mermaid.js |
-| State | TanStack Query v5 (서버), Zustand (클라이언트) |
+| State | Server Action + `revalidatePath` (서버), Zustand (클라이언트 UI) |
 | Validation | Zod |
 | Deploy | Vercel |
 | Git Hooks | Husky + lint-staged |
@@ -41,16 +41,16 @@
 src/
 ├── actions/          # Server Actions (post, comment, like, image)
 ├── app/
-│   ├── (blog)/       # 공개 페이지 (홈, 게시글, 포트폴리오)
+│   ├── (blog)/       # 공개 페이지 (홈, 게시글, 기술 뉴스)
 │   ├── (protected)/  # 관리자 전용 (글쓰기, 수정)
-│   └── api/          # NextAuth API 라우트
+│   └── api/          # NextAuth + Cron (뉴스 수집, 고아 이미지 청소)
 ├── components/
 │   ├── editor/       # Tiptap 에디터 + 확장 (CodeBlock, Mermaid)
 │   ├── layout/       # SideNav, MobileHeader, Footer
 │   ├── post/         # PostCard, PostList, CommentSection, LikeButton
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
-├── hooks/            # useIntersectionObserver, useOptimisticLike
-├── lib/              # auth, supabase, logger, analytics
+├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
+├── lib/              # auth, supabase, rss, llm, analytics
 ├── schemas/          # Zod 검증 스키마
 ├── stores/           # Zustand (toast, modal, sidebar, like)
 └── types/            # TypeScript 타입 정의
@@ -85,7 +85,14 @@ GOOGLE_CLIENT_SECRET=...
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=...
 ADMIN_EMAIL=...
+
+# Cron (뉴스 수집 / 고아 이미지 청소)
+CRON_SECRET=...        # 없으면 크론 라우트가 401을 반환한다
+OPENAI_API_KEY=...     # 없으면 뉴스 요약이 전건 실패한다
 ```
+
+> ⚠️ `CRON_SECRET`, `OPENAI_API_KEY`는 Vercel 프로젝트 환경변수에도 등록해야 한다.
+> 로컬에만 있으면 배포된 Cron이 동작하지 않는다.
 
 ### 개발 서버 구동
 
@@ -97,12 +104,11 @@ pnpm dev
 
 프로젝트의 상세 기술 명세는 `.specs/` 디렉토리에서 확인할 수 있습니다:
 
-- [아키텍처](.specs/architecture.md) — 디렉토리 구조, 라우트 그룹, 데이터 흐름
-- [인증](.specs/auth.md) — NextAuth 설정, 권한 체계
-- [데이터베이스](.specs/database.md) — 테이블 스키마, 마이그레이션 SQL
+- [아키텍처](.specs/architecture.md) — 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름
+- [데이터베이스](.specs/database.md) — 테이블·RPC 요약 (SQL 원본은 [supabase/migrations](supabase/migrations))
 - [디자인 시스템](.specs/design-system.md) — 컬러, 타이포그래피, 레이아웃
 - [에디터](.specs/editor.md) — Tiptap 확장, CodeBlock, Mermaid
-- [기능](.specs/features.md) — 게시글, 댓글, 좋아요, 조회수, 포트폴리오
+- [기능](.specs/features.md) — 인증, 게시글, 댓글, 좋아요, 조회수, 기술 뉴스, SEO, 에러 처리
 
 ## 📝 라이선스
 

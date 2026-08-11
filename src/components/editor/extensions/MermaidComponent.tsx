@@ -1,7 +1,7 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Code, Eye, ExternalLink } from 'lucide-react';
 import mermaid from 'mermaid';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 // Mermaid 초기화
 mermaid.initialize({
@@ -17,8 +17,6 @@ export default function MermaidComponent(props: NodeViewProps) {
   const [error, setError] = useState<string | null>(null);
 
   const code = node.attrs.code as string;
-  // 유니크 아이디 생성 (mermaid.render 시 ID 충돌 방지용)
-  const diagramId = useRef(`mermaid-${Math.random().toString(36).substr(2, 9)}`);
 
   // 작성된 코드에 맞춰 공식 문서 URL 동적 반환
   const getDocsUrl = (codeStr: string) => {
@@ -62,8 +60,9 @@ export default function MermaidComponent(props: NodeViewProps) {
           setSvgContent(svg);
           setError(null);
         }
-      } catch (err: any) {
-        if (isMounted) setError(err.message || 'Syntax Error in Mermaid code');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Syntax Error in Mermaid code';
+        if (isMounted) setError(message);
       }
     };
 
@@ -100,7 +99,7 @@ export default function MermaidComponent(props: NodeViewProps) {
           contentEditable={false}
         >
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-gray-600 select-none">
+            <span className="text-sm font-semibold text-gray-500 select-none">
               Diagram (Mermaid)
             </span>
           </div>
@@ -133,7 +132,7 @@ export default function MermaidComponent(props: NodeViewProps) {
                   setIsEditMode(true);
                 }
               }}
-              className="mr-2 rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-600 outline-none hover:border-gray-300 focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
+              className="mr-2 rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-500 outline-none hover:border-gray-300 focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
             >
               <option value="custom">Custom Code</option>
               <option value="flowchart">Flowchart</option>
@@ -167,7 +166,7 @@ export default function MermaidComponent(props: NodeViewProps) {
       <div className={isEditable ? 'p-4' : 'py-4'}>
         {isEditable && isEditMode ? (
           <textarea
-            className="min-h-[150px] w-full resize-y rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-sm text-gray-800 outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
+            className="min-h-[150px] w-full resize-y rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-sm text-gray-900 outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
             value={code}
             onChange={(e) => updateAttributes({ code: e.target.value })}
             onFocus={handleTextareaFocus}

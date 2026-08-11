@@ -32,18 +32,16 @@ export default function ImageComponent({ node }: NodeViewProps) {
 
   return (
     <NodeViewWrapper className="relative my-4 flex justify-center">
-      <div className="relative w-full overflow-hidden rounded-lg border border-gray-100 dark:border-neutral-800">
+      <div className="relative w-full overflow-hidden rounded-lg border border-gray-100">
         {/* 스켈레톤: 업로드 중이거나 아직 이미지가 로드되지 않았을 때 표시 */}
         {(uploading || !isLoaded) && (
-          <div className="flex h-[300px] w-full items-center justify-center bg-gray-50 dark:bg-neutral-900">
+          <div className="flex h-[300px] w-full items-center justify-center bg-gray-50">
             <Skeleton className="h-full w-full" />
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
-                  <span className="text-sm font-medium text-gray-500 dark:text-neutral-400">
-                    이미지 업로드 중...
-                  </span>
+                  <span className="text-sm font-medium text-gray-500">이미지 업로드 중...</span>
                 </div>
               </div>
             )}
@@ -51,7 +49,10 @@ export default function ImageComponent({ node }: NodeViewProps) {
         )}
 
         {/* 실제 이미지: 업로드 중이 아닐 때만 렌더링 (또는 투명하게 미리 렌더링하여 로드 체크) */}
+        {/* 에디터 NodeView는 사용자 업로드 이미지의 원본 비율·크기를 그대로 따라야 하는데,
+            next/image는 width/height 고정 또는 fill(크기 확정된 부모)을 요구해 부적합하다. */}
         {src && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt={alt || ''}

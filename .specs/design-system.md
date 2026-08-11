@@ -23,14 +23,12 @@
 | 호버 포인트 | `orange-600` |
 | 액티브 포인트 | `orange-700` |
 
-### 텍스트/보더 — 기본 팔레트 사용
+### 텍스트 · 보더
+
+텍스트 계층(3단)과 보더 색의 규칙 원본은 `AGENTS.md` 스타일링 섹션이다. 여기서는 상태 색만 추가로 정의한다.
+
 | 용도 | Tailwind 클래스 |
 |---|---|
-| 본문 텍스트 | `gray-900` |
-| 부가 텍스트 | `gray-500` |
-| 비활성 텍스트 | `gray-400` |
-| 기본 보더 | `gray-200` |
-| 연한 보더 | `gray-100` |
 | 에러/삭제 | `red-500` |
 | 성공 | `green-500` |
 
@@ -80,7 +78,7 @@
 
 ---
 
-## 4. 레이아웃
+## 5. 레이아웃
 
 ### 데스크톱 (≥ 1024px)
 
@@ -96,6 +94,7 @@
 │   ─────    │                                         │
 │   Home     │                                         │
 │   Posts    │                                         │
+│   News     │                                         │
 │            │                                         │
 │            │              Footer                     │
 └────────────┴─────────────────────────────────────────┘
@@ -118,13 +117,13 @@
 
 ### 사이드 네비게이션 항목
 - 로고 / 프로필 아바타
-- Home
-- Posts
-- (Admin인 경우) Write 버튼
+- Home / Posts / News (`lib/constants/nav.ts`)
+- 하단: 로그인/프로필 버튼
+- 글쓰기 진입은 사이드 네비가 아니라 `FloatingActionButton`(admin 전용)이 담당
 
 ---
 
-## 5. 컴포넌트 스타일 기준
+## 6. 컴포넌트 스타일 기준
 
 ### 버튼 (Buttons)
 | 종류 | 스타일 | 예시 |
@@ -136,10 +135,10 @@
 | **IconButton** | `p-2 rounded-lg transition-colors` (ghost/danger) | 툴바, 삭제 아이콘 |
 
 ### 카드 (Cards)
-```
-bg-white border border-gray-200 rounded-lg shadow-sm
-hover:shadow-md transition-shadow duration-200
-```
+
+목록 카드(PostCard, NewsCard)는 박스가 아니라 **플랫 리스트 항목**이다. 컨테이너의 `divide-y divide-gray-100`으로 구분하고, hover는 제목 색 전환(`group-hover:text-orange-500`)으로 표현한다. 테두리·그림자·배경 박스를 쓰지 않는다.
+
+그림자는 떠 있거나 고정된 요소에만 쓴다 — sticky 툴바, EditorFooter, FAB, 모달, 드롭다운.
 
 ### 입력 필드 (Inputs)
 ```
@@ -148,11 +147,10 @@ focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none
 ```
 
 ### 태그/뱃지 (TagBadge)
-- **Primary** (`variant="primary"`): `bg-orange-50 text-orange-600` — PostCard 태그
-- **Solid** (`variant="solid"`): `bg-gray-100 text-gray-600` — 게시글 상세 태그
-- **Default** (`variant="default"`): `bg-gray-50 text-gray-500` — 보조
-- **스타일**: `text-xs font-medium px-2.5 py-1 rounded-full`
-- `tag` prop에 `#` 접두사가 없으면 자동으로 붙여 표시
+- **단일 스타일**: `rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600` — 컴팩트 스퀘어, 테두리 없음 (플랫 원칙)
+- 게시글 기술 태그와 뉴스 소스 라벨이 같은 컴포넌트를 쓴다
+- `tag` prop에 `#` 접두사가 없으면 자동으로 붙인다. 뉴스 소스 라벨은 `hash={false}`
+- variant 체계는 제거됨 — 실사용이 primary 한 종뿐이었다
 
 ### 드롭다운 (DropdownMenu)
 - Context 기반 합성 컴포넌트 패턴 (`DropdownMenu` + `DropdownMenu.Item`)
@@ -164,7 +162,7 @@ focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none
 
 ---
 
-## 6. 간격 기준
+## 7. 간격 기준
 
 | 용도 | 값 |
 |---|---|

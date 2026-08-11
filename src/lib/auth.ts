@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 import type { NextAuthOptions } from 'next-auth';
+import type { Adapter } from 'next-auth/adapters';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -20,7 +21,7 @@ export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  }) as any, // next-auth v4와 @auth/supabase-adapter 호환성
+  }) as Adapter, // next-auth v4와 @auth/supabase-adapter 간 타입 시그니처 차이 보정
   session: {
     strategy: 'jwt',
   },
@@ -36,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: token.id || token.sub,
-        isAdmin: session.user?.email === process.env.ADMIN_EMAIL,
+        isAdmin: !!process.env.ADMIN_EMAIL && session.user?.email === process.env.ADMIN_EMAIL,
       },
     }),
   },
@@ -47,34 +48,11 @@ export const authOptions: NextAuthOptions = {
  * 관리자 기준: 로그인한 유저의 이메일이 환경변수 ADMIN_EMAIL과 일치하는지 판별
  */
 export async function isAdmin(): Promise<boolean> {
+  // fail-closed: ADMIN_EMAIL 미설정 시 undefined === undefined 로
+  // 비로그인 방문자까지 admin 이 되는 것을 방지한다.
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) return false;
+
   const session = await getServerSession(authOptions);
-  return session?.user?.email === process.env.ADMIN_EMAIL;
-}
-
-/**
- * 관리자 권한 필수 확인
- * 관리자가 아니면 Error 발생
- */
-export async function requireAdmin(): Promise<void> {
-  if (!(await isAdmin())) {
-    throw new Error('권한이 없습니다.');
-  }
-}
-
-/**
- * 로그인 여부 필수 확인
- * 로그인이 되어있지 않으면 Error 발생
- */
-export async function requireAuth(): Promise<void> {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    throw new Error('로그인이 필요합니다.');
-  }
-}
-
-/**
- * [호환성 유지] 기존 코드에서 사용하던 verifyAdminSession 대체
- */
-export async function verifyAdminSession(): Promise<boolean> {
-  return isAdmin();
+  return session?.user?.email === adminEmail;
 }
