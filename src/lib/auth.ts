@@ -51,31 +51,3 @@ export async function isAdmin(): Promise<boolean> {
   const session = await getServerSession(authOptions);
   return session?.user?.email === process.env.ADMIN_EMAIL;
 }
-
-/**
- * 관리자 권한 필수 확인
- * 관리자가 아니면 Error 발생
- */
-export async function requireAdmin(): Promise<void> {
-  if (!(await isAdmin())) {
-    throw new Error('권한이 없습니다.');
-  }
-}
-
-/**
- * 로그인 여부 필수 확인
- * 로그인이 되어있지 않으면 Error 발생
- */
-export async function requireAuth(): Promise<void> {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    throw new Error('로그인이 필요합니다.');
-  }
-}
-
-/**
- * [호환성 유지] 기존 코드에서 사용하던 verifyAdminSession 대체
- */
-export async function verifyAdminSession(): Promise<boolean> {
-  return isAdmin();
-}

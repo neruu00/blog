@@ -39,7 +39,7 @@ Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, 
 
 ```ts
 export async function createPost(formData: FormData) {
-  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
+  if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
   // ...
 }
 ```
@@ -50,12 +50,10 @@ export async function createPost(formData: FormData) {
 
 업로드된 이미지는 `is_used = false`로 시작하고, 게시글 저장 시 `post_id`와 연결된다. 24시간 넘게 연결되지 않으면 크론이 삭제한다. `actions/post.ts`에는 각 단계 실패에 대한 롤백·강제삭제 경로가 있다. **이미지 관련 코드를 수정할 때 이 경로를 깨뜨리지 말 것.** 깨지면 스토리지에 좀비 파일이 남는다.
 
-### 3. 설치돼 있지만 쓰지 않는 것
+### 3. 들여오지 않는 것
 
-| 대상 | 상태 |
-|---|---|
-| TanStack Query | provider는 마운트돼 있으나 `useQuery`/`useMutation` 호출 0건. **새로 쓰지 말 것** (`PLAN.md` D-001) |
-| `lib/logger.ts` | 사용처 0건. ESLint가 `console.warn`/`console.error`를 허용하므로 그대로 쓰면 된다 |
+- **TanStack Query** — 제거됐다. 서버 상태는 Server Action + `revalidatePath`, 낙관적 업데이트는 `useOptimistic`으로 처리한다. 재도입은 검색 기능 결정(`PLAN.md` D-001, T-402) 이후에만
+- **로거 라이브러리/유틸** — `console.warn`/`console.error`를 그대로 쓴다 (ESLint 허용)
 
 ---
 
@@ -92,7 +90,28 @@ export async function createPost(formData: FormData) {
 
 ## 컴포넌트
 
-**만들기 전에 먼저 찾는다.** `components/ui/`(Modal, Tooltip, TagBadge, IconButton, DropdownMenu, Skeleton)와 `components/common/`(Pagination, ConfirmDialog)에 이미 있는 것을 우선 쓴다. 비슷한 걸 하나 더 만들지 않는다.
+### 공용 컴포넌트를 먼저 쓴다
+
+**UI를 만들기 전에 아래 인벤토리를 먼저 확인한다.** 여기 있는 것과 비슷한 걸 페이지 안에 인라인으로 다시 만들지 않는다 — 그게 이 표가 존재하는 이유다.
+
+| 컴포넌트 | 위치 | 용도 |
+|---|---|---|
+| `EmptyState` | `common/` | 빈 목록 플레이스홀더 (점선 박스 + 안내 문구, 액션은 children) |
+| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. **h1 스타일의 단일 출처** |
+| `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
+| `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
+| `Pagination` | `common/` | 페이지네이션 |
+| `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
+| `FilterChip` | `ui/` | 필터 탭 알약 (활성 = 주황 배경, 테두리 없음) |
+| `TagBadge` | `ui/` | 전역 공용 뱃지 — 게시글 태그(`#` 자동)와 뉴스 소스 라벨(`hash={false}`)이 공유. 스타일은 하나 |
+| `IconButton` | `ui/` | 아이콘 버튼 (variant: ghost/danger) |
+| `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기) |
+| `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
+| `Tooltip` / `Skeleton` | `ui/` | 툴팁 / 로딩 스켈레톤 |
+
+**승격 규칙**: 같은 구조를 **두 번째로** 작성하게 되는 순간이 공용화 시점이다. 컴포넌트로 추출해 `common/`(조합형) 또는 `ui/`(프리미티브)에 넣고, **이 표에 한 줄 추가한다.** 표에 없는 공용 컴포넌트는 다음 작업자에게 존재하지 않는 것과 같다.
+
+과거 사례: 빈 상태 박스가 4개 파일에 5번, 페이지 h1이 3번, 필터 칩이 2페이지에 각자 다른 스타일로 복제돼 있었다 — 두 번째 복제 때 추출했으면 없었을 드리프트다.
 
 **서버 컴포넌트가 기본이다.** `'use client'`는 훅·이벤트 핸들러·브라우저 API·Zustand 구독이 필요한 **최소 리프**에만 붙인다. 페이지 전체를 클라이언트로 만들지 않는다.
 
@@ -166,8 +185,8 @@ type ActionResult<T = void> =
 
 - Tailwind **기본 팔레트를 우선** 사용한다. 포인트 컬러는 `orange-500`
 - 기본 팔레트에 없거나 시맨틱 이름이 필요할 때만 `globals.css`의 `@theme inline`에 토큰을 추가한다 (`surface`, `code-bg` 등)
-- **임의 hex를 새로 쓰지 않는다** (`bg-[#eee]`). 필요한 색이 팔레트에 없다면 정말 필요한지부터 의심하고, 필요하면 `@theme`에 토큰으로 추가한다
-  - 현재 예외: `CodeBlockComponent.tsx`의 Mac 창 색상, `EditorFooter.tsx`의 그림자. 해당 파일을 손대게 되면 토큰으로 옮긴다
+- **임의 hex를 새로 쓰지 않는다** (`bg-[#eee]`). 필요한 색이 팔레트에 없다면 정말 필요한지부터 의심하고, 필요하면 `@theme`에 토큰으로 추가한다 (Mac 코드블록 색·에디터 푸터 그림자는 이미 토큰이다: `code-block*`, `mac-*`, `shadow-editor-footer`)
+  - 현재 예외: `EyePoster.tsx`의 `text-[8px]` 하나 — 8px 유틸이 없고 장식용 마이크로 텍스트라 유지
 
 ### 텍스트 계층
 

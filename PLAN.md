@@ -81,7 +81,7 @@
 
 - [x] **T-201** 조회수가 항상 `+1`로 표시된다(`app/(blog)/posts/[id]/page.tsx:141`). 이미 본 글이라 카운트가 오르지 않는 경우에도 화면엔 +1이 나온다.
 - [x] **T-202** `error.tsx` / `not-found.tsx` / `loading.tsx` 부재. 홈에서 Supabase 에러 시 `throw new Error`(`app/(blog)/page.tsx:31`)가 Next 기본 에러 화면으로 직행한다.
-- [ ] **T-203** 캐싱 전략 부재. 홈·목록·상세가 매 요청 DB를 직격한다. `revalidate` 또는 `unstable_cache` 미사용. 나아가 `revalidatePath`(경로 전체 무효화) 대신 `revalidateTag` 기반의 세분화된 무효화로 전환하면 T-204의 과잉 재생성도 함께 줄어든다.
+- [ ] **T-203** 캐싱 전략 — **일부 완료**: 홈·`/news/[id]`는 `force-static` + 5분 ISR 적용 (supabase-js fetch가 캐시 옵션 없이 나가 `revalidate`만으로는 동적에 남는다 — force-static 필수). 잔여: `/news`·`/posts`는 `searchParams`, `/posts/[id]`는 세션 의존으로 동적 유지 중(각 파일에 사유 주석). 필터의 경로 세그먼트화 또는 관리자 UI의 클라이언트 세션 전환 시 ISR 확대 가능. `revalidateTag` 세분화도 미착수.
 - [ ] **T-204** 댓글 작성 시 `revalidatePath`로 페이지 RSC 트리 전체가 재생성된다(`actions/comment.ts:89`). 댓글 하나에 `getPost`+`getLikeStatus`+`getComments`+`verifyAdminSession`이 모두 재실행된다. → `useOptimistic` 적용 (D-001 참조).
 - [ ] **T-205** 폼 상태를 수동 관리 중이다 — `hooks/usePostSubmit.tsx`, `stores/useEditorStore.ts`의 `isSubmitting` 등. React 19 `useActionState` + `useFormStatus`로 선언적 리팩토링하면 보일러플레이트가 줄고 동시성 안전성이 확보된다.
 - [ ] **T-206** **`/posts/[id]` 번들이 First Load JS 500 kB로 전 라우트 중 최대다** (빌드 실측, 페이지 자체 210 kB). Tiptap 런타임 전체가 읽기 전용 페이지에 실린다. 작성/수정 시 `@tiptap/html`의 `generateHTML`로 정적 HTML을 사전 생성해 별도 컬럼에 저장하고, 상세 페이지는 에디터 라이브러리 없이 렌더한다. 초기 로드·SEO 모두 개선된다.
@@ -94,9 +94,9 @@
 한 번에 묶으면 약 `-300`줄.
 
 - [x] **T-301** `.agent/rules/state-management.md` §3(TanStack Query) 정리 — D-001 결정 반영. **T-302보다 먼저 처리한다.**
-- [ ] **T-302** TanStack Query 제거 검토 — provider + devtools가 마운트돼 있으나 `useQuery`/`useMutation` 호출 0건. **`T-402`(검색) 로드맵 확정 후 결정.** 검색을 넣을 거면 존치, 아니면 제거.
+- [x] **T-302** TanStack Query 제거 완료 (2026-08-11 사용자 승인) — provider, devtools, eslint 플러그인, 패키지 3개. 검색(T-402) 도입 시 `pnpm add` + provider 재마운트로 복구 가능.
 - [x] **T-303** 미사용 의존성 제거 — `@google/generative-ai`(openai로 대체됨), `framer-motion`. 둘 다 import 0건.
-- [ ] **T-304** `lib/logger.ts` 94줄 미사용. 전 코드가 `console.error`를 쓴다. 문서 주석은 "이 모듈로만 로그 출력"이라 적혀 있어 의도와 현실이 불일치한다. 채택하거나 삭제하거나 택일.
+- [x] **T-304** `lib/logger.ts` 삭제 완료 — "삭제" 쪽으로 결정. `console.warn`/`console.error` 직접 사용이 컨벤션 (ESLint 허용).
 - [x] **T-305** `hooks/useOptimisticLike.ts` 빈 스텁("Phase 4에서 구현 예정"), `stores/useLikeStore.ts` 사용처 0.
 - [x] **T-306** `TAG_DICTIONARY` 중복 정의 — `lib/constants/tags.ts`와 `components/editor/TagInputField.tsx:6`. 한쪽만 고치면 태그 입력과 필터가 어긋난다.
 - [x] **T-307** README 드리프트 정리 — 포트폴리오 제거, 기술 뉴스 추가, `CRON_SECRET`/`OPENAI_API_KEY` 환경변수 문서화.
@@ -121,6 +121,6 @@
 
 ## ❓ 미해결 질문
 
-1. **검색(T-402)을 로드맵에 넣는가?** → T-302(TanStack Query 제거 여부)가 여기에 종속된다.
+1. **검색(T-402)을 로드맵에 넣는가?** → TanStack Query는 제거됐다(T-302). 검색 도입 시 재설치를 검토한다.
 2. **Vercel 플랜은?** `api/cron/fetch-news/route.ts`의 `maxDuration = 300`은 주석대로 Pro 기준이다. Hobby라면 실제 상한 확인이 필요하다.
-3. **`lib/logger.ts`를 채택할 것인가 삭제할 것인가?** (T-304)
+3. ~~`lib/logger.ts` 채택 vs 삭제~~ — 삭제로 해소 (T-304)

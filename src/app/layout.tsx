@@ -1,6 +1,6 @@
 /**
  * @file layout.tsx
- * @description 루트 레이아웃. Providers(TanStack Query), 폰트, 분석 도구를 설정한다.
+ * @description 루트 레이아웃. AuthProvider, 폰트, 분석 도구를 설정한다.
  *              실제 페이지 레이아웃(SideNav, Header 등)은 라우트 그룹별 layout에서 담당.
  */
 
@@ -11,7 +11,6 @@ import Script from 'next/script';
 
 import Modal from '@/components/ui/Modal';
 import ToastContainer from '@/components/ui/ToastContainer';
-import TanstackQueryLayout from '@/layouts/TanstackQueryLayout';
 import AuthProvider from '@/providers/AuthProvider';
 
 import type { Metadata } from 'next';
@@ -43,7 +42,7 @@ export default function RootLayout({
         className={`${geistMono.variable} bg-surface min-h-screen font-sans text-gray-900 antialiased`}
       >
         <AuthProvider>
-          <TanstackQueryLayout>{children}</TanstackQueryLayout>
+          {children}
           <ToastContainer />
           <Modal />
         </AuthProvider>

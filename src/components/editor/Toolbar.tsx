@@ -23,17 +23,6 @@ import { useState } from 'react';
 import { uploadImage } from '@/actions/image';
 import { convertToWebP } from '@/lib/image-converter';
 
-// https://github.com/wooorm/lowlight
-const LANGUAGES = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'java', label: 'Java' },
-  { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
-  { value: 'json', label: 'JSON' },
-  { value: 'bash', label: 'Bash/Terminal' },
-];
-
 interface ToolbarProps {
   editor: Editor | null;
 }
@@ -300,28 +289,28 @@ export default function Toolbar({ editor }: ToolbarProps) {
                   <button
                     type="button"
                     onClick={() => editor.chain().focus().addRowAfter().run()}
-                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
                   >
                     아래에 행 추가
                   </button>
                   <button
                     type="button"
                     onClick={() => editor.chain().focus().addColumnAfter().run()}
-                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
                   >
                     오른쪽에 열 추가
                   </button>
                   <button
                     type="button"
                     onClick={() => editor.chain().focus().deleteRow().run()}
-                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
                   >
                     행 삭제
                   </button>
                   <button
                     type="button"
                     onClick={() => editor.chain().focus().deleteColumn().run()}
-                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+                    className="flex w-full items-center px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
                   >
                     열 삭제
                   </button>
@@ -345,7 +334,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <button
         type="button"
         onClick={handleImageUpload}
-        className="rounded p-1.5 text-gray-500 hover:bg-gray-200 hover:text-orange-500 dark:text-neutral-400 dark:hover:bg-neutral-800"
+        className="rounded p-1.5 text-gray-500 hover:bg-gray-200 hover:text-orange-500"
         title="Upload Image"
       >
         <ImageIcon className="h-5 w-5" />

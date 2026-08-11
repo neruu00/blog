@@ -14,12 +14,6 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.105.1
-      '@tanstack/react-query':
-        specifier: ^5.90.19
-        version: 5.100.9(react@19.2.3)
-      '@tanstack/react-query-devtools':
-        specifier: ^5.91.2
-        version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.3))(react@19.2.3)
       '@tiptap/core':
         specifier: 3.22.5
         version: 3.22.5(@tiptap/pm@3.22.5)
@@ -111,9 +105,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@4.2.4)
-      '@tanstack/eslint-plugin-query':
-        specifier: ^5.91.3
-        version: 5.100.9(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       '@types/node':
         specifier: ^20
         version: 20.19.39
@@ -670,32 +661,6 @@ packages:
     resolution: {integrity: sha512-w31dd8HOx3k9vPtcQh5QHP9GwKcgbMp87j58qi6xgiBnFFtKEAgCWnDw4qUT8aHwkCp8bKvb/KGKWWHedP0AAg==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
-
-  '@tanstack/eslint-plugin-query@5.100.9':
-    resolution: {integrity: sha512-3jZwyxAZWSBqI7EXEdw+rktFfX1opMpqn9Lruwz52DEzQdi7kbKnqixjhR3dJ1xFfG05YxV9vsqXGxXqcLAmjA==}
-    peerDependencies:
-      eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
-      typescript: ^5.4.0 || ^6.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@tanstack/query-core@5.100.9':
-    resolution: {integrity: sha512-SJSFw1S8+kQ0+knv/XGfrbocWoAlT7vDKsSImtLx3ZPQmEcR46hkDjLSvynSy25N8Ms4tIEini1FuBd5k7IscQ==}
-
-  '@tanstack/query-devtools@5.100.9':
-    resolution: {integrity: sha512-gqiptrTIhbK2PuCaPRHmWXfJG1NGYVFpAr0HqogEqiSBNB5xDz6fmesQt7w4WgMOqOQPnPHJ3ZDMuhDaXvNO8g==}
-
-  '@tanstack/react-query-devtools@5.100.9':
-    resolution: {integrity: sha512-mM3slaVGXJmz+pOLgXdANj75ikgQCyudyl3kmFvm6brI1JyVeY/+IeD17uDHIvZrD8hfoO2sdZ54RFsHdYAuhA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.100.9
-      react: ^18 || ^19
-
-  '@tanstack/react-query@5.100.9':
-    resolution: {integrity: sha512-Oa44XkaI3kCNN6ME0KByU3xT3SEUNOMfZpHxL6+wFoTm+OeUFYHKdeYVe0aOXlRDm/f15sgLwEt2HDorIdW8+A==}
-    peerDependencies:
-      react: ^18 || ^19
 
   '@tiptap/core@3.22.5':
     resolution: {integrity: sha512-L1lhWz6ujGny8LduTJ7MBWYhzigwOvfUJUrJ7IzOJSuy3+OAzisdGDD1GV7LEO/hU0Hr2Mkm1wajRIHExvS9HQ==}
@@ -3791,30 +3756,6 @@ snapshots:
     dependencies:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.2.4
-
-  '@tanstack/eslint-plugin-query@5.100.9(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)':
-    dependencies:
-      '@typescript-eslint/utils': 8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
-      eslint: 9.39.4(jiti@2.6.1)
-    optionalDependencies:
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-
-  '@tanstack/query-core@5.100.9': {}
-
-  '@tanstack/query-devtools@5.100.9': {}
-
-  '@tanstack/react-query-devtools@5.100.9(@tanstack/react-query@5.100.9(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      '@tanstack/query-devtools': 5.100.9
-      '@tanstack/react-query': 5.100.9(react@19.2.3)
-      react: 19.2.3
-
-  '@tanstack/react-query@5.100.9(react@19.2.3)':
-    dependencies:
-      '@tanstack/query-core': 5.100.9
-      react: 19.2.3
 
   '@tiptap/core@3.22.5(@tiptap/pm@3.22.5)':
     dependencies:

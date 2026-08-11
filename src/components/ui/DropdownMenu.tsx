@@ -44,7 +44,7 @@ function Item({ children, onClick, icon, className = '' }: ItemProps) {
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-600 ${className}`}
+      className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-900 transition-colors hover:bg-orange-50 hover:text-orange-600 ${className}`}
     >
       {icon && <span className="h-4 w-4 flex-shrink-0">{icon}</span>}
       {children}

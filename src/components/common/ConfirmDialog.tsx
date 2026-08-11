@@ -21,10 +21,10 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <div className="flex flex-col">
-      <h3 id="modal-title" className="text-xl font-bold text-gray-900 dark:text-white">
+      <h3 id="modal-title" className="text-xl font-bold text-gray-900">
         {title}
       </h3>
-      <p id="modal-description" className="mt-2 text-gray-600 dark:text-neutral-400">
+      <p id="modal-description" className="mt-2 text-gray-500">
         {message}
       </p>
 
@@ -32,7 +32,7 @@ export default function ConfirmDialog({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+          className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100"
         >
           {cancelText}
         </button>

@@ -4,16 +4,23 @@
  *              태그(카테고리) 필터링과 전체 게시글 리스트를 표시한다.
  */
 
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import PageHeader from '@/components/common/PageHeader';
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
-import { verifyAdminSession } from '@/lib/auth';
+import FilterChip from '@/components/ui/FilterChip';
+import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
-import type { PostCategory } from '@/types/post.type';
+import { mapPostRow } from '@/lib/utils/mappers';
 
+/**
+ * 이 페이지는 동적 렌더링으로 남긴다:
+ * - 태그 필터·페이지네이션이 `searchParams`를 읽는다 (force-static 시 빈 객체가 됨)
+ * - `isAdmin()`이 세션 쿠키를 읽는다
+ * ISR 전환은 PLAN.md T-203 참조 (관리자 UI를 클라이언트 세션으로 옮기면 가능)
+ */
 export default async function PostsPage({
   searchParams,
 }: {
@@ -67,51 +74,31 @@ export default async function PostsPage({
     redirect(`/posts?${params.toString()}`);
   }
 
-  const isAdmin = await verifyAdminSession();
+  const isAdmin = await checkIsAdmin();
 
-  const formattedPosts = (posts || []).map((post) => ({
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    createdAt: new Date(post.created_at),
-    updatedAt: new Date(post.updated_at || post.created_at),
-    author: post.author || 'admin',
-    tags: post.tags || [],
-    category: (post.category || 'tech') as PostCategory,
-    viewCount: post.view_count || 0,
-    likeCount: post.like_count || 0,
-  }));
+  const formattedPosts = (posts || []).map(mapPostRow);
 
   const categories = ['All', ...TAG_DICTIONARY.map((t) => t.name)];
 
   return (
     <div className="mx-auto max-w-3xl">
       {/* 헤더 */}
-      <header className="mb-10">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900">
-          {currentTag === 'All' ? '전체 글' : currentTag}
-        </h1>
-        <p className="text-sm text-gray-400">총 {totalPosts}개의 글</p>
-      </header>
+      <PageHeader
+        title={currentTag === 'All' ? '전체 글' : currentTag}
+        description={`총 ${totalPosts}개의 글`}
+      />
 
       {/* 태그 필터 */}
       <nav className="mb-10 flex flex-wrap gap-2">
-        {categories.map((tag) => {
-          const isActive = currentTag === tag;
-          return (
-            <Link
-              key={tag}
-              href={tag === 'All' ? '/posts' : `/posts?tag=${tag}`}
-              className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'border-orange-500 bg-orange-500 text-white'
-                  : 'border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-500'
-              }`}
-            >
-              {tag}
-            </Link>
-          );
-        })}
+        {categories.map((tag) => (
+          <FilterChip
+            key={tag}
+            href={tag === 'All' ? '/posts' : `/posts?tag=${tag}`}
+            active={currentTag === tag}
+          >
+            {tag}
+          </FilterChip>
+        ))}
       </nav>
 
       {/* 게시글 리스트 */}

@@ -33,7 +33,7 @@ export default function BlogError({
         {error.digest && (
           <>
             <br />
-            <span className="text-xs text-gray-300">오류 코드: {error.digest}</span>
+            <span className="text-xs text-gray-400">오류 코드: {error.digest}</span>
           </>
         )}
       </p>
@@ -48,7 +48,7 @@ export default function BlogError({
         </button>
         <Link
           href="/"
-          className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-orange-300 hover:text-orange-500"
+          className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:border-orange-300 hover:text-orange-500"
         >
           홈으로
         </Link>

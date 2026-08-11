@@ -29,7 +29,7 @@ export default function EditorFooter({
   return (
     <footer
       data-editor-footer
-      className="editor-footer fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-between border-t border-gray-200 bg-white/95 px-6 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-sm"
+      className="editor-footer shadow-editor-footer fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-between border-t border-gray-200 bg-white/95 px-6 backdrop-blur-sm"
     >
       {/* 좌측: 뒤로가기 */}
       <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export default function EditorFooter({
           type="button"
           onClick={onSaveDraft}
           disabled={isSubmitting}
-          className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           title="임시저장"
         >
           <Save className="h-4 w-4" />

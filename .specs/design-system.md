@@ -146,11 +146,10 @@ focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none
 ```
 
 ### 태그/뱃지 (TagBadge)
-- **Primary** (`variant="primary"`): `bg-orange-50 text-orange-600` — PostCard 태그
-- **Solid** (`variant="solid"`): `bg-gray-100 text-gray-600` — 게시글 상세 태그
-- **Default** (`variant="default"`): `bg-gray-50 text-gray-500` — 보조
-- **스타일**: `text-xs font-medium px-2.5 py-1 rounded-full`
-- `tag` prop에 `#` 접두사가 없으면 자동으로 붙여 표시
+- **단일 스타일**: `rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600` — 컴팩트 스퀘어, 테두리 없음 (플랫 원칙)
+- 게시글 기술 태그와 뉴스 소스 라벨이 같은 컴포넌트를 쓴다
+- `tag` prop에 `#` 접두사가 없으면 자동으로 붙인다. 뉴스 소스 라벨은 `hash={false}`
+- variant 체계는 제거됨 — 실사용이 primary 한 종뿐이었다
 
 ### 드롭다운 (DropdownMenu)
 - Context 기반 합성 컴포넌트 패턴 (`DropdownMenu` + `DropdownMenu.Item`)

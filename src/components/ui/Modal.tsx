@@ -74,7 +74,7 @@ export default function Modal() {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
         tabIndex={-1}
-        className="relative z-10 w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl focus:outline-none dark:border-neutral-800 dark:bg-neutral-900"
+        className="relative z-10 w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl focus:outline-none"
       >
         {content}
       </div>
