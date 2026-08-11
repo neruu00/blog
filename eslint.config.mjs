@@ -28,15 +28,10 @@ const eslintConfig = [
     },
     rules: {
       eqeqeq: ['error', 'always'], // ===, !== force
-      'no-unused-vars': [
-        'warn',
-        {
-          args: 'after-used',
-          ignoreRestSiblings: true,
-          varsIgnorePattern: '^_',
-          argsIgnorePattern: '^_',
-        },
-      ], // unused vars warning
+      // base no-unused-vars 는 TS 인터페이스/타입 시그니처의 파라미터 이름을
+      // 미사용으로 오탐한다. 미사용 코드 검출은 tsconfig 의
+      // noUnusedLocals / noUnusedParameters (tsc, pnpm verify에 포함)가 담당한다.
+      'no-unused-vars': 'off',
       'prefer-const': ['error', { destructuring: 'all' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',

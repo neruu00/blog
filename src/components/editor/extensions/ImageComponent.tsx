@@ -51,7 +51,10 @@ export default function ImageComponent({ node }: NodeViewProps) {
         )}
 
         {/* 실제 이미지: 업로드 중이 아닐 때만 렌더링 (또는 투명하게 미리 렌더링하여 로드 체크) */}
+        {/* 에디터 NodeView는 사용자 업로드 이미지의 원본 비율·크기를 그대로 따라야 하는데,
+            next/image는 width/height 고정 또는 fill(크기 확정된 부모)을 요구해 부적합하다. */}
         {src && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt={alt || ''}

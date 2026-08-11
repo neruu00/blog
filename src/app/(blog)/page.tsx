@@ -13,7 +13,7 @@ import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
-import { type TechNews, type TechNewsSource } from '@/types/tech-news.type';
+import { type TechNewsSource } from '@/types/tech-news.type';
 
 export default async function HomePage() {
   const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =

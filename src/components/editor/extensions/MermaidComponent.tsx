@@ -1,7 +1,7 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Code, Eye, ExternalLink } from 'lucide-react';
 import mermaid from 'mermaid';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 // Mermaid 초기화
 mermaid.initialize({
@@ -17,8 +17,6 @@ export default function MermaidComponent(props: NodeViewProps) {
   const [error, setError] = useState<string | null>(null);
 
   const code = node.attrs.code as string;
-  // 유니크 아이디 생성 (mermaid.render 시 ID 충돌 방지용)
-  const diagramId = useRef(`mermaid-${Math.random().toString(36).substr(2, 9)}`);
 
   // 작성된 코드에 맞춰 공식 문서 URL 동적 반환
   const getDocsUrl = (codeStr: string) => {

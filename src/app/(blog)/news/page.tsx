@@ -9,11 +9,7 @@ import Link from 'next/link';
 
 import NewsCard from '@/components/news/NewsCard';
 import { supabase } from '@/lib/supabase';
-import {
-  TECH_NEWS_SOURCE_LABELS,
-  type TechNews,
-  type TechNewsSource,
-} from '@/types/tech-news.type';
+import { TECH_NEWS_SOURCE_LABELS, type TechNewsSource } from '@/types/tech-news.type';
 
 export const metadata = {
   title: '기술 뉴스 | neruu00.log',

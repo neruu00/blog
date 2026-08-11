@@ -23,17 +23,6 @@ import { useState } from 'react';
 import { uploadImage } from '@/actions/image';
 import { convertToWebP } from '@/lib/image-converter';
 
-// https://github.com/wooorm/lowlight
-const LANGUAGES = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'java', label: 'Java' },
-  { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
-  { value: 'json', label: 'JSON' },
-  { value: 'bash', label: 'Bash/Terminal' },
-];
-
 interface ToolbarProps {
   editor: Editor | null;
 }
