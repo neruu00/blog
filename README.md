@@ -30,7 +30,7 @@
 | Database | Supabase (PostgreSQL) |
 | Auth | NextAuth v4 (Google OAuth) |
 | Editor | Tiptap + Mermaid.js |
-| State | TanStack Query v5 (서버), Zustand (클라이언트) |
+| State | Server Action + `revalidatePath` (서버), Zustand (클라이언트 UI) |
 | Validation | Zod |
 | Deploy | Vercel |
 | Git Hooks | Husky + lint-staged |
@@ -49,7 +49,7 @@ src/
 │   ├── layout/       # SideNav, MobileHeader, Footer
 │   ├── post/         # PostCard, PostList, CommentSection, LikeButton
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
-├── hooks/            # useIntersectionObserver, useOptimisticLike
+├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
 ├── lib/              # auth, supabase, logger, analytics
 ├── schemas/          # Zod 검증 스키마
 ├── stores/           # Zustand (toast, modal, sidebar, like)
@@ -109,7 +109,7 @@ pnpm dev
 - [데이터베이스](.specs/database.md) — 테이블 스키마, 마이그레이션 SQL
 - [디자인 시스템](.specs/design-system.md) — 컬러, 타이포그래피, 레이아웃
 - [에디터](.specs/editor.md) — Tiptap 확장, CodeBlock, Mermaid
-- [기능](.specs/features.md) — 게시글, 댓글, 좋아요, 조회수, 포트폴리오
+- [기능](.specs/features.md) — 게시글, 댓글, 좋아요, 조회수, 기술 뉴스, SEO, 에러 처리
 
 ## 📝 라이선스
 

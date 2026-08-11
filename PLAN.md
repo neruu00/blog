@@ -89,7 +89,7 @@
 - [x] **T-305** `hooks/useOptimisticLike.ts` 빈 스텁("Phase 4에서 구현 예정"), `stores/useLikeStore.ts` 사용처 0.
 - [x] **T-306** `TAG_DICTIONARY` 중복 정의 — `lib/constants/tags.ts`와 `components/editor/TagInputField.tsx:6`. 한쪽만 고치면 태그 입력과 필터가 어긋난다.
 - [x] **T-307** README 드리프트 정리 — 포트폴리오 제거, 기술 뉴스 추가, `CRON_SECRET`/`OPENAI_API_KEY` 환경변수 문서화.
-- [ ] **T-308** `.specs/database.md`에 `tech_news` 테이블이 없다. `original_url`의 UNIQUE 제약 여부가 불명확하다.
+- [x] **T-308** `.specs/database.md`에 `tech_news` 스키마 + 마이그레이션 SQL 추가. **`original_url` UNIQUE 인덱스는 아직 실제 DB에 적용되지 않았다** — SQL만 문서화된 상태.
 - [ ] **T-310** 디자인 시스템화 — `Modal`, `ToastContainer`는 분리됐으나 버튼·인풋 다수가 인라인 스타일이다. `cn()`(`lib/utils.ts`)이 이미 있으므로 CVA를 얹어 `Button`/`Input`/`Badge`를 `components/ui/`로 원시화한다.
 - [ ] **T-309** 테스트 0건. `.harness/eval/runner.js`는 tsc/lint/build만 검사해 로직 회귀를 못 잡는다. 최소한 `LikeButton` 동기화와 이미지 롤백(`actions/post.ts:169-203`)은 커버가 필요하다.
 
