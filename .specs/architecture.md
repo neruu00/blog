@@ -11,8 +11,9 @@
 | DB | Supabase (PostgreSQL) |
 | Auth | next-auth v4 (Google OAuth) |
 | Editor | Tiptap + Mermaid |
-| Server State | TanStack Query v5 |
+| Server State | Server Action + `revalidatePath` (TanStack Query 미사용 — `PLAN.md` D-001) |
 | Client State | Zustand |
+| 뉴스 수집 | rss-parser + OpenAI gpt-4o-mini (Vercel Cron) |
 | Validation | Zod |
 | Analytics | GA4 + Vercel Analytics |
 | Icons | Lucide React |
@@ -34,23 +35,33 @@ src/
 ├── app/
 │   ├── (blog)/           # 공개 페이지 그룹 (사이드 네비 레이아웃)
 │   │   ├── layout.tsx    # SideNav + Main 영역
+│   │   ├── error.tsx     # 그룹 에러 바운더리 (reset 제공)
+│   │   ├── loading.tsx   # 그룹 로딩 스켈레톤
 │   │   ├── page.tsx      # 홈
 │   │   ├── posts/
 │   │   │   ├── page.tsx          # 게시글 목록
 │   │   │   └── [id]/page.tsx     # 게시글 상세
-
-│   │       └── page.tsx          # 포트폴리오
+│   │   └── news/
+│   │       ├── page.tsx          # 기술 뉴스 목록 (소스별 필터)
+│   │       └── [id]/page.tsx     # 뉴스 상세 (마크다운 요약)
 │   │
 │   ├── (protected)/      # 관리자 전용 (인증 guard)
 │   │   ├── layout.tsx    # requireAdmin guard
 │   │   ├── write/page.tsx
 │   │   └── edit/[id]/
+│   │       ├── page.tsx
 │   │       └── _components/EditPostClient.tsx
 │   │
 │   ├── api/
 │   │   ├── auth/[...nextauth]/route.ts  # NextAuth 핸들러
-│   │   └── cron/cleanup-images/route.ts
+│   │   └── cron/
+│   │       ├── cleanup-images/route.ts  # 고아 이미지 청소 (일 1회)
+│   │       └── fetch-news/route.ts      # RSS 수집 + LLM 요약 (일 1회)
 │   │
+│   ├── feed.xml/route.ts # 자체 RSS 2.0 피드 (최신 20건, 1h ISR)
+│   ├── sitemap.ts        # 사이트맵 (정적 + 게시글 + 뉴스, 1h ISR)
+│   ├── robots.ts         # 크롤러 규칙
+│   ├── not-found.tsx     # 전역 404
 │   ├── layout.tsx        # Root layout (Providers, Font, GA)
 │   └── globals.css       # Tailwind custom theme 정의
 │
@@ -80,38 +91,56 @@ src/
 │   │       ├── CustomTable.ts           # 테이블 관리 Extension
 │   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
 │   │       └── MermaidComponent.tsx     # Mermaid React NodeView
+│   ├── news/             # 기술 뉴스 도메인
+│   │       └── NewsCard.tsx
 │   ├── layout/           # 레이아웃 컴포넌트
 │   │       ├── SideNav.tsx
 │   │       ├── MobileHeader.tsx
 │   │       ├── NavLinks.tsx
-│   │       ├── AuthButtons.tsx
-│   │       └── Footer.tsx
+│   │       ├── Footer.tsx
+│   │       ├── BlogOwnerProfile.tsx
+│   │       ├── ProfileButton.tsx
+│   │       ├── LoginButton.tsx
+│   │       ├── FloatingActionButton.tsx  # 권한별 액션 (글쓰기 / 이슈제보)
+│   │       ├── EyePoster.tsx             # 커서 트래킹 포스터
+│   │       └── InteractivePoster.tsx
+│   ├── common/           # 도메인 무관 공통 컴포넌트
+│   │       ├── ConfirmDialog.tsx
+│   │       └── Pagination.tsx
 │   ├── ui/               # 공통 UI 프리미티브
 │   │       ├── TagBadge.tsx        # 태그 뱃지 (variant: primary/solid/default)
 │   │       ├── IconButton.tsx      # 아이콘 버튼
-│   │       └── DropdownMenu.tsx    # 드롭다운 메뉴 (Context 기반, ESC/외부클릭 닫기)
+│   │       ├── DropdownMenu.tsx    # 드롭다운 메뉴 (Context 기반, ESC/외부클릭 닫기)
+│   │       ├── Modal.tsx           # 전역 모달 (useModalStore 연동)
+│   │       ├── ToastContainer.tsx  # 전역 토스트 (useToastStore 연동)
+│   │       ├── Tooltip.tsx
+│   │       └── Skeleton.tsx
 │
 ├── hooks/
-│   ├── useOptimisticLike.ts
 │   ├── useActiveNav.ts          # isActive 판별 훅 (SideNav/MobileHeader 공유)
 │   ├── useDraft.tsx             # 임시저장 로드/저장/자동저장 훅
 │   ├── usePostSubmit.tsx        # 게시글 제출 + 삭제 로직 훅
 │   └── useIntersectionObserver.ts  # TOC 활성 항목 감지 (MutationObserver 기반)
 │
 ├── layouts/
-│   └── TanstackQueryLayout.tsx  # TanStack Query Provider
+│   └── TanstackQueryLayout.tsx  # TanStack Query Provider (미사용 — PLAN.md T-302)
 │
 ├── lib/
 │   ├── auth.ts           # NextAuth 설정 + 헬퍼
-│   ├── supabase.ts       # Supabase 클라이언트
-│   ├── logger.ts         # 로깅 유틸리티
+│   ├── supabase.ts       # Supabase 클라이언트 (service_role)
+│   ├── logger.ts         # 로깅 유틸리티 (미사용 — PLAN.md T-304)
 │   ├── export.ts         # 게시글 내보내기 유틸 (Markdown)
+│   ├── rss.ts            # RSS 피드 소스 정의 + 파싱
+│   ├── llm.ts            # OpenAI 요약 (재시도 + 지수 백오프)
+│   ├── image-converter.ts # 클라이언트 WebP 변환
+│   ├── utils.ts          # cn() — clsx + tailwind-merge
 │   ├── constants/
 │   │       ├── tags.ts       # 태그 및 페이지네이션 상수
-│   │       └── nav.ts        # 네비게이션 메뉴 상수
+│   │       ├── nav.ts        # 네비게이션 메뉴 상수
+│   │       └── site.ts       # SITE_URL 등 (sitemap/robots/feed 공유)
 │   └── utils/
 │       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
-│       └── date.ts       # 날짜 포맷팅
+│       ├── date.ts       # 날짜 포맷팅
 │       └── analytics.ts  # GA4 분석 유틸리티
 │
 ├── providers/
@@ -122,18 +151,20 @@ src/
 │   └── comment.schema.ts
 │
 ├── stores/               # Zustand 스토어
-│   ├── useLikeStore.ts
 │   ├── useModalStore.ts
 │   ├── useSidebarStore.ts
 │   ├── useToastStore.ts
 │   └── useEditorStore.ts
 │
-└── types/
-    ├── post.type.ts
-    ├── comment.type.ts
-    ├── user.type.ts
-    ├── action.type.ts    # ActionResult<T> 통합 반환 타입
-    └── next-auth.d.ts    # NextAuth 타입 확장
+├── types/
+│   ├── post.type.ts
+│   ├── comment.type.ts
+│   ├── user.type.ts
+│   ├── tech-news.type.ts # 뉴스 타입 + 소스 라벨
+│   ├── action.type.ts    # ActionResult<T> 통합 반환 타입
+│   └── next-auth.d.ts    # NextAuth 타입 확장
+│
+└── middleware.ts         # /write, /edit 경로 admin guard
 ```
 
 ---
@@ -142,9 +173,10 @@ src/
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]` | SideNav + Footer | 불필요 |
-| `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 |
-| `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 용도별 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]` | SideNav + Footer | 불필요 |
+| `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 (`middleware.ts` + 서버 액션 이중 검증) |
+| `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 크론은 `CRON_SECRET` Bearer 검증 |
+| 메타 | `/sitemap.xml`, `/robots.txt`, `/feed.xml` | 없음 | 불필요 (1h ISR) |
 
 ---
 
@@ -154,8 +186,14 @@ src/
 [사용자] → [Server Component] → [Supabase] → [SSR 렌더링]
                                                     │
 [사용자] → [Client Component] → [Server Action] → [Supabase]
-                │                                      │
-                └── [TanStack Query] ← 캐싱/낙관적 업데이트
+                │                       │
+                │                       └── revalidatePath → RSC 재생성
                 │
-                └── [Zustand] ← 전역 UI 상태
+                ├── [useOptimistic] ← 낙관적 업데이트 (React 19 네이티브)
+                └── [Zustand] ← 전역 UI 상태 (모달/토스트/사이드바)
+
+[Vercel Cron] → [fetch-news] → [RSS 6종] → [gpt-4o-mini] → [tech_news]
+             └→ [cleanup-images] → 24h 경과 고아 이미지 삭제
 ```
+
+> 서버 상태 캐싱 레이어(TanStack Query)는 사용하지 않는다. 근거는 `PLAN.md` D-001.

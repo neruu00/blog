@@ -49,6 +49,23 @@
 | `is_used` | BOOLEAN | 사용 중 여부 |
 | `created_at` | TIMESTAMPTZ | 업로드 시간 |
 
+### tech_news (뉴스 큐레이션)
+
+| 컬럼 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `id` | UUID | `gen_random_uuid()` | PK |
+| `title` | TEXT | — | 기사 원제 |
+| `original_url` | TEXT | — | 원문 URL |
+| `content` | TEXT | — | LLM이 생성한 마크다운 요약 |
+| `source` | TEXT | — | 피드 소스 (`react`, `nextjs`, `typescript`, `chrome`, `tailwindcss`, `javascript`) |
+| `published_at` | TIMESTAMPTZ | — | 원문 발행일 (RSS `isoDate`/`pubDate`) |
+| `created_at` | TIMESTAMPTZ | `now()` | 수집 시간 |
+
+**UNIQUE 제약 권장**: `original_url` — 크론 재실행/백필 시 중복 삽입 방지.
+`/api/cron/fetch-news`가 애플리케이션 레벨에서도 중복을 거르지만, 그 체크는
+`published_at >= sinceDate` 윈도우 안에서만 동작하므로 DB 제약이 최종 방어선이다.
+라우트는 제약 유무와 무관하게 동작한다 — `23505`를 실패가 아닌 스킵으로 처리한다.
+
 ### users, accounts, sessions (Auth.js 자동 생성)
 Auth.js의 Supabase Adapter가 자동으로 생성/관리하는 테이블.
 
@@ -82,10 +99,25 @@ CREATE TABLE IF NOT EXISTS likes (
   UNIQUE(post_id, user_id)
 );
 
+-- tech_news 테이블
+CREATE TABLE IF NOT EXISTS tech_news (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  original_url TEXT NOT NULL,
+  content TEXT NOT NULL,
+  source TEXT NOT NULL,
+  published_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 중복 수집 방지 (미적용 시 백필 반복 실행에서 중복 행 발생 가능)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tech_news_original_url ON tech_news(original_url);
+
 -- 인덱스
 CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
+CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
 ```
 
 ---

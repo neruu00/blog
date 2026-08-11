@@ -5,7 +5,7 @@
  *
  * 파이프라인:
  *   1. Authorization 헤더 검증 (CRON_SECRET)
- *   2. 날짜 필터 기준 계산 (기본: 최근 7일)
+ *   2. 날짜 필터 기준 계산 (기본: DEFAULT_SINCE_DAYS일)
  *   3. 각 RSS 피드 파싱
  *   4. 날짜 필터 → original_url 중복 체크
  *   5. 신규 기사만 GPT-4o-mini로 요약
@@ -19,7 +19,7 @@
 import { NextResponse } from 'next/server';
 
 import { summarizeToMarkdown } from '@/lib/llm';
-import { parseFeed, RSS_FEEDS } from '@/lib/rss';
+import { parseFeed, RSS_FEEDS, type ParsedFeedItem } from '@/lib/rss';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -56,12 +56,30 @@ export async function GET(req: Request) {
     processed: 0,
     skipped: 0, // URL 중복으로 스킵
     dateSkipped: 0, // 날짜 필터로 스킵 (LLM 호출 없음)
-    failed: 0,
+    failed: 0, // 기사 단위 실패
+    feedsFailed: 0, // 피드 단위 실패 (URL 만료, 네트워크 오류 등)
     errors: [] as string[],
   };
 
   for (const feed of RSS_FEEDS) {
-    const items = await parseFeed(feed.url);
+    // 시간 제한 체크: 피드 파싱 자체가 오래 걸릴 수 있으므로 바깥 루프에서 먼저 확인한다.
+    // (안쪽 루프에만 두면 아이템이 0개인 피드에서는 가드에 도달하지 못한다)
+    if (Date.now() - startTime > MAX_RUN_TIME) {
+      console.warn('[fetch-news] 최대 실행 시간 초과, 남은 피드 처리를 중단합니다.');
+      return NextResponse.json({ ...results, timeout: true });
+    }
+
+    let items: ParsedFeedItem[];
+    try {
+      items = await parseFeed(feed.url);
+    } catch (error) {
+      // 피드 단위 실패를 집계하지 않으면 6개가 전부 죽어도 응답이 200 + 전부 0이 된다.
+      results.feedsFailed++;
+      const message = error instanceof Error ? error.message : String(error);
+      results.errors.push(`[${feed.source}] 피드 파싱 실패 (${feed.url}): ${message}`);
+      console.error(`[fetch-news] 피드 파싱 실패: ${feed.url}`, error);
+      continue;
+    }
 
     if (items.length === 0) {
       console.warn(`[fetch-news] 피드 아이템 없음: ${feed.source}`);
@@ -104,10 +122,16 @@ export async function GET(req: Request) {
         });
 
         if (insertError) {
-          throw insertError;
+          // original_url UNIQUE 제약에 걸린 중복은 실패가 아니라 스킵이다.
+          // (백필을 여러 번 돌리거나 크론이 겹쳐 실행될 때 발생)
+          if (insertError.code === '23505') {
+            results.skipped++;
+          } else {
+            throw insertError;
+          }
+        } else {
+          results.processed++;
         }
-
-        results.processed++;
 
         // 기사 간 1초 딜레이: OpenAI rate limit 방지
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -123,7 +147,7 @@ export async function GET(req: Request) {
   console.warn('[fetch-news] 완료:', JSON.stringify(results));
 
   return NextResponse.json({
-    message: `완료: ${results.processed}개 저장, ${results.skipped}개 URL중복, ${results.dateSkipped}개 날짜필터, ${results.failed}개 실패`,
+    message: `완료: ${results.processed}개 저장, ${results.skipped}개 URL중복, ${results.dateSkipped}개 날짜필터, ${results.failed}개 기사실패, ${results.feedsFailed}개 피드실패`,
     ...results,
   });
 }
