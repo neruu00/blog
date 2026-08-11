@@ -203,12 +203,12 @@ type ActionResult<T = void> =
 | 문서 | 내용 |
 |---|---|
 | `PLAN.md` | 개선 백로그와 결정 로그. **작업 전에 관련 항목이 있는지 확인하라** |
-| `.specs/architecture.md` | 디렉토리 구조, 라우트 그룹, 데이터 흐름 |
-| `.specs/database.md` | 테이블 스키마, 마이그레이션 SQL |
-| `.specs/features.md` | 게시글·댓글·좋아요·뉴스·SEO 동작 명세 |
-| `.specs/auth.md` | NextAuth 설정, 권한 체계 |
+| `supabase/migrations/` | **DB 스키마의 원본** — 스키마 변경은 여기에 새 파일로 |
+| `.specs/architecture.md` | 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름 |
+| `.specs/database.md` | 테이블·RPC 읽기용 요약 |
+| `.specs/features.md` | 인증·게시글·댓글·좋아요·뉴스·SEO 동작 명세 |
 | `.specs/editor.md` | Tiptap 확장 |
-| `.specs/design-system.md` | 컬러, 타이포그래피 |
+| `.specs/design-system.md` | 컬러, 타이포그래피, 컴포넌트 레시피 |
 
 코드를 바꾸면 해당 스펙 문서도 같이 갱신한다. 문서가 코드와 어긋나면 다음 작업자가 그 문서를 믿고 잘못된 코드를 쓴다.
 

@@ -1,6 +1,38 @@
 # 기능 스펙
 
-## 1. 게시글 (Posts)
+## 1. 인증 · 권한 (Auth)
+
+Google OAuth (next-auth v4) + Supabase Adapter. 세션은 JWT 전략.
+
+| 역할 | 판별 | 권한 |
+|---|---|---|
+| 비로그인 | 세션 없음 | 게시글·뉴스 열람, 조회수 |
+| 일반 유저 | Google 세션 존재 | + 댓글, 좋아요 |
+| Admin | 세션 이메일 === `ADMIN_EMAIL` | + 게시글 CRUD, 이미지 업로드 |
+
+### 파일 구성
+
+- `lib/auth.ts` — NextAuth 설정 + 권한 헬퍼
+- `app/api/auth/[...nextauth]/route.ts` — NextAuth API Route
+- `providers/AuthProvider.tsx` — SessionProvider 래퍼 (클라이언트)
+- `types/next-auth.d.ts` — 세션 타입 확장 (`user.id`, `user.isAdmin`)
+- `middleware.ts` — `/write`, `/edit` 경로 가드. **서버 액션 호출은 막지 못한다** (`AGENTS.md` 참조)
+
+### 권한 헬퍼 (`lib/auth.ts`)
+
+| 함수 | 반환 | 비고 |
+|---|---|---|
+| `verifyAdminSession()` | `boolean` | **코드 전체가 실제로 쓰는 함수.** 서버 액션 첫 줄에서 호출 |
+| `isAdmin()` | `boolean` | `verifyAdminSession`의 실체 |
+| `requireAdmin()` / `requireAuth()` | throw | 정의만 있고 호출처 0건 |
+
+### 로그인 UI
+
+`signIn('google')` / `signOut()`. 사이드 네비 하단과 모바일 헤더의 로그인/프로필 버튼 (`LoginButton`, `ProfileButton`).
+
+---
+
+## 2. 게시글 (Posts)
 
 ### CRUD
 - **작성/수정/삭제**: admin만 가능
@@ -29,7 +61,7 @@
 
 ---
 
-## 2. 댓글 (Comments)
+## 3. 댓글 (Comments)
 
 ### 권한
 - **작성**: Google 로그인 사용자만
@@ -55,7 +87,7 @@ interface Comment {
 
 ---
 
-## 3. 좋아요 (Likes)
+## 4. 좋아요 (Likes)
 
 ### 권한
 - Google 로그인 사용자만, 게시글당 1회
@@ -75,7 +107,7 @@ interface Comment {
 
 ---
 
-## 4. 조회수 (View Count)
+## 5. 조회수 (View Count)
 
 ### 동작
 - `ViewCounter` 클라이언트 컴포넌트가 마운트 시 `incrementViewCount` Server Action 호출
@@ -88,7 +120,7 @@ interface Comment {
 
 ---
 
-## 5. 기술 뉴스 (Tech News)
+## 6. 기술 뉴스 (Tech News)
 
 프론트엔드 관련 RSS를 수집해 한국어 마크다운으로 요약, `tech_news`에 저장한다.
 
@@ -126,7 +158,7 @@ interface Comment {
 
 ---
 
-## 6. Google Analytics 4
+## 7. Google Analytics 4
 
 - `next/script`로 GA 스크립트 로드 (`afterInteractive` 전략)
 - 측정 ID: `G-ZL70EZYFER`
@@ -134,7 +166,7 @@ interface Comment {
 
 ---
 
-## 7. SEO
+## 8. SEO
 
 | 경로 | 내용 | 갱신 |
 |---|---|---|
@@ -149,7 +181,7 @@ interface Comment {
 
 ---
 
-## 8. 에러 처리
+## 9. 에러 처리
 
 | 파일 | 범위 |
 |---|---|

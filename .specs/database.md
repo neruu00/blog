@@ -71,57 +71,25 @@ Auth.js의 Supabase Adapter가 자동으로 생성/관리하는 테이블.
 
 ---
 
-## 2. 마이그레이션 SQL
+## 2. 마이그레이션
 
-```sql
--- posts 컬럼 추가
-ALTER TABLE posts ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'tech';
-ALTER TABLE posts ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;
-ALTER TABLE posts ADD COLUMN IF NOT EXISTS like_count INTEGER DEFAULT 0;
-ALTER TABLE posts ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+**SQL의 원본은 `supabase/migrations/`다.** 이 문서는 읽기용 요약이며, 스키마를 바꿀 때는 저 디렉토리에 새 마이그레이션 파일을 추가하고 라이브 DB에 실행한 뒤 이 문서의 표를 함께 갱신한다.
 
--- comments 테이블
-CREATE TABLE IF NOT EXISTS comments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  parent_id UUID REFERENCES comments(id) ON DELETE CASCADE,
-  content TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
+- `20260811000000_baseline.sql` — 현재까지 적용된 전체 스키마 (테이블 + 인덱스 + RPC 함수)
+- ⚠️ `idx_tech_news_original_url`(UNIQUE)은 아직 라이브 DB에 미적용 (`PLAN.md` T-308)
 
--- likes 테이블
-CREATE TABLE IF NOT EXISTS likes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE(post_id, user_id)
-);
+## 3. RPC 함수
 
--- tech_news 테이블
-CREATE TABLE IF NOT EXISTS tech_news (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  original_url TEXT NOT NULL,
-  content TEXT NOT NULL,
-  source TEXT NOT NULL,
-  published_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
+서버 액션이 `supabase.rpc()`로 호출하는 DB 함수. 정의는 baseline 마이그레이션 참조.
 
--- 중복 수집 방지 (미적용 시 백필 반복 실행에서 중복 행 발생 가능)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tech_news_original_url ON tech_news(original_url);
-
--- 인덱스
-CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
-CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
-```
+| 함수 | 인자 | 호출처 | 역할 |
+|---|---|---|---|
+| `increment_view_count` | `post_id` | `actions/post.ts` | `posts.view_count` +1 |
+| `increment_like_count` | `target_post_id` | `actions/like.ts` | `posts.like_count` +1 |
+| `decrement_like_count` | `target_post_id` | `actions/like.ts` | `posts.like_count` −1 (0 미만 방지) |
 
 ---
 
-## 3. RLS (Row Level Security)
+## 4. RLS (Row Level Security)
 
 RLS 정책은 없다. 서버가 `service_role` 키로 접근해 RLS를 전면 bypass하므로 권한 통제는 전적으로 서버 액션 코드에 있다. 작업 시 주의사항은 `AGENTS.md` "반드시 알아야 할 것" 1번, 분리 계획은 `PLAN.md` T-102 참조.

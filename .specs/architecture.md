@@ -22,150 +22,22 @@
 
 ---
 
-## 2. 디렉토리 구조
+## 2. 코드 구조
 
-```
-src/
-├── actions/              # Server Actions (도메인별 분리)
-│   ├── post.ts
-│   ├── comment.ts
-│   ├── like.ts
-│   └── image.ts
-│
-├── app/
-│   ├── (blog)/           # 공개 페이지 그룹 (사이드 네비 레이아웃)
-│   │   ├── layout.tsx    # SideNav + Main 영역
-│   │   ├── error.tsx     # 그룹 에러 바운더리 (reset 제공)
-│   │   ├── loading.tsx   # 그룹 로딩 스켈레톤
-│   │   ├── page.tsx      # 홈
-│   │   ├── posts/
-│   │   │   ├── page.tsx          # 게시글 목록
-│   │   │   └── [id]/page.tsx     # 게시글 상세
-│   │   └── news/
-│   │       ├── page.tsx          # 기술 뉴스 목록 (소스별 필터)
-│   │       └── [id]/page.tsx     # 뉴스 상세 (마크다운 요약)
-│   │
-│   ├── (protected)/      # 관리자 전용 (인증 guard)
-│   │   ├── layout.tsx    # requireAdmin guard
-│   │   ├── write/page.tsx
-│   │   └── edit/[id]/
-│   │       ├── page.tsx
-│   │       └── _components/EditPostClient.tsx
-│   │
-│   ├── api/
-│   │   ├── auth/[...nextauth]/route.ts  # NextAuth 핸들러
-│   │   └── cron/
-│   │       ├── cleanup-images/route.ts  # 고아 이미지 청소 (일 1회)
-│   │       └── fetch-news/route.ts      # RSS 수집 + LLM 요약 (일 1회)
-│   │
-│   ├── feed.xml/route.ts # 자체 RSS 2.0 피드 (최신 20건, 1h ISR)
-│   ├── sitemap.ts        # 사이트맵 (정적 + 게시글 + 뉴스, 1h ISR)
-│   ├── robots.ts         # 크롤러 규칙
-│   ├── not-found.tsx     # 전역 404
-│   ├── layout.tsx        # Root layout (Providers, Font, GA)
-│   └── globals.css       # Tailwind custom theme 정의
-│
-├── components/
-│   ├── post/             # 게시글 도메인 컴포넌트
-│   │   ├── PostCard.tsx
-│   │   ├── PostList.tsx
-│   │   ├── CommentSection.tsx
-│   │   ├── CommentForm.tsx
-│   │   ├── CommentList.tsx
-│   │   ├── LikeButton.tsx
-│   │   ├── DeletePostButton.tsx
-│   │   ├── ViewCounter.tsx
-│   │   ├── TableOfContents.tsx
-│   │   └── PostExportButtons.tsx  # 게시글 내보내기 버튼
-│   ├── editor/           # Tiptap 에디터
-│   │   ├── TiptapEditor.tsx
-│   │   ├── TiptapViewer.tsx
-│   │   ├── Toolbar.tsx
-│   │   ├── TagInputField.tsx
-│   │   ├── EditorFooter.tsx     # 고정 하단 푸터
-│   │   ├── PostTitleInput.tsx   # 제목 입력 컴포넌트
-│   │   └── extensions/
-│   │       ├── ShiftedHeading.ts        # SEO 헤딩 시프트
-│   │       ├── CustomCodeBlock.ts       # Mac 스타일 코드블록 Extension
-│   │       ├── CodeBlockComponent.tsx   # CodeBlock React NodeView
-│   │       ├── CustomTable.ts           # 테이블 관리 Extension
-│   │       ├── MermaidBlock.tsx         # Mermaid Node Extension
-│   │       └── MermaidComponent.tsx     # Mermaid React NodeView
-│   ├── news/             # 기술 뉴스 도메인
-│   │       └── NewsCard.tsx
-│   ├── layout/           # 레이아웃 컴포넌트
-│   │       ├── SideNav.tsx
-│   │       ├── MobileHeader.tsx
-│   │       ├── NavLinks.tsx
-│   │       ├── Footer.tsx
-│   │       ├── BlogOwnerProfile.tsx
-│   │       ├── ProfileButton.tsx
-│   │       ├── LoginButton.tsx
-│   │       ├── FloatingActionButton.tsx  # 권한별 액션 (글쓰기 / 이슈제보)
-│   │       ├── EyePoster.tsx             # 커서 트래킹 포스터
-│   │       └── InteractivePoster.tsx
-│   ├── common/           # 도메인 무관 공통 컴포넌트
-│   │       ├── ConfirmDialog.tsx
-│   │       └── Pagination.tsx
-│   ├── ui/               # 공통 UI 프리미티브
-│   │       ├── TagBadge.tsx        # 태그 뱃지 (variant: primary/solid/default)
-│   │       ├── IconButton.tsx      # 아이콘 버튼
-│   │       ├── DropdownMenu.tsx    # 드롭다운 메뉴 (Context 기반, ESC/외부클릭 닫기)
-│   │       ├── Modal.tsx           # 전역 모달 (useModalStore 연동)
-│   │       ├── ToastContainer.tsx  # 전역 토스트 (useToastStore 연동)
-│   │       ├── Tooltip.tsx
-│   │       └── Skeleton.tsx
-│
-├── hooks/
-│   ├── useActiveNav.ts          # isActive 판별 훅 (SideNav/MobileHeader 공유)
-│   ├── useDraft.tsx             # 임시저장 로드/저장/자동저장 훅
-│   ├── usePostSubmit.tsx        # 게시글 제출 + 삭제 로직 훅
-│   └── useIntersectionObserver.ts  # TOC 활성 항목 감지 (MutationObserver 기반)
-│
-├── layouts/
-│   └── TanstackQueryLayout.tsx  # TanStack Query Provider (미사용 — PLAN.md T-302)
-│
-├── lib/
-│   ├── auth.ts           # NextAuth 설정 + 헬퍼
-│   ├── supabase.ts       # Supabase 클라이언트 (service_role)
-│   ├── logger.ts         # 로깅 유틸리티 (미사용 — PLAN.md T-304)
-│   ├── export.ts         # 게시글 내보내기 유틸 (Markdown)
-│   ├── rss.ts            # RSS 피드 소스 정의 + 파싱
-│   ├── llm.ts            # OpenAI 요약 (재시도 + 지수 백오프)
-│   ├── image-converter.ts # 클라이언트 WebP 변환
-│   ├── utils.ts          # cn() — clsx + tailwind-merge
-│   ├── constants/
-│   │       ├── tags.ts       # 태그 및 페이지네이션 상수
-│   │       ├── nav.ts        # 네비게이션 메뉴 상수
-│   │       └── site.ts       # SITE_URL 등 (sitemap/robots/feed 공유)
-│   └── utils/
-│       ├── tiptap.ts     # Tiptap 텍스트/이미지/TOC 추출
-│       ├── date.ts       # 날짜 포맷팅
-│       └── analytics.ts  # GA4 분석 유틸리티
-│
-├── providers/
-│   └── AuthProvider.tsx  # NextAuth SessionProvider 래퍼
-│
-├── schemas/              # Zod 스키마
-│   ├── post.schema.ts
-│   └── comment.schema.ts
-│
-├── stores/               # Zustand 스토어
-│   ├── useModalStore.ts
-│   ├── useSidebarStore.ts
-│   ├── useToastStore.ts
-│   └── useEditorStore.ts
-│
-├── types/
-│   ├── post.type.ts
-│   ├── comment.type.ts
-│   ├── user.type.ts
-│   ├── tech-news.type.ts # 뉴스 타입 + 소스 라벨
-│   ├── action.type.ts    # ActionResult<T> 통합 반환 타입
-│   └── next-auth.d.ts    # NextAuth 타입 확장
-│
-└── middleware.ts         # /write, /edit 경로 admin guard
-```
+**구조의 원본은 코드다** — 전체 목록이 필요하면 `find src -type f`를 실행하라. 파일 단위 트리를 문서에 옮겨 적지 않는다: 과거 이 문서의 트리는 삭제된 파일을 품은 채 이틀 사이 두 번 어긋났다. 아래는 길을 잃었을 때의 진입점만 적는다.
+
+| 영역 | 위치 | 비고 |
+|---|---|---|
+| 페이지 라우트 | `src/app/(blog)/`, `src/app/(protected)/` | 그룹별 권한은 §3 |
+| API · 크론 | `src/app/api/` | NextAuth, fetch-news, cleanup-images |
+| SEO 메타 라우트 | `src/app/` — `sitemap.ts`, `robots.ts`, `feed.xml/` | 1h ISR |
+| 서버 액션 | `src/actions/` | post / comment / like / image, 도메인별 1파일 |
+| 도메인 로직 | `src/lib/` | auth, supabase(service_role), rss, llm, export, image-converter |
+| 상수 | `src/lib/constants/` | tags, nav, site(SITE_URL) |
+| 컴포넌트 | `src/components/` | 분류 기준은 `AGENTS.md` 컴포넌트 섹션 |
+| 상태 | `src/stores/` (Zustand), `src/hooks/` | |
+| 검증 · 타입 | `src/schemas/` (Zod), `src/types/` | `ActionResult<T>`는 `action.type.ts` |
+| 미들웨어 | `src/middleware.ts` | `/write`, `/edit` 경로 가드 |
 
 ---
 
