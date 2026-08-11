@@ -50,7 +50,7 @@ src/
 │   ├── post/         # PostCard, PostList, CommentSection, LikeButton
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
 ├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
-├── lib/              # auth, supabase, logger, analytics
+├── lib/              # auth, supabase, rss, llm, analytics
 ├── schemas/          # Zod 검증 스키마
 ├── stores/           # Zustand (toast, modal, sidebar, like)
 └── types/            # TypeScript 타입 정의

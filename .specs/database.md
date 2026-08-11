@@ -75,8 +75,8 @@ Auth.js의 Supabase Adapter가 자동으로 생성/관리하는 테이블.
 
 **SQL의 원본은 `supabase/migrations/`다.** 이 문서는 읽기용 요약이며, 스키마를 바꿀 때는 저 디렉토리에 새 마이그레이션 파일을 추가하고 라이브 DB에 실행한 뒤 이 문서의 표를 함께 갱신한다.
 
-- `20260811000000_baseline.sql` — 현재까지 적용된 전체 스키마 (테이블 + 인덱스 + RPC 함수)
-- ⚠️ `idx_tech_news_original_url`(UNIQUE)은 아직 라이브 DB에 미적용 (`PLAN.md` T-308)
+- `20260811000000_baseline.sql` — 라이브 DB에 **적용된** 전체 스키마 (테이블 + 인덱스 + RPC 함수)
+- `20260811000001_tech_news_unique_url.sql` — ⚠️ **미적용 대기** — 중복 행 정리 + `original_url` UNIQUE 인덱스 (`PLAN.md` T-308). 적용 후 파일 헤더의 상태 주석을 갱신할 것
 
 ## 3. RPC 함수
 

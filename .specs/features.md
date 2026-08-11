@@ -151,8 +151,10 @@ interface Comment {
 
 ### 필수 환경변수
 
-`CRON_SECRET`, `OPENAI_API_KEY` — **Vercel에도 등록해야 한다.** 둘 중 하나라도 없으면
-크론이 200 OK를 반환하면서 아무것도 저장하지 않는다.
+`CRON_SECRET`, `OPENAI_API_KEY` — **Vercel에도 등록해야 한다.** 누락 시 크론은 처리를
+시작하기 전에 명시적으로 실패한다: `CRON_SECRET` 불일치/부재는 **401**,
+`OPENAI_API_KEY` 부재는 사전 검사에서 **500**을 반환한다.
+(과거에는 200 OK를 반환하며 조용히 실패해 장애가 43일간 감춰졌다 — 그 재발 방지 장치다.)
 
 ---
 

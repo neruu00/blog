@@ -27,7 +27,8 @@ const eslintConfig = [
       import: importPlugin,
     },
     rules: {
-      eqeqeq: ['error', 'always'], // ===, !== force
+      // ===/!== 강제. 단 `x != null`(null/undefined 동시 검사 관용구)은 허용
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       // base no-unused-vars 는 TS 인터페이스/타입 시그니처의 파라미터 이름을
       // 미사용으로 오탐한다. 미사용 코드 검출은 tsconfig 의
       // noUnusedLocals / noUnusedParameters (tsc, pnpm verify에 포함)가 담당한다.

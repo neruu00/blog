@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: token.id || token.sub,
-        isAdmin: session.user?.email === process.env.ADMIN_EMAIL,
+        isAdmin: !!process.env.ADMIN_EMAIL && session.user?.email === process.env.ADMIN_EMAIL,
       },
     }),
   },
@@ -48,6 +48,11 @@ export const authOptions: NextAuthOptions = {
  * 관리자 기준: 로그인한 유저의 이메일이 환경변수 ADMIN_EMAIL과 일치하는지 판별
  */
 export async function isAdmin(): Promise<boolean> {
+  // fail-closed: ADMIN_EMAIL 미설정 시 undefined === undefined 로
+  // 비로그인 방문자까지 admin 이 되는 것을 방지한다.
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) return false;
+
   const session = await getServerSession(authOptions);
-  return session?.user?.email === process.env.ADMIN_EMAIL;
+  return session?.user?.email === adminEmail;
 }

@@ -13,7 +13,8 @@ export default function PageHeader({ title, description }: PageHeaderProps) {
   return (
     <header className="mb-10">
       <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
-      {description && <p className="leading-relaxed text-gray-500">{description}</p>}
+      {/* falsy지만 렌더 가능한 값(0 등)이 스타일 없이 새어나가지 않도록 null 계열만 생략 */}
+      {description != null && <p className="leading-relaxed text-gray-500">{description}</p>}
     </header>
   );
 }

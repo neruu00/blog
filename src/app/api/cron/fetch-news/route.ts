@@ -12,7 +12,7 @@
  *   6. tech_news 테이블에 INSERT
  *
  * 쿼리 파라미터 (수동 실행 시 사용):
- *   ?days=N         — 최근 N일 이내 기사만 처리 (기본값: 7)
+ *   ?days=N         — 최근 N일 이내 기사만 처리 (기본값: DEFAULT_SINCE_DAYS = 2)
  *   ?since=YYYY-MM-DD — 특정 날짜 이후 기사만 처리
  */
 
@@ -36,6 +36,15 @@ export async function GET(req: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return new Response('Unauthorized', { status: 401 });
+  }
+
+  // 사전 검사: 요약에 필수인 키가 없으면 전건 실패가 확정이므로
+  // 조용한 200 대신 설정 오류를 즉시 알린다. (과거 이 침묵이 장애를 43일 감췄다)
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'OPENAI_API_KEY가 설정되지 않았습니다. Vercel 환경변수를 확인하세요.' },
+      { status: 500 },
+    );
   }
 
   const startTime = Date.now();
@@ -132,6 +141,9 @@ export async function GET(req: Request) {
         } else {
           results.processed++;
         }
+
+        // 같은 URL이 다른 피드에 또 나와도 이번 실행 안에서 LLM을 재호출하지 않도록 기록
+        existingUrls.add(item.link);
 
         // 기사 간 1초 딜레이: OpenAI rate limit 방지
         await new Promise((resolve) => setTimeout(resolve, 1000));

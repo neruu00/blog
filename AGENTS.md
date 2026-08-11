@@ -13,7 +13,7 @@ Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, 
 | 개발 서버 | `pnpm dev` (Turbopack, :3000) |
 | 프로덕션 빌드 | `pnpm build` |
 | 린트 | `pnpm lint` |
-| 타입 검사 | `npx tsc --noEmit` |
+| 타입 검사 | `pnpm exec tsc --noEmit` |
 | **전체 검증** | `pnpm verify` — 타입 + 린트 + 빌드 |
 | 포맷 | `pnpm format` |
 
@@ -115,7 +115,7 @@ export async function createPost(formData: FormData) {
 
 **서버 컴포넌트가 기본이다.** `'use client'`는 훅·이벤트 핸들러·브라우저 API·Zustand 구독이 필요한 **최소 리프**에만 붙인다. 페이지 전체를 클라이언트로 만들지 않는다.
 
-```
+```text
 page.tsx (서버)
   └── PostList (서버)
         ├── PostCard (서버 — 표시만)
