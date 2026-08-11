@@ -13,7 +13,16 @@ import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
-import { type TechNewsSource } from '@/types/tech-news.type';
+import { mapNewsListRow, mapPostRow } from '@/lib/utils/mappers';
+
+/**
+ * 세션·쿠키 의존이 없어 정적 재생성이 가능하다. 5분 ISR —
+ * 새 글/뉴스는 최대 5분 지연으로 반영되고, 그동안 DB 조회가 발생하지 않는다.
+ * supabase-js의 내부 fetch는 캐시 옵션이 없어 그대로 두면 라우트가 동적으로
+ * 남기 때문에 force-static으로 fetch 캐싱까지 강제해야 revalidate가 동작한다.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =
@@ -35,25 +44,8 @@ export default async function HomePage() {
     throw new Error('뉴스를 불러오는 중 오류가 발생했습니다.');
   }
 
-  const formattedPosts = (posts || []).map((post) => ({
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    createdAt: new Date(post.created_at),
-    updatedAt: new Date(post.updated_at || post.created_at),
-    author: post.author || 'admin',
-    tags: post.tags || [],
-    category: post.category || 'tech',
-    viewCount: post.view_count || 0,
-    likeCount: post.like_count || 0,
-  }));
-
-  const newsList = (newsRows ?? []).map((row) => ({
-    id: row.id,
-    title: row.title,
-    source: row.source as TechNewsSource,
-    publishedAt: new Date(row.published_at),
-  }));
+  const formattedPosts = (posts || []).map(mapPostRow);
+  const newsList = (newsRows ?? []).map(mapNewsListRow);
 
   return (
     <div className="mx-auto max-w-5xl">

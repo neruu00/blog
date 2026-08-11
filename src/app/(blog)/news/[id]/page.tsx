@@ -20,6 +20,13 @@ interface NewsDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * 세션·쿠키 의존 없음 — 요약 본문은 수집 후 불변이므로 5분 ISR로 충분하다.
+ * supabase-js fetch가 캐시 옵션 없이 나가므로 force-static으로 캐싱을 강제한다.
+ */
+export const dynamic = 'force-static';
+export const revalidate = 300;
+
 export async function generateMetadata({ params }: NewsDetailPageProps): Promise<Metadata> {
   const { id } = await params;
   const { data } = await supabase.from('tech_news').select('title, source').eq('id', id).single();

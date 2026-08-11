@@ -12,8 +12,14 @@ import PostList from '@/components/post/PostList';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
-import type { PostCategory } from '@/types/post.type';
+import { mapPostRow } from '@/lib/utils/mappers';
 
+/**
+ * 이 페이지는 동적 렌더링으로 남긴다:
+ * - 태그 필터·페이지네이션이 `searchParams`를 읽는다 (force-static 시 빈 객체가 됨)
+ * - `isAdmin()`이 세션 쿠키를 읽는다
+ * ISR 전환은 PLAN.md T-203 참조 (관리자 UI를 클라이언트 세션으로 옮기면 가능)
+ */
 export default async function PostsPage({
   searchParams,
 }: {
@@ -69,18 +75,7 @@ export default async function PostsPage({
 
   const isAdmin = await checkIsAdmin();
 
-  const formattedPosts = (posts || []).map((post) => ({
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    createdAt: new Date(post.created_at),
-    updatedAt: new Date(post.updated_at || post.created_at),
-    author: post.author || 'admin',
-    tags: post.tags || [],
-    category: (post.category || 'tech') as PostCategory,
-    viewCount: post.view_count || 0,
-    likeCount: post.like_count || 0,
-  }));
+  const formattedPosts = (posts || []).map(mapPostRow);
 
   const categories = ['All', ...TAG_DICTIONARY.map((t) => t.name)];
 

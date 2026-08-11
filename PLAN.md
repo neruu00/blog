@@ -81,7 +81,7 @@
 
 - [x] **T-201** 조회수가 항상 `+1`로 표시된다(`app/(blog)/posts/[id]/page.tsx:141`). 이미 본 글이라 카운트가 오르지 않는 경우에도 화면엔 +1이 나온다.
 - [x] **T-202** `error.tsx` / `not-found.tsx` / `loading.tsx` 부재. 홈에서 Supabase 에러 시 `throw new Error`(`app/(blog)/page.tsx:31`)가 Next 기본 에러 화면으로 직행한다.
-- [ ] **T-203** 캐싱 전략 부재. 홈·목록·상세가 매 요청 DB를 직격한다. `revalidate` 또는 `unstable_cache` 미사용. 나아가 `revalidatePath`(경로 전체 무효화) 대신 `revalidateTag` 기반의 세분화된 무효화로 전환하면 T-204의 과잉 재생성도 함께 줄어든다.
+- [ ] **T-203** 캐싱 전략 — **일부 완료**: 홈·`/news/[id]`는 `force-static` + 5분 ISR 적용 (supabase-js fetch가 캐시 옵션 없이 나가 `revalidate`만으로는 동적에 남는다 — force-static 필수). 잔여: `/news`·`/posts`는 `searchParams`, `/posts/[id]`는 세션 의존으로 동적 유지 중(각 파일에 사유 주석). 필터의 경로 세그먼트화 또는 관리자 UI의 클라이언트 세션 전환 시 ISR 확대 가능. `revalidateTag` 세분화도 미착수.
 - [ ] **T-204** 댓글 작성 시 `revalidatePath`로 페이지 RSC 트리 전체가 재생성된다(`actions/comment.ts:89`). 댓글 하나에 `getPost`+`getLikeStatus`+`getComments`+`verifyAdminSession`이 모두 재실행된다. → `useOptimistic` 적용 (D-001 참조).
 - [ ] **T-205** 폼 상태를 수동 관리 중이다 — `hooks/usePostSubmit.tsx`, `stores/useEditorStore.ts`의 `isSubmitting` 등. React 19 `useActionState` + `useFormStatus`로 선언적 리팩토링하면 보일러플레이트가 줄고 동시성 안전성이 확보된다.
 - [ ] **T-206** **`/posts/[id]` 번들이 First Load JS 500 kB로 전 라우트 중 최대다** (빌드 실측, 페이지 자체 210 kB). Tiptap 런타임 전체가 읽기 전용 페이지에 실린다. 작성/수정 시 `@tiptap/html`의 `generateHTML`로 정적 HTML을 사전 생성해 별도 컬럼에 저장하고, 상세 페이지는 에디터 라이브러리 없이 렌더한다. 초기 로드·SEO 모두 개선된다.
