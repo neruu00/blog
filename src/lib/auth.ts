@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 import type { NextAuthOptions } from 'next-auth';
+import type { Adapter } from 'next-auth/adapters';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -20,7 +21,7 @@ export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  }) as any, // next-auth v4와 @auth/supabase-adapter 호환성
+  }) as Adapter, // next-auth v4와 @auth/supabase-adapter 간 타입 시그니처 차이 보정
   session: {
     strategy: 'jwt',
   },

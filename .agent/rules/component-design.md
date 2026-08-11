@@ -23,7 +23,7 @@ ClientComponent (page.tsx) — 페이지 전체를 클라이언트로
 - 이벤트 핸들러 (`onClick`, `onChange` 등)
 - 브라우저 API 접근 (`window`, `document`)
 - Zustand 스토어 구독
-- TanStack Query 훅 사용
+- `useOptimistic` 등 클라이언트 전용 React 훅 사용
 
 ---
 

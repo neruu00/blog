@@ -8,7 +8,7 @@
 | 서버 액션 | camelCase `.action.ts` | `post.action.ts` |
 | Zod 스키마 | camelCase `.schema.ts` | `post.schema.ts` |
 | Zustand 스토어 | `use` + PascalCase `Store.ts` | `useModalStore.ts` |
-| 커스텀 훅 | `use` + PascalCase `.ts` | `useOptimisticLike.ts` |
+| 커스텀 훅 | `use` + PascalCase `.ts` | `useIntersectionObserver.ts` |
 | 타입 정의 | camelCase `.type.ts` | `post.type.ts` |
 | 유틸리티 | camelCase `.ts` | `logger.ts` |
 | 페이지 | `page.tsx` (Next.js 규칙) | `app/posts/page.tsx` |
@@ -103,7 +103,7 @@ export default function PostCard({ post, index }: PostCardProps) { ... }
 - 유틸/헬퍼: `export function` 또는 `export const` (일관성 유지)
 - 서버 액션: `export async function` (`'use server'` 파일 내)
 - 이벤트 핸들러: `handle` 접두사 (`handleSubmit`, `handleClick`)
-- 커스텀 훅: `use` 접두사 (`useOptimisticLike`)
+- 커스텀 훅: `use` 접두사 (`useIntersectionObserver`)
 
 ---
 
