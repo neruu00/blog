@@ -195,5 +195,3 @@ src/
 [Vercel Cron] → [fetch-news] → [RSS 6종] → [gpt-4o-mini] → [tech_news]
              └→ [cleanup-images] → 24h 경과 고아 이미지 삭제
 ```
-
-> 서버 상태 캐싱 레이어(TanStack Query)는 사용하지 않는다. 근거는 `PLAN.md` D-001.

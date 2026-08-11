@@ -124,4 +124,4 @@ CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at 
 
 ## 3. RLS (Row Level Security)
 
-Supabase 서비스 역할 키(`SUPABASE_SERVICE_ROLE_KEY`)를 사용하는 서버 측에서는 RLS를 bypass하지만, 추후 클라이언트 직접 접근이 필요하면 RLS 정책을 추가해야 한다.
+RLS 정책은 없다. 서버가 `service_role` 키로 접근해 RLS를 전면 bypass하므로 권한 통제는 전적으로 서버 액션 코드에 있다. 작업 시 주의사항은 `AGENTS.md` "반드시 알아야 할 것" 1번, 분리 계획은 `PLAN.md` T-102 참조.

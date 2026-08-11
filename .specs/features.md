@@ -126,26 +126,7 @@ interface Comment {
 
 ---
 
-## 6. 로깅
-
-### 서버 (logger.ts)
-```typescript
-const logger = {
-  info: (message: string, meta?: Record<string, unknown>) => void,
-  warn: (message: string, meta?: Record<string, unknown>) => void,
-  error: (message: string, error?: unknown) => void,
-};
-```
-- 구조화된 JSON 로그 출력 (Vercel Logs 검색 가능)
-- `no-console` ESLint 규칙과 호환: `console.log` 대신 `logger` 사용
-
-### 클라이언트
-- 개발 모드: 모든 레벨 출력
-- 프로덕션: error만 출력
-
----
-
-## 7. Google Analytics 4
+## 6. Google Analytics 4
 
 - `next/script`로 GA 스크립트 로드 (`afterInteractive` 전략)
 - 측정 ID: `G-ZL70EZYFER`
@@ -153,7 +134,7 @@ const logger = {
 
 ---
 
-## 8. SEO
+## 7. SEO
 
 | 경로 | 내용 | 갱신 |
 |---|---|---|
@@ -168,7 +149,7 @@ const logger = {
 
 ---
 
-## 9. 에러 처리
+## 8. 에러 처리
 
 | 파일 | 범위 |
 |---|---|
@@ -176,5 +157,4 @@ const logger = {
 | `app/(blog)/loading.tsx` | Server Component가 Supabase 응답을 기다리는 동안의 스켈레톤 |
 | `app/not-found.tsx` | 매칭되지 않는 경로 + `notFound()` 호출 |
 
-Server Action은 예외를 던지지 않고 `ActionResult<T>`(`{ success, data?, error? }`)로
-반환하며, 클라이언트는 이를 토스트로 표시한다.
+Server Action의 반환 규약(`ActionResult<T>`, 예외를 던지지 않음)은 `AGENTS.md` 서버 액션 섹션이 원본이다. 클라이언트는 실패를 토스트로 표시한다.
