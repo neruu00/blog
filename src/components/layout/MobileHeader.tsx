@@ -10,19 +10,16 @@
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
 import { useSidebarStore } from '@/stores/useSidebarStore';
 
+import AuthSection from './AuthSection';
 import BlogOwnerProfile from './BlogOwnerProfile';
-import LoginButton from './LoginButton';
 import NavLinks from './NavLinks';
-import ProfileButton from './ProfileButton';
 
 export default function MobileHeader() {
   const pathname = usePathname();
-  const { data: session } = useSession();
   const isOpen = useSidebarStore((state) => state.isOpen);
   const toggle = useSidebarStore((state) => state.toggle);
   const close = useSidebarStore((state) => state.close);
@@ -99,7 +96,7 @@ export default function MobileHeader() {
         {/* 하단 푸터 / 로그인 영역 */}
         <div className="flex flex-col gap-1 border-t border-gray-100 pt-2 pb-2">
           <div className="px-2">
-            {session ? <ProfileButton session={session} /> : <LoginButton />}
+            <AuthSection />
           </div>
         </div>
       </div>
