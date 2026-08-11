@@ -7,6 +7,7 @@
 
 import Link from 'next/link';
 
+import TagBadge from '@/components/ui/TagBadge';
 import { formatDateKo } from '@/lib/utils/date';
 import { TECH_NEWS_SOURCE_LABELS, type TechNews } from '@/types/tech-news.type';
 
@@ -21,10 +22,8 @@ export default function NewsCard({ news }: NewsCardProps) {
     <article className="group py-3 first:pt-0 last:pb-0">
       <Link href={`/news/${news.id}`} className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3 overflow-hidden">
-          {/* 소스 뱃지 (미니멀 스퀘어 형태) */}
-          <span className="shrink-0 rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600">
-            {sourceLabel}
-          </span>
+          {/* 소스 뱃지 */}
+          <TagBadge tag={sourceLabel} hash={false} />
 
           {/* 제목 */}
           <h3 className="truncate text-sm font-medium text-gray-900 transition-colors group-hover:text-orange-500">

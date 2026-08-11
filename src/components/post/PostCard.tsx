@@ -29,7 +29,7 @@ export default function PostCard({ post }: PostCardProps) {
         {post.tags.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
-              <TagBadge key={tag} tag={tag} variant="primary" />
+              <TagBadge key={tag} tag={tag} />
             ))}
           </div>
         )}

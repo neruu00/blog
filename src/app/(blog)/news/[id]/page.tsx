@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 
 import BackLink from '@/components/common/BackLink';
+import TagBadge from '@/components/ui/TagBadge';
 import { supabase } from '@/lib/supabase';
 import { TECH_NEWS_SOURCE_LABELS } from '@/types/tech-news.type';
 import type { TechNews, TechNewsSource } from '@/types/tech-news.type';
@@ -82,9 +83,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
       <header className="mb-10 border-b border-gray-100 pb-8">
         {/* 소스 뱃지 */}
         <div className="mb-4">
-          <span className="rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">
-            {sourceLabel}
-          </span>
+          <TagBadge tag={sourceLabel} hash={false} />
         </div>
 
         {/* 제목 */}

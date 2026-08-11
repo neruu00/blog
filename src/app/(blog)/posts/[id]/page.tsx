@@ -135,7 +135,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             {post.tags && post.tags.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
                 {post.tags.map((tag: string) => (
-                  <TagBadge key={tag} tag={tag} variant="primary" />
+                  <TagBadge key={tag} tag={tag} />
                 ))}
               </div>
             )}

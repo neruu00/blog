@@ -103,7 +103,7 @@ export async function createPost(formData: FormData) {
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
 | `FilterChip` | `ui/` | 필터 탭 알약 (활성 = 주황 배경, 테두리 없음) |
-| `TagBadge` | `ui/` | 태그 뱃지 (variant: primary/solid/default) |
+| `TagBadge` | `ui/` | 전역 공용 뱃지 — 게시글 태그(`#` 자동)와 뉴스 소스 라벨(`hash={false}`)이 공유. 스타일은 하나 |
 | `IconButton` | `ui/` | 아이콘 버튼 (variant: ghost/danger) |
 | `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기) |
 | `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
