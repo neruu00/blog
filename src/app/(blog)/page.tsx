@@ -99,7 +99,7 @@ export default async function HomePage() {
           ) : (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-12">
               <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
-              <p className="mt-1 text-sm text-gray-300">Cron Job이 실행되면 자동으로 채워집니다.</p>
+              <p className="mt-1 text-sm text-gray-400">Cron Job이 실행되면 자동으로 채워집니다.</p>
             </div>
           )}
         </div>

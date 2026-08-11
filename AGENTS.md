@@ -164,8 +164,8 @@ type ActionResult<T = void> =
 
 - Tailwind **기본 팔레트를 우선** 사용한다. 포인트 컬러는 `orange-500`
 - 기본 팔레트에 없거나 시맨틱 이름이 필요할 때만 `globals.css`의 `@theme inline`에 토큰을 추가한다 (`surface`, `code-bg` 등)
-- **임의 hex를 새로 쓰지 않는다** (`bg-[#eee]`). 필요한 색이 팔레트에 없다면 정말 필요한지부터 의심하고, 필요하면 `@theme`에 토큰으로 추가한다
-  - 현재 예외: `CodeBlockComponent.tsx`의 Mac 창 색상, `EditorFooter.tsx`의 그림자. 해당 파일을 손대게 되면 토큰으로 옮긴다
+- **임의 hex를 새로 쓰지 않는다** (`bg-[#eee]`). 필요한 색이 팔레트에 없다면 정말 필요한지부터 의심하고, 필요하면 `@theme`에 토큰으로 추가한다 (Mac 코드블록 색·에디터 푸터 그림자는 이미 토큰이다: `code-block*`, `mac-*`, `shadow-editor-footer`)
+  - 현재 예외: `EyePoster.tsx`의 `text-[8px]` 하나 — 8px 유틸이 없고 장식용 마이크로 텍스트라 유지
 
 ### 텍스트 계층
 

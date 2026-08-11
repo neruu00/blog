@@ -103,7 +103,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       {/* 마크다운 요약 */}
       <section className="mb-12">
-        <div className="prose prose-gray prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-800 prose-code:font-mono max-w-none">
+        <div className="prose prose-gray prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-500 prose-p:leading-relaxed prose-li:text-gray-500 prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-code:font-mono max-w-none">
           <ReactMarkdown>{news.content}</ReactMarkdown>
         </div>
       </section>
@@ -118,7 +118,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               href={news.originalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-orange-300 hover:text-orange-600"
+              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:border-orange-300 hover:text-orange-600"
             >
               <ExternalLink className="h-4 w-4" />
               원본 뉴스 보러가기
@@ -131,7 +131,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               href={chromeKoreanUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-orange-300 hover:text-orange-600"
+              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:border-orange-300 hover:text-orange-600"
             >
               <ExternalLink className="h-4 w-4" />
               🇰🇷 한국어 버전

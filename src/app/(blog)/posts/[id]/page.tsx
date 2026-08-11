@@ -117,7 +117,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       <div className="mb-8 flex items-center justify-between">
         <Link
           href="/posts"
-          className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-600"
+          className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-500"
         >
           <ArrowLeft className="h-4 w-4" />
           목록으로
@@ -149,7 +149,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </header>
 
-          <div className="prose prose-lg prose-orange max-w-none text-gray-700">
+          <div className="prose prose-lg prose-orange max-w-none text-gray-900">
             <TiptapViewer content={post.content} />
           </div>
 
@@ -167,7 +167,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <>
                 <Link
                   href={`/edit/${post.id}`}
-                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-200"
                 >
                   수정
                 </Link>

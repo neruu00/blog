@@ -20,6 +20,16 @@
   /* 코드 블록 배경 */
   --color-code-bg: #f8f9fa;
 
+  /* Mac 스타일 코드 블록 (다크 표면 — CodeBlockComponent 전용) */
+  --color-code-block: #1e1e1e;
+  --color-code-block-header: #2d2d2d;
+  --color-mac-red: #ff5f56;
+  --color-mac-yellow: #ffbd2e;
+  --color-mac-green: #27c93f;
+
+  /* 에디터 하단 고정 푸터의 위쪽 그림자 */
+  --shadow-editor-footer: 0 -4px 24px rgb(0 0 0 / 0.06);
+
   /* 폰트 */
   --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
   --font-mono: var(--font-geist-mono);

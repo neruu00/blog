@@ -35,8 +35,8 @@ export default function Pagination({ currentPage, totalPages, currentTag }: Pagi
         href={getPageLink(currentPage - 1)}
         className={`flex h-9 w-9 items-center justify-center rounded-md border transition-colors ${
           currentPage > 1
-            ? 'border-gray-200 text-gray-600 hover:bg-gray-50'
-            : 'pointer-events-none border-gray-100 text-gray-300'
+            ? 'border-gray-200 text-gray-500 hover:bg-gray-50'
+            : 'pointer-events-none border-gray-100 text-gray-400'
         }`}
         aria-disabled={currentPage <= 1}
       >
@@ -53,7 +53,7 @@ export default function Pagination({ currentPage, totalPages, currentTag }: Pagi
             className={`flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors ${
               isCurrent
                 ? 'border-orange-500 bg-orange-500 text-white'
-                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                : 'border-gray-200 text-gray-500 hover:bg-gray-50'
             }`}
           >
             {page}
@@ -66,8 +66,8 @@ export default function Pagination({ currentPage, totalPages, currentTag }: Pagi
         href={getPageLink(currentPage + 1)}
         className={`flex h-9 w-9 items-center justify-center rounded-md border transition-colors ${
           currentPage < totalPages
-            ? 'border-gray-200 text-gray-600 hover:bg-gray-50'
-            : 'pointer-events-none border-gray-100 text-gray-300'
+            ? 'border-gray-200 text-gray-500 hover:bg-gray-50'
+            : 'pointer-events-none border-gray-100 text-gray-400'
         }`}
         aria-disabled={currentPage >= totalPages}
       >

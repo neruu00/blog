@@ -61,17 +61,17 @@ export default function TagInputField({ tags, onChange }: TagInputProps) {
   };
 
   return (
-    <div className="relative mx-auto flex w-full max-w-4xl flex-wrap items-center gap-2 border-b border-gray-100 pb-3 dark:border-neutral-800">
+    <div className="relative mx-auto flex w-full max-w-4xl flex-wrap items-center gap-2 border-b border-gray-100 pb-3">
       {tags.map((tag) => (
         <span
           key={tag}
-          className="flex items-center gap-1.5 rounded-full bg-orange-50 py-1.5 pr-2 pl-3 text-sm font-medium text-orange-600 transition-colors dark:bg-orange-500/10 dark:text-orange-400"
+          className="flex items-center gap-1.5 rounded-full bg-orange-50 py-1.5 pr-2 pl-3 text-sm font-medium text-orange-600 transition-colors"
         >
           {tag}
           <button
             type="button"
             onClick={() => removeTag(tag)}
-            className="rounded-full p-0.5 hover:bg-orange-200 hover:text-orange-800 dark:hover:bg-orange-500/20 dark:hover:text-orange-300"
+            className="rounded-full p-0.5 hover:bg-orange-200 hover:text-orange-800"
           >
             <X className="size-3.5" />
           </button>
@@ -86,11 +86,11 @@ export default function TagInputField({ tags, onChange }: TagInputProps) {
         onKeyDown={handleTagKeyDown}
         onFocus={() => setIsTagFocused(true)}
         onBlur={() => setIsTagFocused(false)}
-        className="min-w-50 flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400 dark:text-gray-300 dark:placeholder:text-gray-600"
+        className="min-w-50 flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
       />
 
       {isTagFocused && suggestions.length > 0 && (
-        <ul className="absolute top-full left-0 z-50 mt-2 max-h-48 w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+        <ul className="absolute top-full left-0 z-50 mt-2 max-h-48 w-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
           {suggestions.map((tagObj) => (
             <li
               key={tagObj.name}
@@ -98,13 +98,11 @@ export default function TagInputField({ tags, onChange }: TagInputProps) {
                 e.preventDefault();
                 addTag(tagObj.name);
               }}
-              className="cursor-pointer rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:text-gray-300 dark:hover:bg-neutral-700 dark:hover:text-orange-400"
+              className="cursor-pointer rounded-lg px-3 py-2 text-sm text-gray-900 transition-colors hover:bg-orange-50 hover:text-orange-600"
             >
               <span className="font-semibold">{tagObj.name}</span>
               {tagObj.keywords.length > 0 && (
-                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
-                  ({tagObj.keywords[0]})
-                </span>
+                <span className="ml-2 text-xs text-gray-400">({tagObj.keywords[0]})</span>
               )}
             </li>
           ))}

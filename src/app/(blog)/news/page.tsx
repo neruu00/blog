@@ -72,7 +72,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               !activeSource
                 ? 'bg-orange-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
             }`}
           >
             전체
@@ -85,7 +85,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 activeSource === src
                   ? 'bg-orange-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
               {TECH_NEWS_SOURCE_LABELS[src]}

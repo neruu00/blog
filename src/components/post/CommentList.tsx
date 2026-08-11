@@ -110,7 +110,7 @@ export default function CommentList({ postId, comments }: CommentListProps) {
                   />
                 )}
               </div>
-              <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-900">
                 {comment.content}
               </p>
             </div>

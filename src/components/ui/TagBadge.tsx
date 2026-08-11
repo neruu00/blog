@@ -13,7 +13,7 @@ export default function TagBadge({ tag, variant = 'default' }: TagBadgeProps) {
   let variantClasses = 'bg-gray-50 text-gray-500'; // default
 
   if (variant === 'solid') {
-    variantClasses = 'bg-gray-100 text-gray-600';
+    variantClasses = 'bg-gray-100 text-gray-500';
   } else if (variant === 'primary') {
     variantClasses = 'bg-orange-50 text-orange-600';
   }

@@ -21,7 +21,7 @@ export default function NotFound() {
         </Link>
         <Link
           href="/posts"
-          className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-orange-300 hover:text-orange-500"
+          className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:border-orange-300 hover:text-orange-500"
         >
           전체 글 보기
         </Link>

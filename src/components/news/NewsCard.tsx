@@ -27,7 +27,7 @@ export default function NewsCard({ news }: NewsCardProps) {
           </span>
 
           {/* 제목 */}
-          <h3 className="truncate text-sm font-medium text-gray-800 transition-colors group-hover:text-orange-500">
+          <h3 className="truncate text-sm font-medium text-gray-900 transition-colors group-hover:text-orange-500">
             {news.title}
           </h3>
         </div>
