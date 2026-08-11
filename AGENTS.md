@@ -90,7 +90,28 @@ export async function createPost(formData: FormData) {
 
 ## 컴포넌트
 
-**만들기 전에 먼저 찾는다.** `components/ui/`(Modal, Tooltip, TagBadge, IconButton, DropdownMenu, Skeleton)와 `components/common/`(Pagination, ConfirmDialog)에 이미 있는 것을 우선 쓴다. 비슷한 걸 하나 더 만들지 않는다.
+### 공용 컴포넌트를 먼저 쓴다
+
+**UI를 만들기 전에 아래 인벤토리를 먼저 확인한다.** 여기 있는 것과 비슷한 걸 페이지 안에 인라인으로 다시 만들지 않는다 — 그게 이 표가 존재하는 이유다.
+
+| 컴포넌트 | 위치 | 용도 |
+|---|---|---|
+| `EmptyState` | `common/` | 빈 목록 플레이스홀더 (점선 박스 + 안내 문구, 액션은 children) |
+| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. **h1 스타일의 단일 출처** |
+| `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
+| `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
+| `Pagination` | `common/` | 페이지네이션 |
+| `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
+| `FilterChip` | `ui/` | 필터 탭 알약 (활성 = 주황 배경, 테두리 없음) |
+| `TagBadge` | `ui/` | 태그 뱃지 (variant: primary/solid/default) |
+| `IconButton` | `ui/` | 아이콘 버튼 (variant: ghost/danger) |
+| `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기) |
+| `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
+| `Tooltip` / `Skeleton` | `ui/` | 툴팁 / 로딩 스켈레톤 |
+
+**승격 규칙**: 같은 구조를 **두 번째로** 작성하게 되는 순간이 공용화 시점이다. 컴포넌트로 추출해 `common/`(조합형) 또는 `ui/`(프리미티브)에 넣고, **이 표에 한 줄 추가한다.** 표에 없는 공용 컴포넌트는 다음 작업자에게 존재하지 않는 것과 같다.
+
+과거 사례: 빈 상태 박스가 4개 파일에 5번, 페이지 h1이 3번, 필터 칩이 2페이지에 각자 다른 스타일로 복제돼 있었다 — 두 번째 복제 때 추출했으면 없었을 드리프트다.
 
 **서버 컴포넌트가 기본이다.** `'use client'`는 훅·이벤트 핸들러·브라우저 API·Zustand 구독이 필요한 **최소 리프**에만 붙인다. 페이지 전체를 클라이언트로 만들지 않는다.
 

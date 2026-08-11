@@ -5,7 +5,6 @@
  *              admin인 경우 수정/삭제 버튼을 표시한다.
  */
 
-import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,6 +12,7 @@ import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
 import { getLikeStatus } from '@/actions/like';
+import BackLink from '@/components/common/BackLink';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
@@ -114,15 +114,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       {/* 상단 네비게이션 */}
-      <div className="mb-8 flex items-center justify-between">
-        <Link
-          href="/posts"
-          className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-500"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          목록으로
-        </Link>
-      </div>
+      <BackLink href="/posts">목록으로</BackLink>
 
       <div className="relative flex xl:gap-8">
         <ViewCounter postId={post.id} />

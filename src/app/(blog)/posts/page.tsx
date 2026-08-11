@@ -4,11 +4,12 @@
  *              태그(카테고리) 필터링과 전체 게시글 리스트를 표시한다.
  */
 
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import PageHeader from '@/components/common/PageHeader';
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
+import FilterChip from '@/components/ui/FilterChip';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
@@ -82,31 +83,22 @@ export default async function PostsPage({
   return (
     <div className="mx-auto max-w-3xl">
       {/* 헤더 */}
-      <header className="mb-10">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900">
-          {currentTag === 'All' ? '전체 글' : currentTag}
-        </h1>
-        <p className="text-sm text-gray-400">총 {totalPosts}개의 글</p>
-      </header>
+      <PageHeader
+        title={currentTag === 'All' ? '전체 글' : currentTag}
+        description={`총 ${totalPosts}개의 글`}
+      />
 
       {/* 태그 필터 */}
       <nav className="mb-10 flex flex-wrap gap-2">
-        {categories.map((tag) => {
-          const isActive = currentTag === tag;
-          return (
-            <Link
-              key={tag}
-              href={tag === 'All' ? '/posts' : `/posts?tag=${tag}`}
-              className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'border-orange-500 bg-orange-500 text-white'
-                  : 'border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-500'
-              }`}
-            >
-              {tag}
-            </Link>
-          );
-        })}
+        {categories.map((tag) => (
+          <FilterChip
+            key={tag}
+            href={tag === 'All' ? '/posts' : `/posts?tag=${tag}`}
+            active={currentTag === tag}
+          >
+            {tag}
+          </FilterChip>
+        ))}
       </nav>
 
       {/* 게시글 리스트 */}

@@ -5,9 +5,8 @@
  *              최신 기술 뉴스(5개), 최신 게시글을 표시한다.
  */
 
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-
+import EmptyState from '@/components/common/EmptyState';
+import SectionHeader from '@/components/common/SectionHeader';
 import EyePoster from '@/components/layout/EyePoster';
 import InteractivePoster from '@/components/layout/InteractivePoster';
 import NewsCard from '@/components/news/NewsCard';
@@ -71,16 +70,7 @@ export default async function HomePage() {
 
         {/* 최신 기술 뉴스 */}
         <div className="col-span-3">
-          <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
-            <h2 className="text-xl font-semibold text-gray-900">최신 기술 뉴스</h2>
-            <Link
-              href="/news"
-              className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
-            >
-              전체 보기
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
+          <SectionHeader title="최신 기술 뉴스" href="/news" />
 
           {newsList.length > 0 ? (
             <div className="flex flex-col divide-y divide-gray-100 border-0 bg-white">
@@ -89,26 +79,16 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-12">
-              <p className="text-gray-400">뉴스가 아직 수집되지 않았습니다.</p>
-              <p className="mt-1 text-sm text-gray-400">Cron Job이 실행되면 자동으로 채워집니다.</p>
-            </div>
+            <EmptyState message="뉴스가 아직 수집되지 않았습니다.">
+              <p className="text-sm text-gray-400">Cron Job이 실행되면 자동으로 채워집니다.</p>
+            </EmptyState>
           )}
         </div>
       </section>
 
       {/* 3. 최신 글 섹션 */}
       <section>
-        <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-3">
-          <h2 className="text-xl font-semibold text-gray-900">최신 글</h2>
-          <Link
-            href="/posts"
-            className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-orange-500"
-          >
-            전체 보기
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
+        <SectionHeader title="최신 글" href="/posts" />
 
         {formattedPosts.length > 0 ? (
           <div className="flex flex-col divide-y divide-gray-100">
@@ -117,9 +97,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 py-20">
-            <p className="text-gray-400">아직 작성된 글이 없습니다.</p>
-          </div>
+          <EmptyState message="아직 작성된 글이 없습니다." />
         )}
       </section>
     </div>

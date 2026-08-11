@@ -5,11 +5,11 @@
  *              Chrome Dev 기사의 경우 한국어 버전 링크를 함께 제공한다.
  */
 
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 
+import BackLink from '@/components/common/BackLink';
 import { supabase } from '@/lib/supabase';
 import { TECH_NEWS_SOURCE_LABELS } from '@/types/tech-news.type';
 import type { TechNews, TechNewsSource } from '@/types/tech-news.type';
@@ -76,13 +76,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   return (
     <div className="mx-auto max-w-3xl">
       {/* 뒤로 가기 */}
-      <Link
-        href="/news"
-        className="mb-8 flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-orange-500"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        뉴스 목록으로
-      </Link>
+      <BackLink href="/news">뉴스 목록으로</BackLink>
 
       {/* 헤더 */}
       <header className="mb-10 border-b border-gray-100 pb-8">

@@ -7,6 +7,7 @@ import { useTransition } from 'react';
 
 import { deleteComment } from '@/actions/comment';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import EmptyState from '@/components/common/EmptyState';
 import IconButton from '@/components/ui/IconButton';
 import { trackCommentDelete } from '@/lib/utils/analytics';
 import { formatDateKo } from '@/lib/utils/date';
@@ -58,11 +59,7 @@ export default function CommentList({ postId, comments }: CommentListProps) {
   const isAdmin = session?.user?.isAdmin;
 
   if (comments.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed border-gray-100 py-10 text-center text-sm text-gray-400">
-        첫 번째 댓글을 남겨보세요!
-      </div>
-    );
+    return <EmptyState message="첫 번째 댓글을 남겨보세요!" />;
   }
 
   return (
