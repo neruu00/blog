@@ -39,7 +39,7 @@ Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, 
 
 ```ts
 export async function createPost(formData: FormData) {
-  if (!(await verifyAdminSession())) return { success: false, error: '관리자 권한이 필요합니다.' };
+  if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
   // ...
 }
 ```
@@ -50,12 +50,10 @@ export async function createPost(formData: FormData) {
 
 업로드된 이미지는 `is_used = false`로 시작하고, 게시글 저장 시 `post_id`와 연결된다. 24시간 넘게 연결되지 않으면 크론이 삭제한다. `actions/post.ts`에는 각 단계 실패에 대한 롤백·강제삭제 경로가 있다. **이미지 관련 코드를 수정할 때 이 경로를 깨뜨리지 말 것.** 깨지면 스토리지에 좀비 파일이 남는다.
 
-### 3. 설치돼 있지만 쓰지 않는 것
+### 3. 들여오지 않는 것
 
-| 대상 | 상태 |
-|---|---|
-| TanStack Query | provider는 마운트돼 있으나 `useQuery`/`useMutation` 호출 0건. **새로 쓰지 말 것** (`PLAN.md` D-001) |
-| `lib/logger.ts` | 사용처 0건. ESLint가 `console.warn`/`console.error`를 허용하므로 그대로 쓰면 된다 |
+- **TanStack Query** — 제거됐다. 서버 상태는 Server Action + `revalidatePath`, 낙관적 업데이트는 `useOptimistic`으로 처리한다. 재도입은 검색 기능 결정(`PLAN.md` D-001, T-402) 이후에만
+- **로거 라이브러리/유틸** — `console.warn`/`console.error`를 그대로 쓴다 (ESLint 허용)
 
 ---
 

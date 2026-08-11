@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation';
 
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
-import { verifyAdminSession } from '@/lib/auth';
+import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
 import type { PostCategory } from '@/types/post.type';
@@ -67,7 +67,7 @@ export default async function PostsPage({
     redirect(`/posts?${params.toString()}`);
   }
 
-  const isAdmin = await verifyAdminSession();
+  const isAdmin = await checkIsAdmin();
 
   const formattedPosts = (posts || []).map((post) => ({
     id: post.id,

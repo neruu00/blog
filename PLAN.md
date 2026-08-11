@@ -94,9 +94,9 @@
 한 번에 묶으면 약 `-300`줄.
 
 - [x] **T-301** `.agent/rules/state-management.md` §3(TanStack Query) 정리 — D-001 결정 반영. **T-302보다 먼저 처리한다.**
-- [ ] **T-302** TanStack Query 제거 검토 — provider + devtools가 마운트돼 있으나 `useQuery`/`useMutation` 호출 0건. **`T-402`(검색) 로드맵 확정 후 결정.** 검색을 넣을 거면 존치, 아니면 제거.
+- [x] **T-302** TanStack Query 제거 완료 (2026-08-11 사용자 승인) — provider, devtools, eslint 플러그인, 패키지 3개. 검색(T-402) 도입 시 `pnpm add` + provider 재마운트로 복구 가능.
 - [x] **T-303** 미사용 의존성 제거 — `@google/generative-ai`(openai로 대체됨), `framer-motion`. 둘 다 import 0건.
-- [ ] **T-304** `lib/logger.ts` 94줄 미사용. 전 코드가 `console.error`를 쓴다. 문서 주석은 "이 모듈로만 로그 출력"이라 적혀 있어 의도와 현실이 불일치한다. 채택하거나 삭제하거나 택일.
+- [x] **T-304** `lib/logger.ts` 삭제 완료 — "삭제" 쪽으로 결정. `console.warn`/`console.error` 직접 사용이 컨벤션 (ESLint 허용).
 - [x] **T-305** `hooks/useOptimisticLike.ts` 빈 스텁("Phase 4에서 구현 예정"), `stores/useLikeStore.ts` 사용처 0.
 - [x] **T-306** `TAG_DICTIONARY` 중복 정의 — `lib/constants/tags.ts`와 `components/editor/TagInputField.tsx:6`. 한쪽만 고치면 태그 입력과 필터가 어긋난다.
 - [x] **T-307** README 드리프트 정리 — 포트폴리오 제거, 기술 뉴스 추가, `CRON_SECRET`/`OPENAI_API_KEY` 환경변수 문서화.
@@ -121,6 +121,6 @@
 
 ## ❓ 미해결 질문
 
-1. **검색(T-402)을 로드맵에 넣는가?** → T-302(TanStack Query 제거 여부)가 여기에 종속된다.
+1. **검색(T-402)을 로드맵에 넣는가?** → TanStack Query는 제거됐다(T-302). 검색 도입 시 재설치를 검토한다.
 2. **Vercel 플랜은?** `api/cron/fetch-news/route.ts`의 `maxDuration = 300`은 주석대로 Pro 기준이다. Hobby라면 실제 상한 확인이 필요하다.
-3. **`lib/logger.ts`를 채택할 것인가 삭제할 것인가?** (T-304)
+3. ~~`lib/logger.ts` 채택 vs 삭제~~ — 삭제로 해소 (T-304)

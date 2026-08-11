@@ -20,7 +20,7 @@ import PostExportButtons from '@/components/post/PostExportButtons';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
 import TagBadge from '@/components/ui/TagBadge';
-import { verifyAdminSession } from '@/lib/auth';
+import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
 import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap';
@@ -104,7 +104,7 @@ async function PostCommentSection({ postId }: { postId: string }) {
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const isAdmin = await verifyAdminSession();
+  const isAdmin = await checkIsAdmin();
   const { data: post, error } = await getPost(id);
 
   if (error || !post) notFound();

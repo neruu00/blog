@@ -22,9 +22,7 @@ Google OAuth (next-auth v4) + Supabase Adapter. 세션은 JWT 전략.
 
 | 함수 | 반환 | 비고 |
 |---|---|---|
-| `verifyAdminSession()` | `boolean` | **코드 전체가 실제로 쓰는 함수.** 서버 액션 첫 줄에서 호출 |
-| `isAdmin()` | `boolean` | `verifyAdminSession`의 실체 |
-| `requireAdmin()` / `requireAuth()` | throw | 정의만 있고 호출처 0건 |
+| `isAdmin()` | `boolean` | 유일한 권한 헬퍼. 관리자 필요 서버 액션의 첫 줄에서 호출 |
 
 ### 로그인 UI
 

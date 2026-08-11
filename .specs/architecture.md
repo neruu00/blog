@@ -11,7 +11,7 @@
 | DB | Supabase (PostgreSQL) |
 | Auth | next-auth v4 (Google OAuth) |
 | Editor | Tiptap + Mermaid |
-| Server State | Server Action + `revalidatePath` (TanStack Query 미사용 — `PLAN.md` D-001) |
+| Server State | Server Action + `revalidatePath` + `useOptimistic` |
 | Client State | Zustand |
 | 뉴스 수집 | rss-parser + OpenAI gpt-4o-mini (Vercel Cron) |
 | Validation | Zod |
