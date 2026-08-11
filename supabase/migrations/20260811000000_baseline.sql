@@ -11,8 +11,6 @@
 --    drift 가 의심되면 라이브 정의가 우선이다.
 --  * users 참조는 Auth.js Supabase Adapter 가 관리하는 next_auth 스키마의
 --    users 테이블을 가리킨다.
---  * idx_tech_news_original_url 은 아직 라이브 DB에 미적용이다 (PLAN.md T-308).
---    fetch-news 라우트는 이 인덱스 없이도 동작한다 (23505를 스킵 처리).
 -- =============================================================================
 
 -- ── posts ────────────────────────────────────────────────────────────────────
@@ -73,9 +71,6 @@ CREATE INDEX IF NOT EXISTS idx_comments_post_id       ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_post_id          ON likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_user_id          ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
-
--- 크론 재실행/백필 중복 방지 최종 방어선. ⚠️ 라이브 DB 미적용 (PLAN.md T-308)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tech_news_original_url ON tech_news(original_url);
 
 -- ── RPC 함수 (서버 액션이 supabase.rpc()로 호출) ─────────────────────────────
 -- 본문은 호출부로부터 재구성. 라이브 정의와 다르면 라이브가 우선.

@@ -24,7 +24,7 @@ export default function PostTitleInput({ mode }: PostTitleInputProps) {
           onKeyDown={(e) => {
             if (e.key === 'Enter') e.preventDefault();
           }}
-          className="block w-full border-none bg-transparent text-4xl font-bold text-gray-900 placeholder-gray-300 outline-none"
+          className="block w-full border-none bg-transparent text-4xl font-bold text-gray-900 outline-none placeholder:text-gray-400"
         />
       </div>
     </div>

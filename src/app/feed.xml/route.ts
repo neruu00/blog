@@ -25,11 +25,21 @@ function escapeXml(value: string): string {
 }
 
 export async function GET() {
-  const { data: posts } = await supabase
+  const { data: posts, error } = await supabase
     .from('posts')
     .select('id, title, content, created_at')
     .order('created_at', { ascending: false })
     .limit(FEED_ITEM_LIMIT);
+
+  // 조회 실패를 빈 피드로 위장하면 1시간 동안 캐시되어 SEO에 그대로 노출된다.
+  // 캐시되지 않는 503으로 실패를 드러낸다.
+  if (error) {
+    console.error('[feed.xml] 게시글 조회 실패:', error);
+    return new Response('Service Unavailable', {
+      status: 503,
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  }
 
   const items = (posts ?? [])
     .map((post) => {

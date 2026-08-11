@@ -22,10 +22,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/news`, changeFrequency: 'daily', priority: 0.7 },
   ];
 
-  const [{ data: posts }, { data: news }] = await Promise.all([
+  const [{ data: posts, error: postsError }, { data: news, error: newsError }] = await Promise.all([
     supabase.from('posts').select('id, created_at, updated_at'),
     supabase.from('tech_news').select('id, published_at'),
   ]);
+
+  // 조회 실패 시 동적 URL이 빠진 사이트맵이 1시간 캐시되는 것보다
+  // 라우트를 실패시키는 편이 낫다 — 크롤러는 이전 사이트맵을 유지하고 재시도한다.
+  if (postsError || newsError) {
+    console.error('[sitemap] 조회 실패:', postsError ?? newsError);
+    throw new Error('sitemap 생성에 필요한 데이터 조회에 실패했습니다.');
+  }
 
   const postRoutes: MetadataRoute.Sitemap = (posts ?? []).map((post) => ({
     url: `${SITE_URL}/posts/${post.id}`,

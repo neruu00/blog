@@ -61,7 +61,7 @@
 
 ## 🚨 T-0. 즉시 처리 (배포 차단 중)
 
-- [ ] **T-001** `OPENAI_API_KEY`를 Vercel Production에 등록 — `npx vercel env add OPENAI_API_KEY production`. 없으면 크론이 계속 전건 실패한다.
+- [x] **T-001** `OPENAI_API_KEY` Vercel 등록 완료 (2026-08-11 확인 — Preview·Production, Sensitive). 등록 명령: `pnpm dlx vercel env add OPENAI_API_KEY production`.
 - [ ] **T-002** 위 "완료" 항목 커밋 + 배포. 현재 워킹트리 미커밋 상태이며, 배포 전까지 프로덕션은 죽은 피드를 계속 긁는다.
 - [ ] **T-003** 배포 후 첫 크론(00:00 UTC) 응답에서 `feedsFailed: 0`, `failed: 0` 확인.
 
