@@ -2,7 +2,7 @@
 
 Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, Google 로그인 사용자는 댓글·좋아요만 할 수 있다. 매일 RSS 6곳을 수집해 LLM으로 요약하는 뉴스 큐레이션이 함께 돌아간다.
 
-이 문서는 **코드에서 읽어낼 수 없는 것**만 담는다. 파일 목록이나 구현 세부는 `.specs/`를 보라.
+이 문서는 **코드에서 읽어낼 수 없는 것**만 담는다. 파일 목록이나 구현 세부는 cushion의 `blog` 라이브러리(스펙 문서)를 보라 — `doc_outline`으로 목록을 확인한다.
 
 ---
 
@@ -52,7 +52,7 @@ export async function createPost(formData: FormData) {
 
 ### 3. 들여오지 않는 것
 
-- **TanStack Query** — 제거됐다. 서버 상태는 Server Action + `revalidatePath`, 낙관적 업데이트는 `useOptimistic`으로 처리한다. 재도입은 검색 기능 결정(`PLAN.md` D-001, T-402) 이후에만
+- **TanStack Query** — 제거됐다. 서버 상태는 Server Action + `revalidatePath`, 낙관적 업데이트는 `useOptimistic`으로 처리한다. 재도입은 검색 기능 결정(cushion `blog/PLAN.md` D-001, T-402) 이후에만
 - **로거 라이브러리/유틸** — `console.warn`/`console.error`를 그대로 쓴다 (ESLint 허용)
 
 ---
@@ -179,7 +179,7 @@ type ActionResult<T = void> =
 
 ## 스타일링
 
-**다크모드는 없다.** 라이트 모드 전용이며 `dark:` 클래스를 쓰지 않는다. (도입 검토는 `PLAN.md` T-405)
+**다크모드는 없다.** 라이트 모드 전용이며 `dark:` 클래스를 쓰지 않는다. (도입 검토는 cushion `blog/PLAN.md` T-405)
 
 ### 색
 
@@ -221,13 +221,15 @@ type ActionResult<T = void> =
 
 | 문서 | 내용 |
 |---|---|
-| `PLAN.md` | 개선 백로그와 결정 로그. **작업 전에 관련 항목이 있는지 확인하라** |
-| `supabase/migrations/` | **DB 스키마의 원본** — 스키마 변경은 여기에 새 파일로 |
-| `.specs/architecture.md` | 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름 |
-| `.specs/database.md` | 테이블·RPC 읽기용 요약 |
-| `.specs/features.md` | 인증·게시글·댓글·좋아요·뉴스·SEO 동작 명세 |
-| `.specs/editor.md` | Tiptap 확장 |
-| `.specs/design-system.md` | 컬러, 타이포그래피, 컴포넌트 레시피 |
+| `supabase/schema.sql` | **DB 스키마의 원본** — 전체가 idempotent한 단일 파일. 변경은 이 파일을 고치고 라이브 DB에 실행 |
+| cushion `blog/PLAN.md` | 개선 백로그와 결정 로그. **작업 전에 관련 항목이 있는지 확인하라** |
+| cushion `blog/architecture.md` | 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름 |
+| cushion `blog/database.md` | 테이블·RPC 읽기용 요약 |
+| cushion `blog/features.md` | 인증·게시글·댓글·좋아요·뉴스·SEO 동작 명세 |
+| cushion `blog/editor.md` | Tiptap 확장 |
+| cushion `blog/design-system.md` | 컬러, 타이포그래피, 컴포넌트 레시피 |
+
+스펙 문서는 저장소가 아니라 **cushion의 `blog` 라이브러리**에 있다. `doc_outline(library: "blog")`으로 목록·헤딩을 확인하고, 필요한 섹션만 `doc_get`으로 읽는다.
 
 코드를 바꾸면 해당 스펙 문서도 같이 갱신한다. 문서가 코드와 어긋나면 다음 작업자가 그 문서를 믿고 잘못된 코드를 쓴다.
 
@@ -237,5 +239,5 @@ type ActionResult<T = void> =
 
 - **이 문서와 어긋나는 코드를 발견하면 고치기 전에 알린다.** 문서가 틀렸을 수도 있다. 실제로 이 저장소의 이전 규칙 문서는 존재하지 않는 함수와 패턴을 지시한 채 방치돼 있었다.
 - **스펙 문서와 코드가 다르면 코드가 정답이다.** 문서를 고치고, 고쳤다고 알린다.
-- 즉석에서 해결하기 어려운 문제를 발견하면 `PLAN.md`에 항목으로 남긴다. 조용히 넘기지 않는다.
+- 즉석에서 해결하기 어려운 문제를 발견하면 cushion `blog/PLAN.md`에 항목으로 남긴다. 조용히 넘기지 않는다.
 - 규칙에 예외를 두어야 한다면 **이유를 코드 주석에 남긴다.** 다음 사람이 "왜 여기만 다르지"로 시간을 쓰지 않게.
