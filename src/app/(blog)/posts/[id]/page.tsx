@@ -11,11 +11,9 @@ import { notFound } from 'next/navigation';
 import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
-import { getLikeStatus } from '@/actions/like';
 import BackLink from '@/components/common/BackLink';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
-import LikeButton from '@/components/post/LikeButton';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import PostNavigation from '@/components/post/PostNavigation';
 import TableOfContents from '@/components/post/TableOfContents';
@@ -76,20 +74,6 @@ export async function generateMetadata(
       tags: post.tags || [],
     },
   };
-}
-
-async function PostLikeSection({ postId }: { postId: string }) {
-  const likeStatus = await getLikeStatus(postId);
-  const initialLikeCount = likeStatus.success ? likeStatus.count || 0 : 0;
-  const initialHasLiked = likeStatus.success ? likeStatus.hasLiked || false : false;
-
-  return (
-    <LikeButton
-      postId={postId}
-      initialLikeCount={initialLikeCount}
-      initialHasLiked={initialHasLiked}
-    />
-  );
 }
 
 async function PostCommentSection({ postId }: { postId: string }) {
@@ -160,12 +144,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
           <div className="prose prose-lg prose-orange max-w-none text-gray-900">
             <TiptapViewer content={post.content} />
-          </div>
-
-          <div className="mt-12 flex justify-center">
-            <Suspense fallback={<Skeleton className="h-10 w-24 rounded-full" />}>
-              <PostLikeSection postId={post.id} />
-            </Suspense>
           </div>
 
           <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
