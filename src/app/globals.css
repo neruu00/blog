@@ -118,29 +118,6 @@ body {
 }
 
 /* ────────────────────────────────────
-   기술 스택 포스터 — 세로 무한 루프 (TechStackPoster)
-   ──────────────────────────────────── */
-
-@keyframes marquee-y {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-50%);
-  }
-}
-
-.animate-marquee-y {
-  animation: marquee-y 20s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-marquee-y {
-    animation: none;
-  }
-}
-
-/* ────────────────────────────────────
    본문 헤딩 스타일 (ShiftedHeading 오프셋)
    # → <h2>, ## → <h3>, ### → <h4> 이므로
    h2가 시각적으로 가장 크게 보이도록 스타일 재정의
