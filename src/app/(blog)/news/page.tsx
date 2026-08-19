@@ -91,7 +91,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
             message={
               activeSource
                 ? `${TECH_NEWS_SOURCE_LABELS[activeSource]} 뉴스가 아직 없습니다.`
-                : '수집된 뉴스가 없습니다. Cron Job이 실행되면 자동으로 채워집니다.'
+                : '아직 수집된 뉴스가 없습니다. 새 뉴스가 수집되면 자동으로 표시됩니다.'
             }
           />
         )}

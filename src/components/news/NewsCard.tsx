@@ -8,7 +8,7 @@
 import Link from 'next/link';
 
 import TagBadge from '@/components/ui/TagBadge';
-import { formatDateKo } from '@/lib/utils/date';
+import { formatRelativeTime } from '@/lib/utils/date';
 import { TECH_NEWS_SOURCE_LABELS, type TechNews } from '@/types/tech-news.type';
 
 interface NewsCardProps {
@@ -31,9 +31,9 @@ export default function NewsCard({ news }: NewsCardProps) {
           </h3>
         </div>
 
-        {/* 날짜 */}
+        {/* 날짜 — 뉴스는 신선도가 중요하므로 상대 시간("3시간 전")으로 표시 */}
         <time dateTime={news.publishedAt.toISOString()} className="shrink-0 text-xs text-gray-400">
-          {formatDateKo(news.publishedAt)}
+          {formatRelativeTime(news.publishedAt)}
         </time>
       </Link>
     </article>

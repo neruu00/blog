@@ -41,7 +41,7 @@ export default function FloatingActionButton() {
           href="https://github.com/neruu00/blog/issues"
           target="_blank"
           rel="noreferrer"
-          className="group flex h-14 w-14 items-center justify-center rounded-full bg-gray-800 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gray-900 hover:shadow-xl"
+          className="group flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
           aria-label="이슈 제보하기"
         >
           <Megaphone className="h-6 w-6 transition-transform group-hover:scale-110" />

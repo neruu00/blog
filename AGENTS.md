@@ -204,7 +204,7 @@ type ActionResult<T = void> =
 
 선을 최소화하고 **배경색 차이로 구역을 나눈다.** 짙은 테두리와 강한 그림자를 기본값으로 두지 않는다.
 
-- Badge·Callout류는 테두리 없이 부드러운 배경만 쓴다 (`TagBadge`: `bg-orange-50 text-orange-600`)
+- Badge·Callout류는 테두리 없이 부드러운 배경만 쓴다 (`TagBadge`: `bg-orange-50 text-orange-700` — orange-600은 12px 텍스트 AA 대비 미달)
 - 구분선은 `border-gray-100`, 카드 경계는 `border-gray-200`
 - 그림자는 **실제로 떠 있는 요소**(모달, 드롭다운, FAB)에만. 평면 카드에는 쓰지 않는다
 

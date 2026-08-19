@@ -41,14 +41,14 @@ export default function BlogError({
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          className="flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
         >
           <RotateCw className="h-4 w-4" />
           다시 시도
         </button>
         <Link
           href="/"
-          className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:border-orange-300 hover:text-orange-500"
+          className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
         >
           홈으로
         </Link>

@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import BackLink from '@/components/common/BackLink';
 import TagBadge from '@/components/ui/TagBadge';
 import { supabase } from '@/lib/supabase';
+import { formatDateKo } from '@/lib/utils/date';
 import { TECH_NEWS_SOURCE_LABELS } from '@/types/tech-news.type';
 import type { TechNews, TechNewsSource } from '@/types/tech-news.type';
 
@@ -86,18 +87,14 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <TagBadge tag={sourceLabel} hash={false} />
         </div>
 
-        {/* 제목 */}
-        <h1 className="mb-4 text-xl leading-snug font-bold tracking-tight text-gray-900">
+        {/* 제목 — 페이지 제목은 text-3xl (design-system.md 크기 체계) */}
+        <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
           {news.title}
         </h1>
 
         {/* 발행일 */}
         <time dateTime={news.publishedAt.toISOString()} className="text-sm text-gray-400">
-          {news.publishedAt.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          {formatDateKo(news.publishedAt)}
         </time>
       </header>
 

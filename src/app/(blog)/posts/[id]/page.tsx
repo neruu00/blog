@@ -17,8 +17,10 @@ import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import LikeButton from '@/components/post/LikeButton';
 import PostExportButtons from '@/components/post/PostExportButtons';
+import PostNavigation from '@/components/post/PostNavigation';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
+import Skeleton from '@/components/ui/Skeleton';
 import TagBadge from '@/components/ui/TagBadge';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -38,11 +40,7 @@ const TiptapViewer = dynamic(() => import('@/components/editor/TiptapViewer'), {
   loading: () => (
     <div className="space-y-3 py-4">
       {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="h-4 animate-pulse rounded bg-gray-100"
-          style={{ width: `${85 - i * 5}%` }}
-        />
+        <Skeleton key={i} className="h-4" style={{ width: `${85 - i * 5}%` }} />
       ))}
     </div>
   ),
@@ -109,6 +107,24 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   if (error || !post) notFound();
 
+  // 이전(더 오래된)/다음(더 최신) 글 — 목록 정렬 기준인 created_at으로 인접 글을 찾는다
+  const [{ data: prevPost }, { data: nextPost }] = await Promise.all([
+    supabase
+      .from('posts')
+      .select('id, title')
+      .lt('created_at', post.created_at)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('posts')
+      .select('id, title')
+      .gt('created_at', post.created_at)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
   const tocItems = extractTocFromTiptap(post.content);
 
   return (
@@ -119,11 +135,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       <div className="relative flex xl:gap-8">
         <ViewCounter postId={post.id} />
         <article className="mx-auto max-w-3xl flex-1">
-          <header className="mb-10 text-center">
-            <h1 className="mb-4 text-2xl leading-snug font-bold tracking-tight text-gray-900">
+          {/* 좌측 정렬 + text-3xl — 목록(PageHeader)·뉴스 상세와 제목 위계·정렬 통일 */}
+          <header className="mb-10">
+            <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
               {post.title}
             </h1>
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 text-sm text-gray-500">
               <time dateTime={post.created_at ? new Date(post.created_at).toISOString() : ''}>
                 {formatDateKo(post.created_at)}
               </time>
@@ -133,7 +150,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <span>조회수 {post.view_count || 0}</span>
             </div>
             {post.tags && post.tags.length > 0 && (
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <div className="mt-6 flex flex-wrap gap-2">
                 {post.tags.map((tag: string) => (
                   <TagBadge key={tag} tag={tag} />
                 ))}
@@ -146,9 +163,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="mt-12 flex justify-center">
-            <Suspense
-              fallback={<div className="h-10 w-24 animate-pulse rounded-full bg-gray-100" />}
-            >
+            <Suspense fallback={<Skeleton className="h-10 w-24 rounded-full" />}>
               <PostLikeSection postId={post.id} />
             </Suspense>
           </div>
@@ -159,7 +174,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               <>
                 <Link
                   href={`/edit/${post.id}`}
-                  className="flex h-10 items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-200"
+                  className="flex h-10 items-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
                 >
                   수정
                 </Link>
@@ -168,9 +183,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </div>
 
-          <Suspense
-            fallback={<div className="mt-16 h-32 w-full animate-pulse rounded-xl bg-gray-100" />}
-          >
+          <PostNavigation prev={prevPost} next={nextPost} />
+
+          <Suspense fallback={<Skeleton className="mt-16 h-32 w-full rounded-xl" />}>
             <PostCommentSection postId={post.id} />
           </Suspense>
         </article>
