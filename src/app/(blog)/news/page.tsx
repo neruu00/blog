@@ -21,7 +21,7 @@ export const metadata = {
 /**
  * 이 페이지는 동적 렌더링으로 남긴다: 소스 필터가 `searchParams`를 읽는데,
  * force-static은 searchParams를 빈 객체로 만들어 필터가 깨진다.
- * (PLAN.md T-203 — 필터를 경로 세그먼트로 옮기면 ISR 전환 가능)
+ * (cushion blog/PLAN.md T-203 — 필터를 경로 세그먼트로 옮기면 ISR 전환 가능)
  */
 
 const ALL_SOURCES = Object.keys(TECH_NEWS_SOURCE_LABELS) as TechNewsSource[];
