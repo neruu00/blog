@@ -8,7 +8,7 @@
 import EmptyState from '@/components/common/EmptyState';
 import SectionHeader from '@/components/common/SectionHeader';
 import EyePoster from '@/components/layout/EyePoster';
-import InteractivePoster from '@/components/layout/InteractivePoster';
+import TechStackPoster from '@/components/layout/TechStackPoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
@@ -48,11 +48,17 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      {/* 1. 인사말 섹션 */}
+      {/* 1. 인사말 — 방범카메라 포스터(作動中)와 같은 톤의 "기록 중" 컨셉 */}
       <section className="mb-12">
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-gray-900">안녕하세요 👋</h1>
+        <h1 className="mb-3 flex items-center gap-3 text-3xl font-bold tracking-tight text-gray-900">
+          기록 작동 중{/* REC 인디케이터 — 녹화 표시등은 관례상 빨강 (상태색 red-500와 동일 값) */}
+          <span
+            className="inline-block h-3 w-3 animate-pulse rounded-full bg-red-500"
+            aria-hidden
+          />
+        </h1>
         <p className="text-lg leading-relaxed text-gray-500">
-          개발하며 배운 것들을 기록하는 블로그입니다.
+          개발하며 배운 것들이 사라지기 전에 이곳에 남깁니다.
         </p>
       </section>
 
@@ -60,13 +66,14 @@ export default async function HomePage() {
           포스터는 마우스 전용 인터랙션이라 터치 기기에선 정지 이미지일 뿐이고,
           모바일에서 콘텐츠보다 먼저 500px+를 차지하므로 md 미만에서는 숨긴다 */}
       <section className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-5">
-        <div className="hidden md:col-span-1 md:block">
-          <InteractivePoster />
-        </div>
-
         {/* 눈동자 포스터 */}
         <div className="hidden md:col-span-1 md:block">
           <EyePoster />
+        </div>
+
+        {/* 기술 스택 무한 루프 */}
+        <div className="hidden md:col-span-1 md:block">
+          <TechStackPoster />
         </div>
 
         {/* 최신 기술 뉴스 */}

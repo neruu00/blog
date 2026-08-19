@@ -98,9 +98,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         </time>
       </header>
 
-      {/* 마크다운 요약 */}
+      {/* 마크다운 요약 — 본문 스타일은 게시글과 동일하게 globals.css의 .prose가 단일 출처 */}
       <section className="mb-12">
-        <div className="prose prose-gray prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-500 prose-p:leading-relaxed prose-li:text-gray-500 prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-code:font-mono max-w-none">
+        <div className="prose prose-lg prose-orange max-w-none text-gray-900">
           <ReactMarkdown>{news.content}</ReactMarkdown>
         </div>
       </section>

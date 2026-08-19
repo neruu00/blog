@@ -30,7 +30,8 @@ export default function PostList({ posts, isAdmin }: PostListProps) {
   return (
     <div className="flex flex-col divide-y divide-gray-100">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        // posts 목록은 h1(PageHeader) 바로 아래라 카드 제목이 h2여야 아웃라인이 이어진다
+        <PostCard key={post.id} post={post} titleAs="h2" />
       ))}
     </div>
   );
