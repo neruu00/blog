@@ -44,8 +44,9 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
 
   if (items.length === 0) return null;
 
+  // 표시 여부(hidden xl:block)는 부모(page.tsx)가 결정한다
   return (
-    <div className="sticky top-24 hidden w-56 shrink-0 lg:block xl:w-64">
+    <div className="sticky top-24 w-64 shrink-0">
       <h3 className="mb-4 text-sm font-semibold text-gray-900">목차</h3>
       <ul className="space-y-2 border-l-2 border-gray-100 pl-4 text-sm text-gray-500">
         {items.map((item, index) => (

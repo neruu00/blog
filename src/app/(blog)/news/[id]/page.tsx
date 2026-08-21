@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import BackLink from '@/components/common/BackLink';
 import TagBadge from '@/components/ui/TagBadge';
 import { supabase } from '@/lib/supabase';
+import { formatDateKo } from '@/lib/utils/date';
 import { TECH_NEWS_SOURCE_LABELS } from '@/types/tech-news.type';
 import type { TechNews, TechNewsSource } from '@/types/tech-news.type';
 
@@ -86,24 +87,20 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <TagBadge tag={sourceLabel} hash={false} />
         </div>
 
-        {/* 제목 */}
-        <h1 className="mb-4 text-xl leading-snug font-bold tracking-tight text-gray-900">
+        {/* 제목 — 페이지 제목은 text-3xl (design-system.md 크기 체계) */}
+        <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
           {news.title}
         </h1>
 
         {/* 발행일 */}
         <time dateTime={news.publishedAt.toISOString()} className="text-sm text-gray-400">
-          {news.publishedAt.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          {formatDateKo(news.publishedAt)}
         </time>
       </header>
 
-      {/* 마크다운 요약 */}
+      {/* 마크다운 요약 — 본문 스타일은 게시글과 동일하게 globals.css의 .prose가 단일 출처 */}
       <section className="mb-12">
-        <div className="prose prose-gray prose-headings:font-semibold prose-headings:text-gray-900 prose-p:text-gray-500 prose-p:leading-relaxed prose-li:text-gray-500 prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-code:font-mono max-w-none">
+        <div className="prose prose-lg prose-orange max-w-none text-gray-900">
           <ReactMarkdown>{news.content}</ReactMarkdown>
         </div>
       </section>

@@ -19,7 +19,7 @@ import { mapPostRow } from '@/lib/utils/mappers';
  * 이 페이지는 동적 렌더링으로 남긴다:
  * - 태그 필터·페이지네이션이 `searchParams`를 읽는다 (force-static 시 빈 객체가 됨)
  * - `isAdmin()`이 세션 쿠키를 읽는다
- * ISR 전환은 PLAN.md T-203 참조 (관리자 UI를 클라이언트 세션으로 옮기면 가능)
+ * ISR 전환은 cushion blog/PLAN.md T-203 참조 (관리자 UI를 클라이언트 세션으로 옮기면 가능)
  */
 export default async function PostsPage({
   searchParams,
@@ -105,7 +105,12 @@ export default async function PostsPage({
       <PostList posts={formattedPosts} isAdmin={isAdmin} />
 
       {/* 페이지네이션 */}
-      <Pagination currentPage={currentPage} totalPages={totalPages} currentTag={currentTag} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/posts"
+        params={currentTag !== 'All' ? { tag: currentTag } : undefined}
+      />
     </div>
   );
 }

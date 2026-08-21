@@ -15,9 +15,8 @@
 | **Google OAuth** | NextAuth v4 기반 소셜 로그인, Admin 권한 분리 |
 | **게시글 CRUD** | 작성/수정/삭제 (Admin), 태그 필터링, 조회수 (쿠키 중복 방지) |
 | **댓글 시스템** | Google 로그인 사용자 전용, 1단 대댓글, 실시간 토스트 알림 |
-| **좋아요** | 낙관적 업데이트 + 디바운싱, 사용자당 게시글당 1회 |
 | **기술 뉴스** | RSS 6개 소스 수집 + GPT-4o-mini 한국어 요약, Vercel Cron 일 1회 자동 갱신 |
-| **애널리틱스** | GA4 커스텀 이벤트 (좋아요, 댓글, 조회수) + Vercel Analytics |
+| **애널리틱스** | GA4 커스텀 이벤트 (댓글, 조회수) + Vercel Analytics |
 | **UI 시스템** | 커스텀 전역 Modal 및 Toast 알림 |
 
 ## 🛠️ 기술 스택
@@ -39,7 +38,7 @@
 
 ```text
 src/
-├── actions/          # Server Actions (post, comment, like, image)
+├── actions/          # Server Actions (post, comment, image)
 ├── app/
 │   ├── (blog)/       # 공개 페이지 (홈, 게시글, 기술 뉴스)
 │   ├── (protected)/  # 관리자 전용 (글쓰기, 수정)
@@ -47,7 +46,7 @@ src/
 ├── components/
 │   ├── editor/       # Tiptap 에디터 + 확장 (CodeBlock, Mermaid)
 │   ├── layout/       # SideNav, MobileHeader, Footer
-│   ├── post/         # PostCard, PostList, CommentSection, LikeButton
+│   ├── post/         # PostCard, PostList, CommentSection
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
 ├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
 ├── lib/              # auth, supabase, rss, llm, analytics
@@ -102,13 +101,7 @@ pnpm dev
 
 ## 📐 스펙 문서
 
-프로젝트의 상세 기술 명세는 `.specs/` 디렉토리에서 확인할 수 있습니다:
-
-- [아키텍처](.specs/architecture.md) — 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름
-- [데이터베이스](.specs/database.md) — 테이블·RPC 요약 (SQL 원본은 [supabase/migrations](supabase/migrations))
-- [디자인 시스템](.specs/design-system.md) — 컬러, 타이포그래피, 레이아웃
-- [에디터](.specs/editor.md) — Tiptap 확장, CodeBlock, Mermaid
-- [기능](.specs/features.md) — 인증, 게시글, 댓글, 좋아요, 조회수, 기술 뉴스, SEO, 에러 처리
+프로젝트의 상세 기술 명세(아키텍처, 데이터베이스, 기능, 에디터, 디자인 시스템)는 cushion 문서 시스템의 `blog` 라이브러리에서 관리합니다. DB 스키마의 SQL 원본은 [supabase/schema.sql](supabase/schema.sql)입니다.
 
 ## 📝 라이선스
 

@@ -24,11 +24,6 @@ export function trackPostView(postId: string, title: string) {
   sendEvent('post_view', { post_id: postId, post_title: title });
 }
 
-/** 좋아요 토글 이벤트 */
-export function trackLikeToggle(postId: string, liked: boolean) {
-  sendEvent('like_toggle', { post_id: postId, liked });
-}
-
 /** 댓글 작성 이벤트 */
 export function trackCommentCreate(postId: string) {
   sendEvent('comment_create', { post_id: postId });
