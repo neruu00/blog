@@ -22,7 +22,6 @@ export function mapPostRow(row: Row): Post {
     tags: (row.tags as string[]) || [],
     category: ((row.category as string) || 'tech') as PostCategory,
     viewCount: (row.view_count as number) || 0,
-    likeCount: (row.like_count as number) || 0,
   };
 }
 

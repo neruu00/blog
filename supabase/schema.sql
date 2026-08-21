@@ -6,8 +6,9 @@
 -- Editor)에 해당 구문을 실행한 뒤 커밋한다.
 -- (cushion `blog/database.md` 는 읽기용 요약이며, 컬럼 변경 시 함께 갱신한다)
 --
--- ⚠️ 라이브 DB 미적용분이 하나 있다 — 아래 "tech_news 중복 정리 + original_url
---    UNIQUE" 블록. 나머지는 모두 적용된 상태다. 실행 후 그 블록의 ⚠️ 주석을 지울 것.
+-- ⚠️ 라이브 DB 미적용분이 두 개 있다 — "tech_news 중복 정리 + original_url UNIQUE"
+--    블록과 "좋아요 기능 제거" DROP 블록. 나머지는 모두 적용된 상태다.
+--    각각 실행 후 해당 블록의 ⚠️ 주석을 지울 것.
 --
 -- 주의:
 --  * posts / images 의 CREATE 문과 RPC 함수 본문은 마이그레이션 기록이 없던
@@ -26,7 +27,6 @@ CREATE TABLE IF NOT EXISTS posts (
   author     TEXT DEFAULT 'admin',
   category   TEXT DEFAULT 'tech',
   view_count INTEGER DEFAULT 0,
-  like_count INTEGER DEFAULT 0,        -- 비정규화 카운트 (RPC로 증감)
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -50,15 +50,6 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- ── likes (유저당 게시글당 1회) ──────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS likes (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  post_id    UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id    UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE(post_id, user_id)
-);
-
 -- ── tech_news (뉴스 큐레이션: RSS 수집 + LLM 요약) ───────────────────────────
 CREATE TABLE IF NOT EXISTS tech_news (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -72,8 +63,6 @@ CREATE TABLE IF NOT EXISTS tech_news (
 
 -- ── 인덱스 ───────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_comments_post_id       ON comments(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_post_id          ON likes(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_user_id          ON likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
 
 -- ── tech_news 중복 정리 + original_url UNIQUE (cushion blog/PLAN.md T-308) ───
@@ -101,14 +90,9 @@ RETURNS void AS $$
   UPDATE posts SET view_count = view_count + 1 WHERE id = post_id;
 $$ LANGUAGE sql;
 
--- actions/like.ts: toggleLike (좋아요 추가 성공 시)
-CREATE OR REPLACE FUNCTION increment_like_count(target_post_id UUID)
-RETURNS void AS $$
-  UPDATE posts SET like_count = like_count + 1 WHERE id = target_post_id;
-$$ LANGUAGE sql;
-
--- actions/like.ts: toggleLike (좋아요 행이 실제로 삭제된 경우에만)
-CREATE OR REPLACE FUNCTION decrement_like_count(target_post_id UUID)
-RETURNS void AS $$
-  UPDATE posts SET like_count = GREATEST(like_count - 1, 0) WHERE id = target_post_id;
-$$ LANGUAGE sql;
+-- ── 좋아요 기능 제거 (2026-08-20, cushion blog/PLAN.md D-004) ─────────────────
+-- ⚠️ 라이브 DB에 아래 DROP 미적용. Supabase SQL Editor에서 실행 후 이 블록 삭제.
+DROP FUNCTION IF EXISTS increment_like_count(UUID);
+DROP FUNCTION IF EXISTS decrement_like_count(UUID);
+DROP TABLE IF EXISTS likes;
+ALTER TABLE posts DROP COLUMN IF EXISTS like_count;

@@ -28,6 +28,4 @@ export interface Post {
   category: PostCategory;
   /** 조회수 */
   viewCount: number;
-  /** 좋아요 수 */
-  likeCount: number;
 }

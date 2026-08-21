@@ -5,7 +5,7 @@
  *              제목, 요약, 태그, 날짜, 조회수를 표시한다.
  */
 
-import { Eye } from 'lucide-react';
+import { Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 import TagBadge from '@/components/ui/TagBadge';
@@ -15,12 +15,16 @@ import type { Post } from '@/types/post.type';
 
 interface PostCardProps {
   post: Post;
+  /** 문서 아웃라인용 헤딩 레벨 — h1 바로 아래(posts 목록)면 h2, 섹션(h2) 아래면 h3 */
+  titleAs?: 'h2' | 'h3';
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, titleAs: TitleTag = 'h3' }: PostCardProps) {
   // Tiptap JSON에서 순수 텍스트를 추출하여 요약 생성
   const plainText = extractTextFromTiptap(post.content);
   const snippet = plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText;
+  // ponytail: 한국어 분당 500자 가정의 단순 추정 — 코드 블록 가중치가 필요해지면 개선
+  const readingMinutes = Math.max(1, Math.round(plainText.length / 500));
 
   return (
     <article className="group py-6 first:pt-0 last:pb-0">
@@ -35,9 +39,9 @@ export default function PostCard({ post }: PostCardProps) {
         )}
 
         {/* 제목 */}
-        <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-500">
+        <TitleTag className="mb-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-500">
           {post.title}
-        </h3>
+        </TitleTag>
 
         {/* 요약 */}
         <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-gray-500">{snippet}</p>
@@ -49,6 +53,11 @@ export default function PostCard({ post }: PostCardProps) {
           <span className="flex items-center gap-1">
             <Eye className="h-3.5 w-3.5" />
             {post.viewCount}
+          </span>
+          <span className="text-gray-400">·</span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            {readingMinutes}분
           </span>
         </div>
       </Link>

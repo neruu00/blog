@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, Google 로그인 사용자는 댓글·좋아요만 할 수 있다. 매일 RSS 6곳을 수집해 LLM으로 요약하는 뉴스 큐레이션이 함께 돌아간다.
+Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, Google 로그인 사용자는 댓글만 쓸 수 있다. 매일 RSS 6곳을 수집해 LLM으로 요약하는 뉴스 큐레이션이 함께 돌아간다.
 
 이 문서는 **코드에서 읽어낼 수 없는 것**만 담는다. 파일 목록이나 구현 세부는 cushion의 `blog` 라이브러리(스펙 문서)를 보라 — `doc_outline`으로 목록을 확인한다.
 
@@ -117,9 +117,9 @@ export async function createPost(formData: FormData) {
 
 ```text
 page.tsx (서버)
-  └── PostList (서버)
-        ├── PostCard (서버 — 표시만)
-        └── LikeButton (클라이언트 — 클릭 처리)
+  ├── PostList (서버)
+  │     └── PostCard (서버 — 표시만)
+  └── CommentSection (클라이언트 — 입력·삭제 처리)
 ```
 
 | 디렉토리 | 용도 |
@@ -138,7 +138,7 @@ page.tsx (서버)
 | 상황 | 수단 |
 |---|---|
 | 라우트 전환 | `(blog)/loading.tsx` |
-| 페이지 일부 (댓글·좋아요 등) | `<Suspense>` + 스켈레톤 |
+| 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경 |
 | 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 (`TiptapViewer` 참고) |
 
@@ -173,8 +173,6 @@ type ActionResult<T = void> =
 | 폼 · 로컬 UI | `useState` / `useActionState` |
 | 필터 · 정렬 · 페이지 | `searchParams` (전역 상태로 만들지 않는다) |
 
-연타가 발생하는 토글(좋아요)은 디바운스 + 진행 중 요청 잠금 + 최종 의도만 전송하는 패턴을 쓴다. 구현 예시는 `components/post/LikeButton.tsx`.
-
 ---
 
 ## 스타일링
@@ -204,7 +202,7 @@ type ActionResult<T = void> =
 
 선을 최소화하고 **배경색 차이로 구역을 나눈다.** 짙은 테두리와 강한 그림자를 기본값으로 두지 않는다.
 
-- Badge·Callout류는 테두리 없이 부드러운 배경만 쓴다 (`TagBadge`: `bg-orange-50 text-orange-600`)
+- Badge·Callout류는 테두리 없이 부드러운 배경만 쓴다 (`TagBadge`: `bg-orange-50 text-orange-700` — orange-600은 12px 텍스트 AA 대비 미달)
 - 구분선은 `border-gray-100`, 카드 경계는 `border-gray-200`
 - 그림자는 **실제로 떠 있는 요소**(모달, 드롭다운, FAB)에만. 평면 카드에는 쓰지 않는다
 
@@ -225,7 +223,7 @@ type ActionResult<T = void> =
 | cushion `blog/PLAN.md` | 개선 백로그와 결정 로그. **작업 전에 관련 항목이 있는지 확인하라** |
 | cushion `blog/architecture.md` | 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름 |
 | cushion `blog/database.md` | 테이블·RPC 읽기용 요약 |
-| cushion `blog/features.md` | 인증·게시글·댓글·좋아요·뉴스·SEO 동작 명세 |
+| cushion `blog/features.md` | 인증·게시글·댓글·뉴스·SEO 동작 명세 |
 | cushion `blog/editor.md` | Tiptap 확장 |
 | cushion `blog/design-system.md` | 컬러, 타이포그래피, 컴포넌트 레시피 |
 

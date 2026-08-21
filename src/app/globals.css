@@ -35,6 +35,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* 키보드 포커스 — 브라우저 기본 아웃라인 대신 포인트 컬러로 통일 (접근성 필수) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid theme('colors.orange.500');
+  outline-offset: 2px;
+}
+
 /* 기본 body 스타일 */
 body {
   background-color: var(--color-surface);
@@ -231,10 +238,9 @@ body {
     display: none !important;
   }
 
-  /* 댓글, TOC, 좋아요 버튼 숨김 */
+  /* 댓글, TOC 숨김 */
   [data-comments],
-  [data-toc],
-  [data-like-button] {
+  [data-toc] {
     display: none !important;
   }
 

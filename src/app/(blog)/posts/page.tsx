@@ -105,7 +105,12 @@ export default async function PostsPage({
       <PostList posts={formattedPosts} isAdmin={isAdmin} />
 
       {/* 페이지네이션 */}
-      <Pagination currentPage={currentPage} totalPages={totalPages} currentTag={currentTag} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/posts"
+        params={currentTag !== 'All' ? { tag: currentTag } : undefined}
+      />
     </div>
   );
 }
