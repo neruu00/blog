@@ -197,6 +197,8 @@ type ActionResult<T = void> =
 | muted | `text-gray-400` | 비활성, placeholder |
 
 > 현재 코드에는 `gray-300`부터 `gray-800`까지 7종이 섞여 있다. **새 코드는 위 3단만 쓰고**, 기존 파일을 수정할 때 함께 정리한다.
+>
+> 예외: 읽기 화면 본문(`.prose`)은 typography의 `--tw-prose-body` = **gray-700**이다. 장문 가독성용 값이라 3단 체계와 별개로 두며, 감싸는 div에 `text-gray-900`을 걸어도 본문에는 닿지 않는다.
 
 ### 플랫 & 미니멀
 
@@ -209,6 +211,8 @@ type ActionResult<T = void> =
 ### 그 외
 
 - **인라인 `style`은 런타임 계산값에만** 쓴다. 정적인 값은 전부 Tailwind 유틸리티로 (허용 예: `EyePoster`의 커서 추적 transform, 스켈레톤의 동적 너비)
+- 본문 타이포(`.prose`) 오버라이드는 `globals.css`가 단일 출처다. `TiptapViewer`가 ProseMirror에 `prose`를 직접 붙이므로 **감싸는 div에 또 걸지 않는다** — 중첩되면 안쪽 `.prose`가 자기 `font-size`를 다시 선언해 바깥 `prose-lg`가 죽는다
+- **`italic`을 쓰지 않는다.** Pretendard에 이탤릭이 없어 합성 oblique가 나오고 한글에서 뭉개진다
 - 아이콘은 **`lucide-react`만** 쓴다. 다른 아이콘 라이브러리를 추가하지 않는다
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
 - 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다

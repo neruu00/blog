@@ -16,7 +16,7 @@ export default function CodeBlockComponent({ node, updateAttributes, editor }: N
   const isEditable = editor.isEditable;
 
   return (
-    <NodeViewWrapper className="bg-code-block my-6 overflow-hidden rounded-xl border border-neutral-800 shadow-lg">
+    <NodeViewWrapper className="bg-code-block my-6 overflow-hidden rounded-xl border border-neutral-800">
       {/* Mac 스타일 헤더 */}
       <div
         className="bg-code-block-header flex items-center border-b border-white/5 px-4 py-1.5"

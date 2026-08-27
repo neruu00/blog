@@ -142,7 +142,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </header>
 
-          <div className="prose prose-lg prose-orange max-w-none text-gray-900">
+          {/* prose는 TiptapViewer의 ProseMirror에 직접 붙는다 — 여기에 또 걸면 중첩돼 크기 지정이 죽는다 */}
+          <div className="text-gray-900">
             <TiptapViewer content={post.content} />
           </div>
 
