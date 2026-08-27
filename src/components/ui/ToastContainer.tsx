@@ -2,6 +2,7 @@
 
 import { X } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
 import { useToastStore } from '@/stores/useToastStore';
 
 const TOAST_STYLES = {
@@ -32,13 +33,15 @@ export default function ToastContainer() {
         >
           <span className="text-base leading-none font-bold">{TOAST_ICONS[toast.type]}</span>
           <p className="text-sm font-medium">{toast.message}</p>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-2 h-6 w-6 shrink-0 rounded-full text-inherit hover:bg-black/10 hover:text-inherit"
             onClick={() => removeToast(toast.id)}
-            className="ml-2 shrink-0 rounded-full p-0.5 transition-colors hover:bg-black/10"
             aria-label="알림 닫기"
           >
             <X className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         </div>
       ))}
     </div>

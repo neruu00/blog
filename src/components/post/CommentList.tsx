@@ -8,7 +8,7 @@ import { useTransition } from 'react';
 import { deleteComment } from '@/actions/comment';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import EmptyState from '@/components/common/EmptyState';
-import IconButton from '@/components/ui/IconButton';
+import Button from '@/components/ui/Button';
 import { trackCommentDelete } from '@/lib/utils/analytics';
 import { formatDateKo } from '@/lib/utils/date';
 import { useModalStore } from '@/stores/useModalStore';
@@ -98,13 +98,16 @@ export default function CommentList({ postId, comments }: CommentListProps) {
                   </span>
                 </div>
                 {canDelete && (
-                  <IconButton
-                    icon={<Trash2 className="h-4 w-4" />}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-500 hover:bg-red-50 hover:text-red-600"
                     onClick={() => handleDelete(comment.id)}
                     disabled={isPending}
-                    label="댓글 삭제"
-                    variant="danger"
-                  />
+                    aria-label="댓글 삭제"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 )}
               </div>
               <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-900">

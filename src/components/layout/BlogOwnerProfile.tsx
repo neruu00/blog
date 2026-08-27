@@ -1,6 +1,6 @@
 import { Github, Mail } from 'lucide-react';
-import Link from 'next/link';
 
+import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
 
 export default function BlogOwnerProfile() {
@@ -13,25 +13,29 @@ export default function BlogOwnerProfile() {
       {/* 소셜 링크 */}
       <div className="mt-5 flex items-center gap-3">
         <Tooltip text="GitHub" position="top">
-          <Link
+          <Button
             href="https://github.com/neruu00"
             target="_blank"
             rel="noreferrer"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full text-gray-400"
             aria-label="GitHub"
           >
             <Github className="h-4 w-4" />
-          </Link>
+          </Button>
         </Tooltip>
 
         <Tooltip text="Email" position="top">
-          <Link
+          <Button
             href="mailto:dnwogus4260@naver.com"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full text-gray-400"
             aria-label="Email"
           >
             <Mail className="h-4 w-4" />
-          </Link>
+          </Button>
         </Tooltip>
       </div>
     </div>

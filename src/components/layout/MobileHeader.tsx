@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
+import Button from '@/components/ui/Button';
 import { useSidebarStore } from '@/stores/useSidebarStore';
 
 import AuthSection from './AuthSection';
@@ -48,13 +49,14 @@ export default function MobileHeader() {
         <Link href="/" className="text-lg font-bold text-gray-900">
           neruu00<span className="text-orange-500">.log</span>
         </Link>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggle}
-          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
           aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
         >
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        </Button>
       </header>
 
       {/* 오버레이 */}
@@ -73,13 +75,9 @@ export default function MobileHeader() {
       >
         {/* 닫기 버튼 */}
         <div className="flex items-center justify-end px-4 pt-4">
-          <button
-            onClick={close}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-900"
-            aria-label="메뉴 닫기"
-          >
+          <Button variant="ghost" size="icon" onClick={close} aria-label="메뉴 닫기">
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
         {/* 프로필 */}

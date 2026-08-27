@@ -31,8 +31,20 @@
   --shadow-editor-footer: 0 -4px 24px rgb(0 0 0 / 0.06);
 
   /* 폰트 */
-  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --font-sans:
+    'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    sans-serif;
   --font-mono: var(--font-geist-mono);
+}
+
+/* 버튼 커서 — 컴포넌트마다 cursor-pointer를 반복하지 않도록 전역에서 한 번만 정한다 */
+button:not(:disabled),
+select:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 /* 키보드 포커스 — 브라우저 기본 아웃라인 대신 포인트 컬러로 통일 (접근성 필수) */

@@ -8,6 +8,8 @@
 
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
+
 interface EditorFooterProps {
   mode: 'create' | 'edit';
   isSubmitting: boolean;
@@ -33,38 +35,28 @@ export default function EditorFooter({
     >
       {/* 좌측: 뒤로가기 */}
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onBack}
-          disabled={isSubmitting}
-          className="flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
-          title="뒤로가기"
-        >
+        <Button variant="ghost" size="sm" onClick={onBack} disabled={isSubmitting} title="뒤로가기">
           <ArrowLeft className="h-4 w-4" />
           <span className="hidden sm:inline">뒤로가기</span>
-        </button>
+        </Button>
       </div>
 
       {/* 우측: 임시저장 + 제출 */}
       <div className="flex items-center gap-2">
         {/* 임시저장 */}
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onSaveDraft}
           disabled={isSubmitting}
-          className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
           title="임시저장"
         >
           <Save className="h-4 w-4" />
           <span className="hidden sm:inline">임시저장</span>
-        </button>
+        </Button>
 
         {/* 게시/수정 제출 버튼 */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex h-9 items-center gap-1.5 rounded-full bg-orange-500 px-6 text-sm font-bold text-white shadow-sm transition-all hover:bg-orange-600 active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300"
-        >
+        <Button type="submit" size="sm" className="px-6 font-bold" disabled={isSubmitting}>
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : mode === 'create' ? (
@@ -72,7 +64,7 @@ export default function EditorFooter({
           ) : (
             '수정하기'
           )}
-        </button>
+        </Button>
       </div>
     </footer>
   );

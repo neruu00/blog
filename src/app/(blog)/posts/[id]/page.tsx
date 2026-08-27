@@ -6,7 +6,6 @@
  */
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache, Suspense } from 'react';
 
@@ -18,6 +17,7 @@ import PostExportButtons from '@/components/post/PostExportButtons';
 import PostNavigation from '@/components/post/PostNavigation';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
+import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 import TagBadge from '@/components/ui/TagBadge';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
@@ -150,12 +150,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             <PostExportButtons title={post.title} content={post.content as JSONContent} />
             {isAdmin && (
               <>
-                <Link
-                  href={`/edit/${post.id}`}
-                  className="flex h-10 items-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
-                >
+                <Button href={`/edit/${post.id}`} variant="outline">
                   수정
-                </Link>
+                </Button>
                 <DeletePostButton postId={post.id} />
               </>
             )}

@@ -7,8 +7,9 @@
  */
 
 import { AlertTriangle, RotateCw } from 'lucide-react';
-import Link from 'next/link';
 import { useEffect } from 'react';
+
+import Button from '@/components/ui/Button';
 
 export default function BlogError({
   error,
@@ -39,19 +40,13 @@ export default function BlogError({
       </p>
 
       <div className="flex gap-3">
-        <button
-          onClick={reset}
-          className="flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
-        >
+        <Button onClick={reset}>
           <RotateCw className="h-4 w-4" />
           다시 시도
-        </button>
-        <Link
-          href="/"
-          className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
-        >
+        </Button>
+        <Button href="/" variant="outline">
           홈으로
-        </Link>
+        </Button>
       </div>
     </div>
   );

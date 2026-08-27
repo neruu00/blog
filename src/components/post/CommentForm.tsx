@@ -18,8 +18,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
   const [content, setContent] = useState('');
   const [isPending, startTransition] = useTransition();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submit = () => {
     if (!session) {
       addToast('로그인이 필요합니다.', 'error');
       return;
@@ -46,28 +45,32 @@ export default function CommentForm({ postId }: CommentFormProps) {
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 한글 조합 중의 Enter는 확정용이라 제출로 삼으면 안 된다
+    if (e.nativeEvent.isComposing) return;
+    if (e.key !== 'Enter' || e.shiftKey) return;
+
+    e.preventDefault();
+    submit();
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="mb-10">
-      <div className="relative">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          disabled={isPending || !session}
-          placeholder={
-            session ? '자유롭게 의견을 남겨주세요.' : '로그인 후 댓글을 작성할 수 있습니다.'
-          }
-          className="min-h-[100px] w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500 focus:outline-none disabled:opacity-60"
-        />
-        <div className="absolute right-3 bottom-3">
-          <button
-            type="submit"
-            disabled={isPending || !session || !content.trim()}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:bg-gray-300"
-          >
-            {isPending ? '작성 중...' : '댓글 작성'}
-          </button>
-        </div>
-      </div>
-    </form>
+    <div className="mb-10">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={isPending || !session}
+        placeholder={
+          session ? '자유롭게 의견을 남겨주세요.' : '로그인 후 댓글을 작성할 수 있습니다.'
+        }
+        className="min-h-[100px] w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500 focus:outline-none disabled:opacity-60"
+      />
+      {session && (
+        <p className="mt-2 text-xs text-gray-400">
+          {isPending ? '작성 중...' : 'Enter로 등록 · Shift+Enter로 줄바꿈'}
+        </p>
+      )}
+    </div>
   );
 }

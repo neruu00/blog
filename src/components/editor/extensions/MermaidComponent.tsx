@@ -3,6 +3,8 @@ import { Code, Eye, ExternalLink } from 'lucide-react';
 import mermaid from 'mermaid';
 import { useEffect, useState } from 'react';
 
+import Button from '@/components/ui/Button';
+
 // Mermaid 초기화
 mermaid.initialize({
   startOnLoad: false,
@@ -140,24 +142,24 @@ export default function MermaidComponent(props: NodeViewProps) {
               <option value="sequence">Sequence Diagram</option>
             </select>
 
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-auto gap-1 px-2 text-xs"
+              aria-pressed={isEditMode}
               onClick={() => setIsEditMode(true)}
-              className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                isEditMode ? 'bg-orange-100 text-orange-600' : 'text-gray-500 hover:bg-gray-200'
-              }`}
             >
               <Code className="h-3 w-3" /> Code
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-auto gap-1 px-2 text-xs"
+              aria-pressed={!isEditMode}
               onClick={() => setIsEditMode(false)}
-              className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                !isEditMode ? 'bg-orange-100 text-orange-600' : 'text-gray-500 hover:bg-gray-200'
-              }`}
             >
               <Eye className="h-3 w-3" /> Preview
-            </button>
+            </Button>
           </div>
         </div>
       )}

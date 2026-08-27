@@ -3,7 +3,7 @@
  * @description 전역 404 페이지. 매칭되지 않는 경로와 notFound() 호출을 모두 처리한다.
  */
 
-import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 export default function NotFound() {
   return (
@@ -13,18 +13,10 @@ export default function NotFound() {
       <p className="mb-8 text-sm text-gray-500">주소가 바뀌었거나 삭제된 글일 수 있습니다.</p>
 
       <div className="flex gap-3">
-        <Link
-          href="/"
-          className="rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
-        >
-          홈으로
-        </Link>
-        <Link
-          href="/posts"
-          className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
-        >
+        <Button href="/">홈으로</Button>
+        <Button href="/posts" variant="outline">
           전체 글 보기
-        </Link>
+        </Button>
       </div>
     </div>
   );

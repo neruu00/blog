@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { deletePost } from '@/actions/post';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import Button from '@/components/ui/Button';
 import { useModalStore } from '@/stores/useModalStore';
 import { useToastStore } from '@/stores/useToastStore';
 
@@ -49,13 +50,14 @@ export default function DeletePostButton({ postId }: DeletePostButtonProps) {
   };
 
   return (
-    <button
+    <Button
+      variant="destructive"
+      size="md"
       onClick={openModal}
       disabled={isDeleting}
-      className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
       title="게시글 삭제"
     >
       {isDeleting ? 'Deleting...' : 'Delete'}
-    </button>
+    </Button>
   );
 }

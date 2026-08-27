@@ -1,5 +1,7 @@
 'use client';
 
+import Button from '@/components/ui/Button';
+
 interface ConfirmDialogProps {
   title: string;
   message: string;
@@ -29,22 +31,17 @@ export default function ConfirmDialog({
       </p>
 
       <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100"
-        >
+        <Button variant="ghost" size="sm" onClick={onCancel}>
           {cancelText}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant={isDanger ? 'destructive' : 'primary'}
+          size="sm"
+          className="font-bold"
           onClick={onConfirm}
-          className={`rounded-lg px-4 py-2 text-sm font-bold text-white transition-colors ${
-            isDanger ? 'bg-red-500 hover:bg-red-600' : 'bg-orange-500 hover:bg-orange-600'
-          }`}
         >
           {confirmText}
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -102,10 +102,10 @@ export async function createPost(formData: FormData) {
 | `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
+| `Button` | `ui/` | **모든 버튼의 단일 출처** — variant: primary/outline/ghost/destructive, size: sm/md/icon. `href`를 주면 `next/link`로 렌더. 토글은 `aria-pressed` |
 | `FilterChip` | `ui/` | 필터 탭 알약 (활성 = 주황 배경, 테두리 없음) |
 | `TagBadge` | `ui/` | 전역 공용 뱃지 — 게시글 태그(`#` 자동)와 뉴스 소스 라벨(`hash={false}`)이 공유. 스타일은 하나 |
-| `IconButton` | `ui/` | 아이콘 버튼 (variant: ghost/danger) |
-| `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기) |
+| `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기). `trigger`는 render prop — 받은 props를 실제 버튼에 펼친다 |
 | `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
 | `Tooltip` / `Skeleton` | `ui/` | 툴팁 / 로딩 스켈레톤 |
 
@@ -211,6 +211,7 @@ type ActionResult<T = void> =
 - **인라인 `style`은 런타임 계산값에만** 쓴다. 정적인 값은 전부 Tailwind 유틸리티로 (허용 예: `EyePoster`의 커서 추적 transform, 스켈레톤의 동적 너비)
 - 아이콘은 **`lucide-react`만** 쓴다. 다른 아이콘 라이브러리를 추가하지 않는다
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
+- 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
 - 기본 트랜지션은 `transition-colors`. 복잡한 애니메이션만 `globals.css`에 `@keyframes`로
 
 ---

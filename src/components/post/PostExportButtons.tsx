@@ -8,6 +8,7 @@
 
 import { Download, FileDown } from 'lucide-react';
 
+import Button from '@/components/ui/Button';
 import DropdownMenu from '@/components/ui/DropdownMenu';
 import { exportToMarkdown } from '@/lib/export';
 
@@ -27,16 +28,12 @@ export default function PostExportButtons({ title, content }: PostExportButtonsP
     <DropdownMenu
       align="right"
       direction="up"
-      trigger={
-        <button
-          type="button"
-          className="flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
-          title="내보내기"
-        >
+      trigger={(triggerProps) => (
+        <Button variant="outline" title="내보내기" {...triggerProps}>
           <Download className="h-4 w-4" />
           내보내기
-        </button>
-      }
+        </Button>
+      )}
     >
       <DropdownMenu.Item onClick={handleExportMarkdown} icon={<FileDown />}>
         Markdown

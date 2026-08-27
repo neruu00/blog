@@ -33,7 +33,7 @@ export default function CodeBlockComponent({ node, updateAttributes, editor }: N
         <div className="ml-auto">
           {isEditable ? (
             <select
-              className="cursor-pointer bg-transparent text-xs text-neutral-400 outline-none hover:text-white"
+              className="bg-transparent text-xs text-neutral-400 outline-none hover:text-white"
               value={node.attrs.language || 'javascript'}
               onChange={(e) => updateAttributes({ language: e.target.value })}
             >

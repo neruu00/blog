@@ -8,6 +8,8 @@
 
 import { useState, useRef, useEffect, createContext, useContext } from 'react';
 
+import { cn } from '@/lib/utils';
+
 // ---- Context ---------------------------------------------------------------
 
 interface DropdownContextValue {
@@ -30,13 +32,15 @@ interface ItemProps {
   onClick?: () => void;
   icon?: React.ReactNode;
   className?: string;
+  /** 행/열 추가처럼 연속 조작이 자연스러운 항목은 false로 둬 메뉴를 열어둔다 */
+  closeOnClick?: boolean;
 }
 
-function Item({ children, onClick, icon, className = '' }: ItemProps) {
+function Item({ children, onClick, icon, className = '', closeOnClick = true }: ItemProps) {
   const { close } = useDropdownContext();
 
   const handleClick = () => {
-    close();
+    if (closeOnClick) close();
     onClick?.();
   };
 
@@ -44,7 +48,10 @@ function Item({ children, onClick, icon, className = '' }: ItemProps) {
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-900 transition-colors hover:bg-orange-50 hover:text-orange-600 ${className}`}
+      className={cn(
+        'flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-gray-900 transition-colors hover:bg-orange-50 hover:text-orange-600',
+        className,
+      )}
     >
       {icon && <span className="h-4 w-4 flex-shrink-0">{icon}</span>}
       {children}
@@ -54,9 +61,14 @@ function Item({ children, onClick, icon, className = '' }: ItemProps) {
 
 // ---- Root ------------------------------------------------------------------
 
+interface TriggerProps {
+  onClick: () => void;
+  'aria-expanded': boolean;
+}
+
 interface DropdownMenuProps {
-  /** 드롭다운을 열고 닫는 트리거 요소 */
-  trigger: React.ReactNode;
+  /** 트리거 렌더 함수. 받은 props를 실제 버튼에 그대로 펼쳐야 열림 상태가 접근성 트리에 올라간다 */
+  trigger: (props: TriggerProps) => React.ReactNode;
   children: React.ReactNode;
   /** 패널 정렬 방향 (기본값: 'right') */
   align?: 'left' | 'right';
@@ -106,10 +118,7 @@ export default function DropdownMenu({
   return (
     <DropdownContext.Provider value={{ isOpen, close }}>
       <div ref={containerRef} className={`relative ${className}`}>
-        {/* 트리거 */}
-        <div onClick={toggle} role="button" aria-expanded={isOpen}>
-          {trigger}
-        </div>
+        {trigger({ onClick: toggle, 'aria-expanded': isOpen })}
 
         {/* 드롭다운 패널 */}
         {isOpen && (
@@ -125,3 +134,5 @@ export default function DropdownMenu({
 }
 
 DropdownMenu.Item = Item;
+/** 패널 안의 커스텀 컨텐츠(폼 등)가 작업 후 메뉴를 닫을 때 쓴다 */
+DropdownMenu.useClose = () => useDropdownContext().close;
