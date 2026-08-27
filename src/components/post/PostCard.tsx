@@ -5,7 +5,7 @@
  *              제목, 요약, 태그, 날짜, 조회수를 표시한다.
  */
 
-import { Clock, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
 import TagBadge from '@/components/ui/TagBadge';
@@ -23,8 +23,6 @@ export default function PostCard({ post, titleAs: TitleTag = 'h3' }: PostCardPro
   // Tiptap JSON에서 순수 텍스트를 추출하여 요약 생성
   const plainText = extractTextFromTiptap(post.content);
   const snippet = plainText.length > 150 ? plainText.slice(0, 150) + '...' : plainText;
-  // ponytail: 한국어 분당 500자 가정의 단순 추정 — 코드 블록 가중치가 필요해지면 개선
-  const readingMinutes = Math.max(1, Math.round(plainText.length / 500));
 
   return (
     <article className="group py-6 first:pt-0 last:pb-0">
@@ -53,11 +51,6 @@ export default function PostCard({ post, titleAs: TitleTag = 'h3' }: PostCardPro
           <span className="flex items-center gap-1">
             <Eye className="h-3.5 w-3.5" />
             {post.viewCount}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            {readingMinutes}분
           </span>
         </div>
       </Link>
