@@ -24,7 +24,10 @@ export const TAG_DICTIONARY = [
   { name: 'Performance', keywords: ['성능', '최적화', 'perf', 'lighthouse'] },
   { name: 'Testing', keywords: ['테스트', '테스팅', 'jest', 'vitest'] },
   { name: 'Network', keywords: ['네트워크', '통신', 'http', 'api'] },
-  { name: 'Auth', keywords: ['인증', '인가', '로그인', 'oauth', 'jwt'] },
+  {
+    name: 'Security',
+    keywords: ['보안', 'xss', 'csrf', 'csp', 'cors', '쿠키', '인증', '인가', 'oauth', 'jwt'],
+  },
   { name: 'Database', keywords: ['데이터베이스', 'db', 'sql'] },
   { name: 'Algorithm', keywords: ['알고리즘', '자료구조'] },
   { name: 'Java', keywords: ['자바'] },
