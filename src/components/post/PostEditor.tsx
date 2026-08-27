@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import EditorFooter from '@/components/editor/EditorFooter';
+import EditorActions from '@/components/editor/EditorActions';
 import PostTitleInput from '@/components/editor/PostTitleInput';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
@@ -53,7 +53,7 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
           <TiptapEditor key={editorKey} content={content} onChange={setContent} />
         </div>
 
-        <EditorFooter
+        <EditorActions
           mode={mode}
           isSubmitting={isSubmitting}
           onBack={handleBack}

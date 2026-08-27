@@ -27,9 +27,6 @@
   --color-mac-yellow: #ffbd2e;
   --color-mac-green: #27c93f;
 
-  /* 에디터 하단 고정 푸터의 위쪽 그림자 */
-  --shadow-editor-footer: 0 -4px 24px rgb(0 0 0 / 0.06);
-
   /* 폰트 */
   --font-sans:
     'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto,
@@ -347,9 +344,8 @@ body {
     display: none !important;
   }
 
-  /* 플로팅/고정 버튼 및 푸터 숨김 */
-  [data-editor-footer],
-  .editor-footer {
+  /* 플로팅 액션 버튼 숨김 */
+  [data-editor-actions] {
     display: none !important;
   }
 

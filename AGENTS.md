@@ -143,7 +143,7 @@ page.tsx (서버)
 |---|---|
 | 라우트 전환 | `(blog)/loading.tsx` |
 | 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
-| 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경 |
+| 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경. 아이콘 버튼은 스피너로 (`EditorActions` 참고) |
 | 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + 마운트 전 `Skeleton` (`MermaidDiagram` 참고) |
 | 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 |
 
