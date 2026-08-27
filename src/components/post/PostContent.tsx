@@ -20,6 +20,7 @@ import type { TocItem } from '@/lib/utils/tiptap';
 import StaticCodeBlock from './StaticCodeBlock';
 
 import type { JSONContent } from '@tiptap/core';
+import type { Node as PMNode } from '@tiptap/pm/model';
 
 /**
  * TiptapEditor와 같은 노드·마크 집합. 노드뷰(React)는 필요 없으므로 스키마만 있는 기본 확장을 쓴다.
@@ -37,6 +38,32 @@ const POST_SCHEMA = [
 
 const HEADING_LEVELS = [2, 3, 4] as const;
 type HeadingLevel = (typeof HEADING_LEVELS)[number];
+
+/**
+ * 표 셀 속성을 React 표기로 옮긴다.
+ * 정적 렌더러는 class/style 말고는 속성명을 그대로 넘기는데, Tiptap은 이걸
+ * HTML 표기(colspan/rowspan)로 내보내 React가 "Did you mean colSpan?"으로 경고한다.
+ * 기본값 1은 아예 빼서 마크업을 깨끗하게 둔다. colwidth는 colgroup이 대신 처리한다.
+ */
+function cellSpanProps(node: PMNode) {
+  const colSpan = Number(node.attrs.colspan) || 1;
+  const rowSpan = Number(node.attrs.rowspan) || 1;
+  return {
+    colSpan: colSpan > 1 ? colSpan : undefined,
+    rowSpan: rowSpan > 1 ? rowSpan : undefined,
+  };
+}
+
+/** 첫 행의 colwidth를 colgroup으로 편다 — 에디터에서 조정한 열 너비를 읽기 화면에서도 유지한다 */
+function columnWidths(table: PMNode): (number | null)[] {
+  const widths: (number | null)[] = [];
+  table.firstChild?.forEach((cell) => {
+    const colwidth = cell.attrs.colwidth as number[] | null;
+    const span = Number(cell.attrs.colspan) || 1;
+    for (let i = 0; i < span; i += 1) widths.push(colwidth?.[i] ?? null);
+  });
+  return widths;
+}
 
 interface PostContentProps {
   content: JSONContent;
@@ -89,15 +116,29 @@ export default function PostContent({ content, toc }: PostContentProps) {
 
         mermaidBlock: ({ node }) => <MermaidDiagram code={node.attrs.code} />,
 
-        // 에디터는 resizable 노드뷰가 표를 .tableWrapper로 감싼다. 뷰어도 같은 래퍼를 둬야
-        // 넓은 표가 페이지를 밀지 않고 안에서만 스크롤된다 (globals.css .prose .tableWrapper)
-        table: ({ children }) => (
-          <div className="tableWrapper">
-            <table>
-              <tbody>{children}</tbody>
-            </table>
-          </div>
-        ),
+        // 에디터는 resizable 노드뷰가 표를 .tableWrapper로 감싸고 colgroup을 그린다.
+        // 뷰어에는 그 노드뷰가 없으므로 둘 다 여기서 직접 만든다 — 래퍼가 없으면
+        // 넓은 표가 페이지를 가로로 민다 (globals.css .prose .tableWrapper)
+        table: ({ node, children }) => {
+          const widths = columnWidths(node);
+          return (
+            <div className="tableWrapper">
+              <table>
+                {widths.some((w) => w !== null) && (
+                  <colgroup>
+                    {widths.map((w, i) => (
+                      <col key={i} style={w ? { width: `${w}px` } : undefined} />
+                    ))}
+                  </colgroup>
+                )}
+                <tbody>{children}</tbody>
+              </table>
+            </div>
+          );
+        },
+
+        tableHeader: ({ node, children }) => <th {...cellSpanProps(node)}>{children}</th>,
+        tableCell: ({ node, children }) => <td {...cellSpanProps(node)}>{children}</td>,
       },
     },
   });
