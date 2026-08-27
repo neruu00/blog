@@ -121,7 +121,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
   };
 
   return (
-    <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 border-b border-gray-200 bg-white p-2 shadow-sm">
+    <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
       {/* H1 버튼 — 사용자에게는 H1로 보이나 내부적으로 level: 2 (ShiftedHeading) */}
       <button
         type="button"

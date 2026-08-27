@@ -53,10 +53,12 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
   });
 
+  // 툴바를 본문 카드 밖 형제로 둔다: 카드의 overflow-hidden 안에 있으면
+  // sticky가 뷰포트가 아닌 카드 내부에만 고정되고, focus 링도 툴바까지 번진다.
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-200 focus-within:border-orange-500/50 focus-within:ring-2 focus-within:ring-orange-500/20">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-2">
       <Toolbar editor={editor} />
-      <div className="flex-1 cursor-text">
+      <div className="flex-1 cursor-text overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-200 focus-within:border-orange-500/50 focus-within:ring-2 focus-within:ring-orange-500/20">
         <EditorContent editor={editor} />
       </div>
     </div>
