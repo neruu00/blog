@@ -5,7 +5,6 @@
  *              admin인 경우 수정/삭제 버튼을 표시한다.
  */
 
-import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { cache, Suspense } from 'react';
 
@@ -13,6 +12,7 @@ import { getComments } from '@/actions/comment';
 import BackLink from '@/components/common/BackLink';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
+import PostContent from '@/components/post/PostContent';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import PostNavigation from '@/components/post/PostNavigation';
 import TableOfContents from '@/components/post/TableOfContents';
@@ -27,22 +27,6 @@ import { extractTextFromTiptap, extractTocFromTiptap } from '@/lib/utils/tiptap'
 
 import type { JSONContent } from '@tiptap/react';
 import type { Metadata, ResolvingMetadata } from 'next';
-
-/**
- * TiptapViewer는 Tiptap 런타임 전체를 포함하는 heavy bundle이다.
- * dynamic import로 분리하여 게시글 목록 등 다른 페이지의 초기 번들에서 제외한다.
- * SEO를 위해 ssr: true 를 유지하고 클라이언트에서 Hydration만 지연한다.
- */
-const TiptapViewer = dynamic(() => import('@/components/editor/TiptapViewer'), {
-  ssr: true,
-  loading: () => (
-    <div className="space-y-3 py-4">
-      {[...Array(6)].map((_, i) => (
-        <Skeleton key={i} className="h-4" style={{ width: `${85 - i * 5}%` }} />
-      ))}
-    </div>
-  ),
-});
 
 const getPost = cache(async (id: string) => {
   return supabase.from('posts').select('*').eq('id', id).single();
@@ -141,11 +125,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               </div>
             )}
           </header>
-
-          {/* prose는 TiptapViewer의 ProseMirror에 직접 붙는다 — 여기에 또 걸면 중첩돼 크기 지정이 죽는다 */}
-          <div className="text-gray-900">
-            <TiptapViewer content={post.content} />
-          </div>
+          <PostContent content={post.content as JSONContent} toc={tocItems} />
 
           <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
             <PostExportButtons title={post.title} content={post.content as JSONContent} />

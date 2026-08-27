@@ -1,46 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import type { TocItem } from '@/lib/utils/tiptap';
 
+/**
+ * 헤딩 id는 PostContent가 서버 렌더 시 같은 배열로 붙인다.
+ * 클라이언트에서 DOM을 뒤져 심는 방식은 첫 로드 해시 스크롤을 놓쳤다.
+ */
 export default function TableOfContents({ items }: { items: TocItem[] }) {
   const itemIds = items.map((item) => item.id);
   const activeId = useIntersectionObserver(itemIds, { rootMargin: '0% 0% -80% 0%' });
-
-  useEffect(() => {
-    if (items.length === 0) return;
-
-    const trySetIds = () => {
-      const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
-      if (headings.length > 0) {
-        headings.forEach((heading, index) => {
-          if (items[index]) {
-            heading.id = items[index].id;
-            (heading as HTMLElement).style.scrollMarginTop = '100px';
-          }
-        });
-        return true;
-      }
-      return false;
-    };
-
-    let mutationObserver: MutationObserver | null = null;
-
-    if (!trySetIds()) {
-      mutationObserver = new MutationObserver(() => {
-        if (trySetIds()) {
-          mutationObserver?.disconnect();
-        }
-      });
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
-    }
-
-    return () => {
-      mutationObserver?.disconnect();
-    };
-  }, [items]);
 
   if (items.length === 0) return null;
 

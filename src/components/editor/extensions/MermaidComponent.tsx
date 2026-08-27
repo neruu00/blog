@@ -1,22 +1,14 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Code, Eye, ExternalLink } from 'lucide-react';
-import mermaid from 'mermaid';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
 
-// Mermaid 초기화
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'default',
-  securityLevel: 'loose', // 텍스트 렌더링 호환성 향상
-});
+import MermaidDiagram from './MermaidDiagram';
 
 export default function MermaidComponent(props: NodeViewProps) {
   const { node, updateAttributes, getPos, editor } = props;
   const [isEditMode, setIsEditMode] = useState(true);
-  const [svgContent, setSvgContent] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
 
   const code = node.attrs.code as string;
 
@@ -40,43 +32,6 @@ export default function MermaidComponent(props: NodeViewProps) {
   };
 
   const docsUrl = getDocsUrl(code);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const renderDiagram = async () => {
-      try {
-        if (!code.trim()) {
-          if (isMounted) setSvgContent('');
-          return;
-        }
-
-        // 핵심 버그 수정: mermaid.render는 동일한 ID로 두 번 이상 호출 시
-        // 다이어그램 타입(Flow, Mindmap 등)에 따라 이전 DOM 캐시가 꼬이는 고질적인 버그가 있습니다.
-        // 따라서 토글할 때마다 완전히 새로운 일회용 랜덤 ID를 생성하여 렌더링을 강제합니다.
-        const tempId = `mermaid-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-
-        const { svg } = await mermaid.render(tempId, code);
-
-        if (isMounted) {
-          setSvgContent(svg);
-          setError(null);
-        }
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Syntax Error in Mermaid code';
-        if (isMounted) setError(message);
-      }
-    };
-
-    // 읽기 전용이거나 Preview 모드일 때 렌더링
-    if (!isEditMode || !editor.isEditable) {
-      renderDiagram();
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [code, isEditMode, editor.isEditable]);
 
   // textarea 클릭 시 Tiptap이 이 블록을 '선택된 상태'로 인지하도록 강제
   const handleTextareaFocus = () => {
@@ -176,18 +131,7 @@ export default function MermaidComponent(props: NodeViewProps) {
             spellCheck={false}
           />
         ) : (
-          <div className="flex min-h-[150px] w-full items-center justify-center overflow-x-auto bg-transparent">
-            {error ? (
-              <div className="w-full rounded-lg bg-red-50 p-4 font-mono text-sm whitespace-pre-wrap text-red-500">
-                {error}
-              </div>
-            ) : (
-              <div
-                className="flex w-full justify-center [&>svg]:h-auto [&>svg]:w-full [&>svg]:max-w-full"
-                dangerouslySetInnerHTML={{ __html: svgContent }}
-              />
-            )}
-          </div>
+          <MermaidDiagram code={code} />
         )}
       </div>
 

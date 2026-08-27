@@ -55,6 +55,10 @@ export async function createPost(formData: FormData) {
 - **TanStack Query** — 제거됐다. 서버 상태는 Server Action + `revalidatePath`, 낙관적 업데이트는 `useOptimistic`으로 처리한다. 재도입은 검색 기능 결정(cushion `blog/PLAN.md` D-001, T-402) 이후에만
 - **로거 라이브러리/유틸** — `console.warn`/`console.error`를 그대로 쓴다 (ESLint 허용)
 
+### 4. 게시글 본문은 서버에서 정적으로 렌더링된다 — 에디터 확장을 추가하면 뷰어 스키마도 고쳐라
+
+읽기 화면은 Tiptap 에디터가 아니라 `components/post/PostContent.tsx`가 `@tiptap/static-renderer`로 JSON을 서버에서 React로 바꾼다. 그 파일의 `POST_SCHEMA`는 **에디터(`TiptapEditor`)와 같은 노드·마크 집합이어야 한다.** 에디터에만 확장을 추가하고 여기를 빼먹으면, 그 노드를 쓴 새 글은 저장은 되는데 상세 페이지가 렌더에 실패한다. 근거와 구조는 cushion `blog/PLAN.md` D-005.
+
 ---
 
 ## 코드 규칙
@@ -140,7 +144,8 @@ page.tsx (서버)
 | 라우트 전환 | `(blog)/loading.tsx` |
 | 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경 |
-| 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 (`TiptapViewer` 참고) |
+| 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + 마운트 전 `Skeleton` (`MermaidDiagram` 참고) |
+| 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 |
 
 ---
 
@@ -211,7 +216,7 @@ type ActionResult<T = void> =
 ### 그 외
 
 - **인라인 `style`은 런타임 계산값에만** 쓴다. 정적인 값은 전부 Tailwind 유틸리티로 (허용 예: `EyePoster`의 커서 추적 transform, 스켈레톤의 동적 너비)
-- 본문 타이포(`.prose`) 오버라이드는 `globals.css`가 단일 출처다. `TiptapViewer`가 ProseMirror에 `prose`를 직접 붙이므로 **감싸는 div에 또 걸지 않는다** — 중첩되면 안쪽 `.prose`가 자기 `font-size`를 다시 선언해 바깥 `prose-lg`가 죽는다
+- 본문 타이포(`.prose`) 오버라이드는 `globals.css`가 단일 출처다. `prose`는 `PostContent`(읽기)·`TiptapEditor`(편집)·뉴스 상세 래퍼 세 곳에만 붙인다. **한 본문에 두 번 겹치지 않는다** — 중첩되면 안쪽 `.prose`가 자기 `font-size`를 다시 선언해 바깥 `prose-lg`가 죽는다. `.prose` 오버라이드에 `!important`나 긴 선택자를 쓰지 않는다(레이어 밖이라 무조건 이긴다)
 - **`italic`을 쓰지 않는다.** Pretendard에 이탤릭이 없어 합성 oblique가 나오고 한글에서 뭉개진다
 - 아이콘은 **`lucide-react`만** 쓴다. 다른 아이콘 라이브러리를 추가하지 않는다
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`

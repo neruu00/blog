@@ -8,7 +8,7 @@ import { TableKit } from '@tiptap/extension-table';
 
 /**
  * 테이블 익스텐션 (TableKit).
- * TiptapEditor / TiptapViewer의 extensions 배열에 추가한다.
+ * TiptapEditor와 PostContent(정적 렌더) 양쪽 extensions 배열에 들어간다.
  */
 export const CustomTable = TableKit.configure({
   table: {
