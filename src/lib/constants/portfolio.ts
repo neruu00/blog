@@ -25,14 +25,22 @@ export interface Challenge {
   postHref?: string;
 }
 
+/** 캐러셀 한 칸에 들어가는 화면 — 정지 캡처이거나 무음 루프 영상이다 */
+export interface Media {
+  kind: 'image' | 'video';
+  src: string;
+  /** 이미지의 alt이자 영상의 접근성 레이블 */
+  alt: string;
+  /** 원본 해상도. 자리를 미리 잡아 레이아웃 점프를 막는 데 쓴다 */
+  width: number;
+  height: number;
+}
+
 export interface Feature {
   title: string;
   description: string;
-  /**
-   * 화면 캡처. 없으면 점선 자리만 표시한다 — 이미지가 준비되면 채운다.
-   * width/height는 next/image가 자리를 미리 잡아 레이아웃 점프를 막는 데 쓴다.
-   */
-  image?: { src: string; alt: string; width: number; height: number };
+  /** 없으면 캐러셀에서 그 칸을 건너뛴다 — 화면이 준비되면 채운다 */
+  media?: Media;
 }
 
 export interface Project {
@@ -45,16 +53,11 @@ export interface Project {
   role: string;
   links: { github?: string; demo?: string };
   /**
-   * 서비스 단위의 서사. 둘 다 필수인 쌍이다 — 배경만 있으면 "그래서 뭐가 됐나"가,
-   * 결과만 있으면 "왜 했나"가 빈다. Challenge의 problem/solution과 같은 구조를
-   * 서비스 규모에서 한 번 더 쓴다.
+   * 왜 이 서비스를 계획했고 무엇을 해결했는지. 한 덩어리의 글이다 —
+   * 배경과 결론을 필드로 쪼개면 이어지는 논증을 어디서 끊을지 매번 고민하게 된다.
+   * 문단은 빈 줄로 나눈다.
    */
-  service?: {
-    /** 왜 이 서비스를 계획했나 */
-    background: string;
-    /** 이 서비스로 무엇을 해결했나 */
-    solved: string;
-  };
+  service?: string;
   /** 내가 구현한 주요 기능. 기능마다 화면 캡처를 함께 보여준다 */
   features?: Feature[];
   /** 과제 목록 앞에 붙는 한 문단 — 이 프로젝트에서 무엇이 어려웠는지의 총평 */
@@ -70,17 +73,14 @@ export interface Education {
   name: string;
   org: string;
   period: string;
-  description?: string;
 }
 
 export const PROFILE = {
   name: '우재현',
   title: 'Frontend Developer',
-  /** 한 문단 소개 — 무엇을 하는 사람인지 */
+  /** 한 줄 소개 — 무엇을 하는 사람인지. 상세 이력은 이력서가 맡는다 */
   summary:
     '실시간 데이터와 복잡한 인증 환경에서 발생하는 상태 불일치 문제를 해결하는 프론트엔드 개발자입니다.',
-  detail:
-    '호출 순서와 상태 흐름을 추적해 문제의 원인을 구조적으로 정의하고, 반복되거나 복잡한 문제를 공통 모듈과 데이터 모델로 추상화해 해결합니다. 백엔드 구조에 관한 이해를 바탕으로 API와 인증 정책을 함께 조율하며 개발합니다.',
   photo: '/profile.jpg',
   email: 'dnwogus4260@naver.com',
   github: 'https://github.com/neruu00',
@@ -96,37 +96,80 @@ export const PROJECTS: Project[] = [
     team: '6인',
     role: '프론트엔드',
     links: { github: 'https://github.com/jeongsanghoedam/secome' },
-    service: {
-      background:
-        '팀마다 회의와 프로젝트 문서를 열심히 만들지만, 정작 회의가 끝난 뒤 그 문서를 다시 찾아보는 일은 많지 않았습니다. 회의록은 한 사람이 도맡아 작성했고, 기록하는 과정에서 놓친 내용은 그대로 유실되었습니다. 나중에 같은 주제를 다시 논의할 때는 이전 회의에서 무엇을 결정했는지 찾기 어려워 비슷한 논의를 반복하기도 했습니다.\n\n문제는 문서를 작성하는 것 자체가 아니었습니다. 회의에서 나온 결정과 맥락이 이후의 업무로 이어지지 않는 구조에 있다고 생각했습니다.\n\n회의에서 결정된 내용이 기존 문서에 반영되지 않으면 문서는 시간이 지날수록 실제 업무와 멀어집니다. 문서가 많아질수록 필요한 내용을 찾기도 어려워지고, 결국 팀이 문서를 만들기 위해 들인 노력만큼 활용되지 못합니다. 특히 별도의 문서 담당자를 두기 어려운 소규모 팀에서는 이런 부담이 더 크게 나타난다고 판단했습니다.',
-      solved:
-        '회의와 문서를 별개의 기능으로 만들기보다, 회의의 결과가 자연스럽게 기록되고 기존 문서의 맥락으로 이어지는 흐름 자체를 서비스의 구조로 만들고자 했습니다.\n\n회의의 목적을 정하지 못한 참가자는 정해진 세션 흐름을 따라갈 수 있도록 하고, 이전 문서를 찾고 싶은 참가자는 문서함에서 필요한 내용을 찾을 수 있도록 했습니다. 회의 내용을 수기로 정리하는 역할은 AI에게 맡겨 참가자가 기록에 집중하지 않아도 되도록 했습니다.\n\nSeCoMe가 해결하고자 한 것은 단순한 회의록 작성이 아니었습니다. 회의에서 나온 정보가 기록에서 끝나지 않고 다음 업무의 맥락으로 이어지도록 만드는 것. 이를 중심으로 회의 진행부터 기록, 문서 반영까지 하나의 흐름으로 연결했습니다.',
-    },
+    service:
+      '팀마다 회의와 프로젝트 문서를 열심히 만들지만, 정작 회의가 끝난 뒤 그 문서를 다시 찾아보는 일은 많지 않았습니다. 회의록은 한 사람이 도맡아 작성했고, 기록하는 과정에서 놓친 내용은 그대로 유실되었습니다. 나중에 같은 주제를 다시 논의할 때는 이전 회의에서 무엇을 결정했는지 찾기 어려워 비슷한 논의를 반복하기도 했습니다.\n\n문제는 문서를 작성하는 것 자체가 아니었습니다. 회의에서 나온 결정과 맥락이 이후의 업무로 이어지지 않는 구조에 있다고 생각했습니다.\n\n회의에서 결정된 내용이 기존 문서에 반영되지 않으면 문서는 시간이 지날수록 실제 업무와 멀어집니다. 문서가 많아질수록 필요한 내용을 찾기도 어려워지고, 결국 팀이 문서를 만들기 위해 들인 노력만큼 활용되지 못합니다. 특히 별도의 문서 담당자를 두기 어려운 소규모 팀에서는 이런 부담이 더 크게 나타난다고 판단했습니다.\n\n회의와 문서를 별개의 기능으로 만들기보다, 회의의 결과가 자연스럽게 기록되고 기존 문서의 맥락으로 이어지는 흐름 자체를 서비스의 구조로 만들고자 했습니다.\n\n회의의 목적을 정하지 못한 참가자는 정해진 세션 흐름을 따라갈 수 있도록 하고, 이전 문서를 찾고 싶은 참가자는 문서함에서 필요한 내용을 찾을 수 있도록 했습니다. 회의 내용을 수기로 정리하는 역할은 AI에게 맡겨 참가자가 기록에 집중하지 않아도 되도록 했습니다.\n\nSeCoMe가 해결하고자 한 것은 단순한 회의록 작성이 아니었습니다. 회의에서 나온 정보가 기록에서 끝나지 않고 다음 업무의 맥락으로 이어지도록 만드는 것. 이를 중심으로 회의 진행부터 기록, 문서 반영까지 하나의 흐름으로 연결했습니다.',
     features: [
+      {
+        title: '랜딩 — 무엇을 약속하는 서비스인가',
+        description:
+          '"회의에서 정한 것이 문서에 남는다"를 첫 문장으로 내걸고, 회의 결과가 문서 수정 제안으로 돌아오기까지의 흐름을 네 장의 카드로 먼저 보여줍니다.',
+        media: {
+          kind: 'image',
+          src: '/portfolio/secome/landing.png',
+          alt: 'SeCoMe 랜딩 페이지 — "회의에서 정한 것이 문서에 남는다"',
+          width: 2843,
+          height: 1521,
+        },
+      },
       {
         title: '프로젝트 시작 — 백지 대신 초안',
         description:
           '프로젝트를 만들 때 간단한 인터뷰를 진행하고, AI가 이를 바탕으로 필요한 문서를 추천합니다. 사용자가 선택한 문서는 초안 상태로 생성되어, 팀은 빈 문서가 아니라 초안에서 작업을 시작합니다.',
+        media: {
+          kind: 'video',
+          src: '/portfolio/secome/draft.mp4',
+          alt: '인터뷰 답변을 바탕으로 AI가 문서를 추천하고 초안을 생성하는 화면',
+          width: 964,
+          height: 720,
+        },
       },
       {
         title: '회의 준비 — 세션과 안건',
         description:
           '회의를 세션 단위로 나누고 세션마다 안건과 목표를 설정합니다. 참가자는 회의 전에 무엇을 논의할지 알 수 있고, 회의 중에는 이 구성이 진행 가이드가 됩니다. 참고 문서를 미리 연결해두면 회의 중 자료를 찾는 시간도 줄어듭니다.',
+        media: {
+          kind: 'video',
+          src: '/portfolio/secome/meeting-setup.mp4',
+          alt: '회의를 세션으로 나누고 세션마다 안건과 참고 문서를 설정하는 화면',
+          width: 1440,
+          height: 1080,
+        },
       },
       {
         title: '회의 진행 — 물어보는 문서함',
         description:
           '프로젝트가 길어질수록 모든 문서를 파악하기는 어렵습니다. 챗봇이 프로젝트 내 문서를 검색해 질문에 답하고, 답변에는 근거가 된 문서 링크를 함께 제공합니다.',
+        media: {
+          kind: 'video',
+          src: '/portfolio/secome/doc-chat.mp4',
+          alt: '회의 중 챗봇이 프로젝트 문서를 검색해 근거 링크와 함께 답하는 화면',
+          width: 1440,
+          height: 1080,
+        },
       },
       {
         title: '기록 — 회의가 문서로 이어지는 지점',
         description:
           '회의 중 대화를 기록하고, 이를 바탕으로 AI가 회의록을 생성합니다. 여기서 끝나지 않고 회의 내용과 관련된 기존 문서를 찾아 갱신안까지 만듭니다. 사용자는 변경 사항을 확인하고 승인 여부만 결정합니다.',
+        media: {
+          kind: 'video',
+          src: '/portfolio/secome/doc-update.mp4',
+          alt: '회의록을 근거로 만들어진 문서 갱신안을 확인하고 승인하는 화면',
+          width: 1440,
+          height: 1080,
+        },
       },
       {
         title: '기록의 축적 — 쌓일수록 보이는 문서',
         description:
           '대시보드에서 최근 작성·갱신된 문서를 한 페이지로 확인하고, 주차별 타임라인으로 프로젝트 흐름을 따라갑니다. 축적된 문서는 서로 연결되어 그래프로 시각화됩니다.',
+        media: {
+          kind: 'video',
+          src: '/portfolio/secome/timeline.mp4',
+          alt: '주차별 타임라인으로 프로젝트의 문서 변화를 따라가는 화면',
+          width: 1050,
+          height: 780,
+        },
       },
     ],
     challengesIntro:
@@ -311,10 +354,17 @@ export const PROJECTS: Project[] = [
 
 export const SKILL_GROUPS: { label: string; items: string[] }[] = [
   {
-    label: '프레임워크 · 상태',
-    items: ['Next.js', 'React', 'TypeScript', 'TanStack Query', 'Zustand'],
+    label: '프론트엔드',
+    items: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'TanStack Query',
+      'Zustand',
+      'Tailwind CSS',
+      'shadcn/ui',
+    ],
   },
-  { label: '스타일링', items: ['Tailwind CSS', 'shadcn/ui'] },
   { label: '협업', items: ['Github', 'Jira', 'Notion', 'Figma', 'Discord', 'Storybook'] },
 ];
 
@@ -328,14 +378,10 @@ export const EDUCATIONS: Education[] = [
     name: '프론트엔드 엔지니어 부트캠프',
     org: '코드잇',
     period: '2024.08 ~ 2025.02',
-    description:
-      'HTML·CSS·JavaScript와 React를 기반으로 웹 표준·접근성을 준수한 SPA를 구현하고, 4회의 협업 프로젝트를 수행했습니다.',
   },
   {
     name: '삼성 청년 SW·AI 아카데미 SSAFY',
     org: '삼성전자',
     period: '2026.02 ~ 2026.12 (예정)',
-    description:
-      'Java 기반 백엔드 트랙을 이수하며 서버 구조와 데이터 흐름을 이해했고, 3회의 프로젝트에서 프론트엔드 개발자로서 백엔드 개발자와 효과적으로 협업하는 역량을 길렀습니다.',
   },
 ];

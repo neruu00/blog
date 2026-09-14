@@ -10,8 +10,8 @@
  */
 
 import { ArrowUpRight, Github } from 'lucide-react';
-import Image from 'next/image';
 
+import FeatureCarousel from '@/components/portfolio/FeatureCarousel';
 import Reveal from '@/components/ui/Reveal';
 import type { Project } from '@/lib/constants/portfolio';
 
@@ -101,51 +101,20 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
         <Reveal>
           <div className="mb-14">
             <BlockLabel>왜 만들었나</BlockLabel>
-            <Paragraphs text={service.background} className="text-gray-500" />
-            {/* 결론은 배경과 색으로 갈라 눈이 여기서 멈추게 한다 */}
-            <div className="mt-5 rounded-xl bg-gray-50 p-6">
-              <Paragraphs text={service.solved} className="text-gray-900" />
-            </div>
+            {/* 이어지는 하나의 논증이다 — 중간을 박스로 떼지 않는다 */}
+            <Paragraphs text={service} className="text-gray-500" />
           </div>
         </Reveal>
       )}
 
       {features && features.length > 0 && (
-        <div className="mb-14">
-          <Reveal>
+        <Reveal>
+          <div className="mb-14">
             <BlockLabel>구현 기능</BlockLabel>
-          </Reveal>
-
-          <ol className="space-y-10">
-            {features.map((feature, i) => (
-              <li key={feature.title}>
-                <Reveal delay={i * 60}>
-                  <h5 className="text-base font-semibold text-gray-900">{feature.title}</h5>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                    {feature.description}
-                  </p>
-
-                  {feature.image ? (
-                    <Image
-                      src={feature.image.src}
-                      alt={feature.image.alt}
-                      width={feature.image.width}
-                      height={feature.image.height}
-                      className="mt-4 h-auto w-full rounded-xl border border-gray-100"
-                    />
-                  ) : (
-                    /* 이미지 대기 자리 — EmptyState와 같은 점선 처리를 재사용한다 */
-                    <div className="mt-4 flex aspect-video items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50">
-                      <span className="px-4 text-center text-xs text-gray-400">
-                        화면 캡처 자리 · {feature.title}
-                      </span>
-                    </div>
-                  )}
-                </Reveal>
-              </li>
-            ))}
-          </ol>
-        </div>
+            {/* 화면이 4:3이라 세로로 쌓으면 한 장이 뷰포트를 먹는다 — 한 칸씩 넘겨 본다 */}
+            <FeatureCarousel features={features} projectName={name} />
+          </div>
+        </Reveal>
       )}
 
       <div className="mb-14">

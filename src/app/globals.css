@@ -57,6 +57,16 @@ button:focus-visible {
   background-color: theme('colors.orange.100');
 }
 
+/* 스크롤바 숨김 — 자체 인디케이터가 위치를 알려주는 캐러셀 전용.
+   스크롤 가능하다는 힌트를 지우는 셈이라, 대체 표시가 있는 곳에만 쓴다 */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* 기본 body 스타일 */
 body {
   background-color: var(--color-surface);

@@ -11,8 +11,10 @@ export default function FloatingActionButton() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
 
-  // 세션 로딩 중이거나 현재 경로가 글쓰기 페이지면 아무 플로팅 버튼도 보여주지 않음
-  if (status === 'loading' || pathname === '/write') {
+  // 포트폴리오는 읽히는 화면이라 떠 있는 액션이 시선을 뺏으면 안 된다.
+  // (옛 '/write' 가드는 제거했다 — 작성 페이지는 (protected) 그룹이라
+  //  (blog) 레이아웃의 이 컴포넌트가 애초에 렌더되지 않는다)
+  if (status === 'loading' || pathname === '/about') {
     return null;
   }
 
