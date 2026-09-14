@@ -112,6 +112,7 @@ export async function createPost(formData: FormData) {
 | `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기). `trigger`는 render prop — 받은 props를 실제 버튼에 펼친다 |
 | `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
 | `Tooltip` / `Skeleton` | `ui/` | 툴팁 / 로딩 스켈레톤 |
+| `Reveal` | `ui/` | **유일한 애니메이션 프리미티브** — 스크롤 진입 시 페이드 업. 새 효과를 만들기 전에 이걸 먼저 본다. 라이브러리 없이 IntersectionObserver + CSS |
 
 **승격 규칙**: 같은 구조를 **두 번째로** 작성하게 되는 순간이 공용화 시점이다. 컴포넌트로 추출해 `common/`(조합형) 또는 `ui/`(프리미티브)에 넣고, **이 표에 한 줄 추가한다.** 표에 없는 공용 컴포넌트는 다음 작업자에게 존재하지 않는 것과 같다.
 
