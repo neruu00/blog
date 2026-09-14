@@ -7,13 +7,16 @@
  *
  *              '해결한 과제'가 본문이고 나머지는 그 주변이다. 스택이 맨 뒤인 건 의도다.
  *              service·features·retrospective는 선택 — 없으면 그 블록을 건너뛴다.
+ *
+ *              '구현 기능'은 두 겹이다: 캡처가 있는 기능은 캐러셀로, 없는 기능은 그 아래 목록으로
+ *              간다. 화면을 다 찍지 못한 프로젝트도 무엇을 만들었는지는 남길 수 있어야 한다.
  */
 
 import { ArrowUpRight, Github } from 'lucide-react';
 
 import FeatureCarousel from '@/components/portfolio/FeatureCarousel';
 import Reveal from '@/components/ui/Reveal';
-import type { Project } from '@/lib/constants/portfolio';
+import type { Feature, Project } from '@/lib/constants/portfolio';
 
 interface ProjectSectionProps {
   project: Project;
@@ -36,6 +39,27 @@ function Paragraphs({ text, className = '' }: { text: string; className?: string
         </p>
       ))}
     </>
+  );
+}
+
+/**
+ * 캡처가 없는 기능 — 캐러셀은 media가 있는 항목만 칸으로 만들므로, 나머지는 여기서 글로 받는다.
+ * 화면이 있는 기능은 이미 캡처 아래 캡션으로 붙어 있어 다시 적지 않는다.
+ * 캡션보다 한 단계 작게 찍는다: 캡처가 걸린 기능이 이 블록의 주인공이어야 한다.
+ */
+function FeatureList({ features }: { features: Feature[] }) {
+  const items = features.filter((feature) => !feature.media);
+  if (items.length === 0) return null;
+
+  return (
+    <ul className="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+      {items.map((feature) => (
+        <li key={feature.title}>
+          <h5 className="text-sm font-semibold text-gray-900">{feature.title}</h5>
+          <p className="mt-2 text-sm leading-relaxed text-gray-500">{feature.description}</p>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -113,6 +137,7 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
             <BlockLabel>구현 기능</BlockLabel>
             {/* 화면이 4:3이라 세로로 쌓으면 한 장이 뷰포트를 먹는다 — 한 칸씩 넘겨 본다 */}
             <FeatureCarousel features={features} projectName={name} />
+            <FeatureList features={features} />
           </div>
         </Reveal>
       )}

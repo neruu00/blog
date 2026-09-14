@@ -235,57 +235,60 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
         ))}
       </ul>
 
-      {/* 점은 이동 수단이자 전체 개수 표시다. 트랙과 같은 3:2 상자를 겹쳐 깔아
-          화면 칸의 아래쪽에 정확히 붙인다 */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 aspect-3/2">
-        {/* 화살표는 화면 칸의 세로 중앙 양옆에 띄운다.
-            점과 같은 처리(반투명 흰 배경 + 그림자) — 캡처 위에 떠 있는 요소라 같은 규칙을 따른다.
+      {/* 한 칸뿐이면 넘길 곳이 없다 — 눌리지 않는 화살표와 점 하나는 조작할 수 있다는 거짓말이다 */}
+      {slides.length > 1 && (
+        /* 점은 이동 수단이자 전체 개수 표시다. 트랙과 같은 3:2 상자를 겹쳐 깔아
+           화면 칸의 아래쪽에 정확히 붙인다 */
+        <div className="pointer-events-none absolute inset-x-0 top-0 aspect-3/2">
+          {/* 화살표는 화면 칸의 세로 중앙 양옆에 띄운다.
+              점과 같은 처리(반투명 흰 배경 + 그림자) — 캡처 위에 떠 있는 요소라 같은 규칙을 따른다.
 
-            인터랙션은 FAB·EditorActions의 원형 플로팅 버튼과 같은 어휘다:
-            hover에 뜨고(그림자 강화) 누르면 들어간다(scale-95).
-            다만 세로 중앙 고정이라 위로 띄우는 대신 '갈 방향으로' 밀어 방향을 함께 알린다.
-            끝 칸에서는 이동·그림자를 되돌린다 — 눌리지 않는 버튼이 반응하면 거짓말이 된다 */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => goTo(index - 1)}
-          disabled={index === 0}
-          aria-label="이전 화면"
-          className="pointer-events-auto absolute top-1/2 left-3 -translate-y-1/2 rounded-full border-transparent bg-white/85 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-x-0.5 hover:bg-white hover:shadow-md active:scale-95 disabled:translate-x-0 disabled:shadow-sm disabled:hover:bg-white/85"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+              인터랙션은 FAB·EditorActions의 원형 플로팅 버튼과 같은 어휘다:
+              hover에 뜨고(그림자 강화) 누르면 들어간다(scale-95).
+              다만 세로 중앙 고정이라 위로 띄우는 대신 '갈 방향으로' 밀어 방향을 함께 알린다.
+              끝 칸에서는 이동·그림자를 되돌린다 — 눌리지 않는 버튼이 반응하면 거짓말이 된다 */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => goTo(index - 1)}
+            disabled={index === 0}
+            aria-label="이전 화면"
+            className="pointer-events-auto absolute top-1/2 left-3 -translate-y-1/2 rounded-full border-transparent bg-white/85 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-x-0.5 hover:bg-white hover:shadow-md active:scale-95 disabled:translate-x-0 disabled:shadow-sm disabled:hover:bg-white/85"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => goTo(index + 1)}
-          disabled={index === slides.length - 1}
-          aria-label="다음 화면"
-          className="pointer-events-auto absolute top-1/2 right-3 -translate-y-1/2 rounded-full border-transparent bg-white/85 shadow-sm backdrop-blur-sm transition-all duration-200 hover:translate-x-0.5 hover:bg-white hover:shadow-md active:scale-95 disabled:translate-x-0 disabled:shadow-sm disabled:hover:bg-white/85"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => goTo(index + 1)}
+            disabled={index === slides.length - 1}
+            aria-label="다음 화면"
+            className="pointer-events-auto absolute top-1/2 right-3 -translate-y-1/2 rounded-full border-transparent bg-white/85 shadow-sm backdrop-blur-sm transition-all duration-200 hover:translate-x-0.5 hover:bg-white hover:shadow-md active:scale-95 disabled:translate-x-0 disabled:shadow-sm disabled:hover:bg-white/85"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
 
-        <div className="absolute inset-x-0 bottom-4 flex justify-center">
-          {/* 캡처 위에 떠 있는 요소라 배경과 그림자를 준다 — 밝은 화면에서 점이 묻힌다 */}
-          <div className="pointer-events-auto flex gap-2 rounded-full bg-white/85 px-3 py-2 shadow-sm backdrop-blur-sm">
-            {slides.map((slide, i) => (
-              <button
-                key={slide.title}
-                onClick={() => goTo(i)}
-                aria-label={`${i + 1}번째 화면: ${slide.title}`}
-                aria-current={i === index}
-                // 공용 Button을 쓰지 않는 예외 — size가 전부 h-9 고정이라 6px 알약과 맞지 않는다
-                className={cn(
-                  'h-1.5 rounded-full transition-all',
-                  i === index ? 'w-6 bg-orange-500' : 'w-1.5 bg-gray-300 hover:bg-gray-400',
-                )}
-              />
-            ))}
+          <div className="absolute inset-x-0 bottom-4 flex justify-center">
+            {/* 캡처 위에 떠 있는 요소라 배경과 그림자를 준다 — 밝은 화면에서 점이 묻힌다 */}
+            <div className="pointer-events-auto flex gap-2 rounded-full bg-white/85 px-3 py-2 shadow-sm backdrop-blur-sm">
+              {slides.map((slide, i) => (
+                <button
+                  key={slide.title}
+                  onClick={() => goTo(i)}
+                  aria-label={`${i + 1}번째 화면: ${slide.title}`}
+                  aria-current={i === index}
+                  // 공용 Button을 쓰지 않는 예외 — size가 전부 h-9 고정이라 6px 알약과 맞지 않는다
+                  className={cn(
+                    'h-1.5 rounded-full transition-all',
+                    i === index ? 'w-6 bg-orange-500' : 'w-1.5 bg-gray-300 hover:bg-gray-400',
+                  )}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 캡션은 한 자리에 겹쳐 쌓고 활성만 보여준다.
           타이머로 갈아끼우지 않는 이유: 전부 깔려 있어야 높이가 가장 긴 글에 맞춰 고정되고,
