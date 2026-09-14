@@ -10,6 +10,7 @@ import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import { useState, useEffect } from 'react';
 
 import Skeleton from '@/components/ui/Skeleton';
+import Spinner from '@/components/ui/Spinner';
 import { cn } from '@/lib/utils';
 
 export default function ImageComponent({ node }: NodeViewProps) {
@@ -40,7 +41,7 @@ export default function ImageComponent({ node }: NodeViewProps) {
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+                  <Spinner label="이미지 업로드 중" />
                   <span className="text-sm font-medium text-gray-500">이미지 업로드 중...</span>
                 </div>
               </div>
