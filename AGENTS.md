@@ -133,6 +133,7 @@ page.tsx (서버)
 | `components/common/` | 도메인 무관 공통 (Pagination, ConfirmDialog) |
 | `components/post/` | 게시글 도메인 |
 | `components/news/` | 뉴스 도메인 |
+| `components/portfolio/` | 포트폴리오(`/about`) 도메인 |
 | `components/editor/` | Tiptap 에디터 |
 | `components/layout/` | SideNav, Footer 등 |
 
@@ -221,7 +222,7 @@ type ActionResult<T = void> =
 - **`italic`을 쓰지 않는다.** Pretendard에 이탤릭이 없어 합성 oblique가 나오고 한글에서 뭉개진다
 - 아이콘은 **`lucide-react`만** 쓴다. 다른 아이콘 라이브러리를 추가하지 않는다
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
-- 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
+- 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)`·`summary` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
 - 기본 트랜지션은 `transition-colors`. 복잡한 애니메이션만 `globals.css`에 `@keyframes`로
 
 ---

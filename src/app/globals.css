@@ -36,7 +36,8 @@
 
 /* 버튼 커서 — 컴포넌트마다 cursor-pointer를 반복하지 않도록 전역에서 한 번만 정한다 */
 button:not(:disabled),
-select:not(:disabled) {
+select:not(:disabled),
+summary {
   cursor: pointer;
 }
 
