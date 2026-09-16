@@ -9,8 +9,9 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useInViewOnce } from '@/hooks/useInViewOnce';
 import { cn } from '@/lib/utils';
 
 interface RevealProps {
@@ -21,33 +22,18 @@ interface RevealProps {
 }
 
 export default function Reveal({ children, delay = 0, className }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+  // matchMedia는 서버에 없다. 첫 렌더에서는 모르는 상태로 두고 마운트 후 판정한다
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // 모션을 끈 사용자에겐 애니메이션 없이 즉시 보여준다
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setShown(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // 한 번만 재생한다 — 스크롤을 오르내릴 때마다 깜빡이면 싸구려로 보인다
-        if (entry.isIntersecting) {
-          setShown(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
+    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
+
+  // 모션을 끈 사용자에겐 관찰 없이 즉시 보여준다
+  const [ref, shown] = useInViewOnce<HTMLDivElement>({
+    rootMargin: '0px 0px -10% 0px',
+    skip: reducedMotion,
+  });
 
   return (
     <div
