@@ -113,7 +113,7 @@ export async function createPost(formData: FormData) {
 | `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
 | `Tooltip` / `Skeleton` | `ui/` | 툴팁 / 로딩 스켈레톤 |
 | `Spinner` | `ui/` | **모든 스피너의 단일 출처** — size: sm/md. 들어올 내용의 모양을 미리 그릴 수 있으면 `Skeleton`, 자리는 잡혔고 기다림만 알리면 될 때 `Spinner` |
-| `Reveal` | `ui/` | **유일한 애니메이션 프리미티브** — 스크롤 진입 시 페이드 업. 새 효과를 만들기 전에 이걸 먼저 본다. 라이브러리 없이 IntersectionObserver + CSS |
+| `Reveal` | `ui/` | **유일한 애니메이션 프리미티브** — 스크롤 진입 시 페이드 업. 새 효과를 만들기 전에 이걸 먼저 본다. 라이브러리 없이 `useInViewOnce` + CSS |
 
 **승격 규칙**: 같은 구조를 **두 번째로** 작성하게 되는 순간이 공용화 시점이다. 컴포넌트로 추출해 `common/`(조합형) 또는 `ui/`(프리미티브)에 넣고, **이 표에 한 줄 추가한다.** 표에 없는 공용 컴포넌트는 다음 작업자에게 존재하지 않는 것과 같다.
 
@@ -147,7 +147,7 @@ page.tsx (서버)
 | 라우트 전환 | `(blog)/loading.tsx` |
 | 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경. 아이콘 버튼은 스피너로 (`EditorActions` 참고) |
-| 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + 마운트 전 `Skeleton` (`MermaidDiagram` 참고) |
+| 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + `Skeleton`. **정적 import하지 말고 그릴 때 `import()`로 받는다** — 안 쓰는 글의 번들까지 무거워진다 (`MermaidDiagram` 참고) |
 | 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`FeatureCarousel` 참고) |
 | 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 |
 
