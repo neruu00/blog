@@ -8,8 +8,9 @@
  *   2. 날짜 필터 기준 계산 (기본: DEFAULT_SINCE_DAYS일)
  *   3. 각 RSS 피드 파싱
  *   4. 날짜 필터 → original_url 중복 체크
- *   5. 신규 기사만 GPT-4o-mini로 요약
- *   6. tech_news 테이블에 INSERT
+ *   5. 신규 기사의 원문 수집 (실패 시 충분한 RSS 설명으로 대체)
+ *   6. GPT-4o-mini로 한국어 해설 생성
+ *   7. tech_news 테이블에 INSERT
  *
  * 쿼리 파라미터 (수동 실행 시 사용):
  *   ?days=N         — 최근 N일 이내 기사만 처리 (기본값: DEFAULT_SINCE_DAYS = 2)
@@ -18,6 +19,7 @@
 
 import { NextResponse } from 'next/server';
 
+import { fetchArticleText } from '@/lib/article';
 import { summarizeToMarkdown } from '@/lib/llm';
 import { parseFeed, RSS_FEEDS, type ParsedFeedItem } from '@/lib/rss';
 import { supabase } from '@/lib/supabase';
@@ -66,7 +68,10 @@ export async function GET(req: Request) {
     skipped: 0, // URL 중복으로 스킵
     dateSkipped: 0, // 날짜 필터로 스킵 (LLM 호출 없음)
     failed: 0, // 기사 단위 실패
+    rssFallback: 0, // 원문 수집 실패 후 RSS 설명으로 생성
+    deferred: 0, // 원문 정보 부족으로 게시 보류
     feedsFailed: 0, // 피드 단위 실패 (URL 만료, 네트워크 오류 등)
+    deferredItems: [] as string[],
     errors: [] as string[],
   };
 
@@ -115,11 +120,19 @@ export async function GET(req: Request) {
           continue;
         }
 
-        // description이 없는 경우 제목만으로 처리
-        const descriptionText = item.description || item.title;
+        // RSS 설명은 대개 짧으므로 원문을 우선한다. 원문 수집 실패 시에도
+        // 충분한 RSS 본문이 있을 때만 생성해 제목만으로 내용을 추측하지 않게 한다.
+        const articleText = await fetchArticleText(item.link);
+        const sourceText = articleText ?? item.description;
+        if (sourceText.trim().length < 400) {
+          results.deferred++;
+          results.deferredItems.push(`[${feed.source}] ${item.title}`);
+          continue;
+        }
+        if (!articleText) results.rssFallback++;
 
         // GPT-4o-mini로 요약 생성 (기사 간 1초 딜레이로 rate limit 방지)
-        const content = await summarizeToMarkdown(item.title, descriptionText);
+        const content = await summarizeToMarkdown(item.title, sourceText);
 
         // Supabase에 저장
         const { error: insertError } = await supabase.from('tech_news').insert({
@@ -159,7 +172,7 @@ export async function GET(req: Request) {
   console.warn('[fetch-news] 완료:', JSON.stringify(results));
 
   return NextResponse.json({
-    message: `완료: ${results.processed}개 저장, ${results.skipped}개 URL중복, ${results.dateSkipped}개 날짜필터, ${results.failed}개 기사실패, ${results.feedsFailed}개 피드실패`,
+    message: `완료: ${results.processed}개 저장(${results.rssFallback}개 RSS 대체), ${results.skipped}개 URL중복, ${results.dateSkipped}개 날짜필터, ${results.deferred}개 게시보류, ${results.failed}개 기사실패, ${results.feedsFailed}개 피드실패`,
     ...results,
   });
 }

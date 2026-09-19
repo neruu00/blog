@@ -7,9 +7,9 @@
 
 import { ExternalLink } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
 
 import BackLink from '@/components/common/BackLink';
+import NewsContent from '@/components/news/NewsContent';
 import TagBadge from '@/components/ui/TagBadge';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
@@ -100,9 +100,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       {/* 마크다운 요약 — 본문 스타일은 게시글과 동일하게 globals.css의 .prose가 단일 출처 */}
       <section className="mb-12">
-        <div className="prose prose-lg prose-orange max-w-none text-gray-900">
-          <ReactMarkdown>{news.content}</ReactMarkdown>
-        </div>
+        <NewsContent content={news.content} />
       </section>
 
       {/* 원본 링크 섹션 */}
