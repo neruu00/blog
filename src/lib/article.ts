@@ -10,6 +10,22 @@ const MAX_ARTICLE_CHARS = 36000;
 
 /** 원문 요청에 실패하거나 유효한 본문을 찾지 못하면 null을 반환한다. */
 export async function fetchArticleText(url: string): Promise<string | null> {
+  const article = await fetchArticle(url);
+  if (!article || article.text.length < 400) return null;
+  return article.text.slice(0, MAX_ARTICLE_CHARS);
+}
+
+/** 북마크 카드에 사용할 Open Graph/Twitter 이미지를 반환한다. */
+export async function fetchArticleImage(url: string): Promise<string | null> {
+  return (await fetchArticle(url))?.imageUrl ?? null;
+}
+
+interface FetchedArticle {
+  text: string;
+  imageUrl: string | null;
+}
+
+async function fetchArticle(url: string): Promise<FetchedArticle | null> {
   if (!isPublicHttpUrl(url)) return null;
 
   const controller = new AbortController();
@@ -44,14 +60,44 @@ export async function fetchArticleText(url: string): Promise<string | null> {
     const html = await readLimitedBody(response);
     if (!html) return null;
 
-    const content = htmlToMarkdown(selectArticleHtml(html));
-    return content.length >= 400 ? content.slice(0, MAX_ARTICLE_CHARS) : null;
+    return {
+      text: htmlToMarkdown(selectArticleHtml(html)),
+      imageUrl: extractPreviewImage(html, currentUrl),
+    };
   } catch (error) {
     console.warn(`[article] 원문 수집 실패: ${url}`, error);
     return null;
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function extractPreviewImage(html: string, articleUrl: string): string | null {
+  const metaTags = html.match(/<meta\b[^>]*>/gi) ?? [];
+  const priorities = ['og:image:secure_url', 'og:image', 'twitter:image'];
+
+  for (const property of priorities) {
+    for (const tag of metaTags) {
+      const key = readHtmlAttribute(tag, 'property') ?? readHtmlAttribute(tag, 'name');
+      if (key?.toLowerCase() !== property) continue;
+
+      const content = readHtmlAttribute(tag, 'content');
+      if (!content) continue;
+      try {
+        const imageUrl = new URL(decodeEntities(content), articleUrl).toString();
+        if (isPublicHttpUrl(imageUrl)) return imageUrl;
+      } catch {
+        // 잘못된 메타데이터는 다음 후보를 확인한다.
+      }
+    }
+  }
+
+  return null;
+}
+
+function readHtmlAttribute(tag: string, name: string): string | null {
+  const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:["']([^"']*)["']|([^\\s>]+))`, 'i'));
+  return match?.[1] ?? match?.[2] ?? null;
 }
 
 function isPublicHttpUrl(value: string): boolean {
