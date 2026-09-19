@@ -5,11 +5,11 @@
  *              Chrome Dev 기사의 경우 한국어 버전 링크를 함께 제공한다.
  */
 
-import { ExternalLink } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
 
 import BackLink from '@/components/common/BackLink';
+import NewsContent from '@/components/news/NewsContent';
+import NewsSourceCard from '@/components/news/NewsSourceCard';
 import TagBadge from '@/components/ui/TagBadge';
 import { supabase } from '@/lib/supabase';
 import { formatDateKo } from '@/lib/utils/date';
@@ -100,39 +100,35 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       {/* 마크다운 요약 — 본문 스타일은 게시글과 동일하게 globals.css의 .prose가 단일 출처 */}
       <section className="mb-12">
-        <div className="prose prose-lg prose-orange max-w-none text-gray-900">
-          <ReactMarkdown>{news.content}</ReactMarkdown>
-        </div>
+        <NewsContent content={news.content} />
       </section>
 
       {/* 원본 링크 섹션 */}
-      <footer className="rounded-lg border border-gray-100 bg-gray-50 p-6">
+      <footer className="rounded-lg bg-gray-50 p-6">
         <p className="mb-4 text-sm font-medium text-gray-500">원문 읽기</p>
-        <div className="flex flex-wrap gap-3">
+        <div className="space-y-3">
           {/* 원본 (영어) 링크 */}
           {isValidOriginalUrl && (
-            <a
-              href={news.originalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:border-orange-300 hover:text-orange-600"
-            >
-              <ExternalLink className="h-4 w-4" />
-              원본 뉴스 보러가기
-            </a>
+            <NewsSourceCard
+              newsId={news.id}
+              source={news.source}
+              url={news.originalUrl}
+              title={news.title}
+              description={`${sourceLabel}에서 발행한 원문 기사입니다.`}
+              sourceLabel={sourceLabel}
+            />
           )}
 
           {/* Chrome Dev 블로그 한국어 버전 */}
           {chromeKoreanUrl && (
-            <a
-              href={chromeKoreanUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:border-orange-300 hover:text-orange-600"
-            >
-              <ExternalLink className="h-4 w-4" />
-              🇰🇷 한국어 버전
-            </a>
+            <NewsSourceCard
+              newsId={news.id}
+              source={news.source}
+              url={chromeKoreanUrl}
+              title={`${news.title} — 한국어`}
+              description="Chrome for Developers에서 제공하는 한국어 버전입니다."
+              sourceLabel="한국어"
+            />
           )}
         </div>
       </footer>

@@ -75,7 +75,7 @@ export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
         title: item.title ?? '',
         link: item.link ?? '',
         description: item.contentSnippet
-          ? item.contentSnippet.trim().slice(0, 1500)
+          ? item.contentSnippet.trim().slice(0, 6000)
           : stripHtml(item.summary ?? item.content ?? ''),
         publishedAt: isNaN(parsedDate.getTime()) ? new Date() : parsedDate,
       };
@@ -94,5 +94,5 @@ function stripHtml(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 1500); // LLM 토큰 최소화를 위해 1500자 제한
+    .slice(0, 6000); // 원문 수집 실패 시에도 충분한 판단 근거를 남긴다.
 }

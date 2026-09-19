@@ -15,7 +15,7 @@
 | **Google OAuth** | NextAuth v4 기반 소셜 로그인, Admin 권한 분리 |
 | **게시글 CRUD** | 작성/수정/삭제 (Admin), 태그 필터링, 조회수 (쿠키 중복 방지) |
 | **댓글 시스템** | Google 로그인 사용자 전용, 1단 대댓글, 실시간 토스트 알림 |
-| **기술 뉴스** | RSS 6개 소스 수집 + GPT-4o-mini 한국어 요약, Vercel Cron 일 1회 자동 갱신 |
+| **기술 뉴스** | RSS 6개 소스의 원문 수집 + GPT-4o-mini 한국어 해설, Vercel Cron 일 1회 자동 갱신 |
 | **애널리틱스** | GA4 커스텀 이벤트 (댓글, 조회수) + Vercel Analytics |
 | **UI 시스템** | 커스텀 전역 Modal 및 Toast 알림 |
 

@@ -20,6 +20,9 @@
   /* 코드 블록 배경 */
   --color-code-bg: #f8f9fa;
 
+  /* JavaScript 공식 로고 배경 */
+  --color-javascript: #f7df1e;
+
   /* Mac 스타일 코드 블록 (다크 표면 — CodeBlockComponent 전용) */
   --color-code-block: #1e1e1e;
   --color-code-block-header: #2d2d2d;
