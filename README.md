@@ -101,7 +101,7 @@ pnpm dev
 
 ## 📐 스펙 문서
 
-프로젝트의 상세 기술 명세(아키텍처, 데이터베이스, 기능, 에디터, 디자인 시스템)는 cushion 문서 시스템의 `blog` 라이브러리에서 관리합니다. DB 스키마의 SQL 원본은 [supabase/schema.sql](supabase/schema.sql)입니다.
+프로젝트의 상세 기술 명세(아키텍처, 데이터베이스, 기능, 에디터, 디자인 시스템)는 [docs/](docs/)에서 관리합니다. 개선 백로그와 결정 로그는 [docs/PLAN.md](docs/PLAN.md)입니다. DB 스키마의 SQL 원본은 [supabase/schema.sql](supabase/schema.sql)입니다.
 
 ## 📝 라이선스
 
