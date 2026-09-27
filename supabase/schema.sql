@@ -4,7 +4,7 @@
 -- 이 파일이 스키마의 원본이다. 전체가 idempotent 하므로 통째로 다시 실행해도
 -- 안전하다. 스키마를 바꿀 때는 이 파일을 수정하고, 라이브 DB(Supabase SQL
 -- Editor)에 해당 구문을 실행한 뒤 커밋한다.
--- (cushion `blog/database.md` 는 읽기용 요약이며, 컬럼 변경 시 함께 갱신한다)
+-- (`docs/database.md` 는 읽기용 요약이며, 컬럼 변경 시 함께 갱신한다)
 --
 -- ⚠️ 라이브 DB 미적용분이 두 개 있다 — "tech_news 중복 정리 + original_url UNIQUE"
 --    블록과 "좋아요 기능 제거" DROP 블록. 나머지는 모두 적용된 상태다.
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS tech_news (
 CREATE INDEX IF NOT EXISTS idx_comments_post_id       ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
 
--- ── tech_news 중복 정리 + original_url UNIQUE (cushion blog/PLAN.md T-308) ───
+-- ── tech_news 중복 정리 + original_url UNIQUE (docs/PLAN.md T-308) ───
 -- ⚠️ 이 블록만 라이브 DB 미적용이다. Supabase SQL Editor에서 실행 후 이 주석 삭제.
 --
 -- 크론 재실행/백필 시 중복 수집의 최종 방어선이다. fetch-news 라우트의
@@ -90,7 +90,7 @@ RETURNS void AS $$
   UPDATE posts SET view_count = view_count + 1 WHERE id = post_id;
 $$ LANGUAGE sql;
 
--- ── 좋아요 기능 제거 (2026-08-20, cushion blog/PLAN.md D-004) ─────────────────
+-- ── 좋아요 기능 제거 (2026-08-20, docs/PLAN.md D-004) ─────────────────
 -- ⚠️ 라이브 DB에 아래 DROP 미적용. Supabase SQL Editor에서 실행 후 이 블록 삭제.
 DROP FUNCTION IF EXISTS increment_like_count(UUID);
 DROP FUNCTION IF EXISTS decrement_like_count(UUID);
