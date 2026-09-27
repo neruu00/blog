@@ -1,5 +1,10 @@
 'use server';
 
+/**
+ * @file comment.ts
+ * @description 댓글 조회·작성·삭제 서버 액션. 작성은 로그인 사용자, 삭제는 작성자 본인이나 관리자만 할 수 있다.
+ */
+
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 
@@ -9,9 +14,7 @@ import { commentSchema, type CommentInput } from '@/schemas/comment.schema';
 import type { ActionResult } from '@/types/action.type';
 import type { Comment } from '@/types/comment.type';
 
-/**
- * 게시글의 댓글 목록 조회
- */
+/** 게시글의 댓글을 작성순으로 가져와 작성자 이름·프로필 이미지를 붙인다. */
 export async function getComments(postId: string): Promise<ActionResult<Comment[]>> {
   try {
     const { data, error } = await supabase
@@ -46,9 +49,7 @@ export async function getComments(postId: string): Promise<ActionResult<Comment[
   }
 }
 
-/**
- * 댓글 작성
- */
+/** 로그인한 사용자의 댓글을 저장한다. `parentId`가 있으면 대댓글이다. */
 export async function createComment(input: CommentInput): Promise<ActionResult<Comment>> {
   try {
     const session = await getServerSession(authOptions);
@@ -76,7 +77,6 @@ export async function createComment(input: CommentInput): Promise<ActionResult<C
 
     if (error) throw error;
 
-    // 세션 정보를 기반으로 user 객체 덧붙이기
     const newComment = {
       ...data,
       user: {
@@ -94,9 +94,7 @@ export async function createComment(input: CommentInput): Promise<ActionResult<C
   }
 }
 
-/**
- * 댓글 삭제
- */
+/** 댓글을 삭제한다. 작성자 본인이나 관리자만 지울 수 있다. */
 export async function deleteComment(commentId: string, postId: string): Promise<ActionResult> {
   try {
     const session = await getServerSession(authOptions);
@@ -104,7 +102,7 @@ export async function deleteComment(commentId: string, postId: string): Promise<
       return { success: false, error: '로그인이 필요합니다.' };
     }
 
-    // 본인 댓글이거나 어드민인지 체크 (DB 수준의 RLS가 설정되어 있다면 더 안전)
+    // RLS가 없으므로 작성자 확인을 여기서 직접 한다
     const { data: comment, error: fetchError } = await supabase
       .from('comments')
       .select('user_id')

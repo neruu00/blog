@@ -1,11 +1,9 @@
 /**
  * @file EditorActions.tsx
- * @description 작성/수정 페이지의 플로팅 액션 버튼 묶음.
- *              화면 우하단에 고정되며 뒤로가기·임시저장·게시(수정)를 아이콘으로 제공한다.
- *              위→아래 순서가 곧 탭 순서이고, 주 액션(제출)이 가장 아래·가장 크다.
+ * @description 작성/수정 페이지 오른쪽 아래에 고정되는 뒤로가기·임시저장·게시 아이콘 버튼 묶음.
+ *              위에서 아래로 배치된 순서가 곧 탭 순서이며, 제출 버튼은 맨 아래에 가장 크게 배치한다.
  *
- *              아이콘 전용이라 Tooltip(마우스·키보드)과 aria-label(스크린리더)로
- *              이름을 각각 준다 — 터치 기기에는 툴팁이 뜨지 않기 때문이다.
+ *              아이콘만 있는 버튼이므로 Tooltip과 aria-label을 모두 지정한다. 터치 기기에서는 툴팁이 표시되지 않는다.
  */
 
 'use client';
@@ -22,7 +20,6 @@ interface EditorActionsProps {
   onSaveDraft: () => void;
 }
 
-/** 떠 있는 요소이므로 그림자를 쓴다 (design-system: 그림자는 실제로 떠 있는 것에만) */
 const FLOATING =
   'rounded-full shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl disabled:translate-y-0 disabled:shadow-lg';
 

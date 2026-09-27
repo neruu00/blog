@@ -1,37 +1,30 @@
 /**
  * @file portfolio.ts
- * @description /about 포트폴리오 페이지의 단일 데이터 출처.
- *
- *              타입이 서사를 강제한다: 기술 나열이 아니라 "무엇이 막혔고(problem)
- *              어떻게 풀었는지(solution)"가 필수다. stack은 맨 뒤 — 부록이지 본문이 아니다.
- *              배열 순서가 곧 화면 순서다.
+ * @description /about 포트폴리오 페이지에 표시하는 데이터. 배열 순서가 곧 화면 순서다.
  */
 
 export interface Challenge {
-  /** 과제 이름. 앞 번호는 렌더링이 붙이므로 여기 쓰지 않는다 */
+  /** 과제 이름. 앞 번호는 화면에서 붙이므로 쓰지 않는다 */
   title: string;
-  /** 무엇이 막혔나 — 상황 */
+  /** 무엇이 막혔는지 */
   problem: string;
-  /**
-   * "이를 ~문제로 정의했습니다" — 증상을 다시 정의한 지점.
-   * 이 페이지에서 가장 중요한 문장이라 화면에서도 유일하게 진하게 찍는다.
-   */
+  /** 문제를 다시 정의한 문장. 화면에서 굵게 표시한다 */
   definition?: string;
-  /** 어떻게 풀었나 — 실행 */
+  /** 어떻게 해결했는지 */
   solution: string;
-  /** 수치로 말할 수 있을 때만. 배지로 강조되므로 남발하면 강조가 죽는다 */
+  /** 성과 수치. 배지로 표시한다 */
   metric?: string;
-  /** 이 문제를 깊게 다룬 블로그 글 — 주장에서 근거로 바로 넘어가는 통로 */
+  /** 이 과제를 자세히 다룬 블로그 글 경로 */
   postHref?: string;
 }
 
-/** 캐러셀 한 칸에 들어가는 화면 — 정지 캡처이거나 무음 루프 영상이다 */
+/** 캐러셀 한 칸에 들어가는 화면. 캡처 이미지 또는 무음 반복 영상이다 */
 export interface Media {
   kind: 'image' | 'video';
   src: string;
   /** 이미지의 alt이자 영상의 접근성 레이블 */
   alt: string;
-  /** 원본 해상도. 자리를 미리 잡아 레이아웃 점프를 막는 데 쓴다 */
+  /** 원본 해상도. 로드 전에 자리를 잡아 레이아웃이 밀리지 않게 한다 */
   width: number;
   height: number;
 }
@@ -39,35 +32,28 @@ export interface Media {
 export interface Feature {
   title: string;
   description: string;
-  /**
-   * 없으면 캐러셀 칸이 되지 않고 그 아래 기능 목록으로 간다 — 화면이 준비되면 채운다.
-   * 캡처를 다 찍지 못한 프로젝트도 무엇을 만들었는지는 남길 수 있어야 한다.
-   */
+  /** 없으면 캐러셀 대신 그 아래 기능 목록에 표시한다 */
   media?: Media;
 }
 
 export interface Project {
   name: string;
   nameEn: string;
-  /** 리뷰어가 3초 안에 판단하는 한 줄 */
+  /** 프로젝트 한 줄 소개 */
   tagline: string;
   period: string;
   team: string;
   role: string;
   links: { github?: string; demo?: string };
-  /**
-   * 왜 이 서비스를 계획했고 무엇을 해결했는지. 한 덩어리의 글이다 —
-   * 배경과 결론을 필드로 쪼개면 이어지는 논증을 어디서 끊을지 매번 고민하게 된다.
-   * 문단은 빈 줄로 나눈다.
-   */
+  /** 서비스를 기획한 이유와 해결한 문제. 문단은 빈 줄로 나눈다 */
   service?: string;
-  /** 내가 구현한 주요 기능. 기능마다 화면 캡처를 함께 보여준다 */
+  /** 직접 구현한 주요 기능 */
   features?: Feature[];
-  /** 과제 목록 앞에 붙는 한 문단 — 이 프로젝트에서 무엇이 어려웠는지의 총평 */
+  /** 과제 목록 앞에 붙는 총평 한 문단 */
   challengesIntro?: string;
-  /** 내가 해결한 과제 — 이 페이지의 본문 */
+  /** 직접 해결한 과제 */
   challenges: Challenge[];
-  /** 다시 한다면 무엇을 다르게 할 것인가 */
+  /** 회고. 없으면 회고 블록을 표시하지 않는다 */
   retrospective?: string;
   stack: string[];
 }
@@ -81,7 +67,7 @@ export interface Education {
 export const PROFILE = {
   name: '우재현',
   title: 'Frontend Developer',
-  /** 한 줄 소개 — 무엇을 하는 사람인지. 상세 이력은 이력서가 맡는다 */
+  /** 한 줄 자기소개 */
   summary:
     '실시간 데이터와 복잡한 인증 환경에서 발생하는 상태 불일치 문제를 해결하는 프론트엔드 개발자입니다.',
   photo: '/profile.jpg',
@@ -89,7 +75,7 @@ export const PROFILE = {
   github: 'https://github.com/neruu00',
 } as const;
 
-/** 순서는 소유자가 정한 그대로다 — 최신순이 아니라 의도된 배치 */
+/** 최신순이 아니라 소유자가 정한 순서다. 정렬하지 않는다 */
 export const PROJECTS: Project[] = [
   {
     name: '세코미',

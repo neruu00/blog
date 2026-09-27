@@ -1,7 +1,6 @@
 /**
  * @file EmptyState.tsx
- * @description 목록이 비었을 때 표시하는 공용 플레이스홀더 박스.
- *              점선 테두리 + 중앙 정렬 안내 문구. 보조 문구/액션은 children으로.
+ * @description 목록이 비었을 때 보여주는 공용 플레이스홀더. 보조 문구나 액션은 children으로 넘긴다.
  */
 
 interface EmptyStateProps {

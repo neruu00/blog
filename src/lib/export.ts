@@ -1,14 +1,9 @@
 /**
  * @file export.ts
- * @description 게시글 Export 유틸리티.
- *              - exportToMarkdown: JSONContent → Markdown 변환 후 .md 파일 다운로드
+ * @description 게시글 본문(Tiptap JSON)을 Markdown으로 바꿔 .md 파일로 내려받는다.
  */
 
 import type { JSONContent } from '@tiptap/react';
-
-// ─────────────────────────────────────────────
-// Markdown Export — JSONContent → Markdown 변환
-// ─────────────────────────────────────────────
 
 /** Tiptap 텍스트 노드의 marks를 Markdown 문법으로 감싼다 */
 function applyMarks(text: string, marks: NonNullable<JSONContent['marks']>): string {
@@ -81,7 +76,7 @@ function nodeToMarkdown(node: JSONContent, listDepth = 0, orderedIndex = 0): str
 
     case 'listItem': {
       const bullet = orderedIndex > 0 ? `${orderedIndex}.` : '-';
-      // 첫 번째 자식(paragraph)의 텍스트와 중첩 리스트를 처리
+      // 첫 문단은 불릿과 같은 줄에, 나머지 자식(중첩 목록 등)은 그 아래에 둔다
       const children = node.content ?? [];
       const firstParagraph = children[0];
       const firstText =
@@ -123,7 +118,6 @@ function nodeToMarkdown(node: JSONContent, listDepth = 0, orderedIndex = 0): str
     case 'hardBreak':
       return '  \n'; // Markdown 줄바꿈
 
-    // ── Table ──────────────────────────────────
     case 'table':
       return (node.content ?? []).map((n) => nodeToMarkdown(n)).join('');
 
@@ -133,8 +127,8 @@ function nodeToMarkdown(node: JSONContent, listDepth = 0, orderedIndex = 0): str
           const cellText = (cell.content ?? [])
             .flatMap((p) => (p.content ?? []).map((n) => nodeToMarkdown(n)))
             .join('')
-            .replace(/\|/g, '\\|') // 파이프 이스케이프
-            .replace(/\n/g, '<br>'); // 개행을 <br>로 변환
+            .replace(/\|/g, '\\|') // 셀 안의 파이프와 개행은 표 문법을 깨뜨린다
+            .replace(/\n/g, '<br>');
           return ` ${cellText} `;
         })
         .join('|');
@@ -149,32 +143,29 @@ function nodeToMarkdown(node: JSONContent, listDepth = 0, orderedIndex = 0): str
 
     case 'tableHeader':
     case 'tableCell': {
-      // tableRow 에서 처리하므로 단독으로는 호출되지 않지만 안전하게 처리
+      // 보통은 tableRow가 처리하므로 여기로 오지 않는다
       return (node.content ?? []).map((n) => nodeToMarkdown(n)).join('');
     }
 
-    // ── Mermaid (코드 블록으로 변환) ────────────
     case 'mermaidBlock': {
       const code = (node.attrs?.code as string) ?? '';
       return `\`\`\`mermaid\n${code}\n\`\`\`\n`;
     }
 
     default:
-      // 알 수 없는 노드는 자식 노드를 재귀 처리
+      // 모르는 노드는 감싸는 문법 없이 자식만 변환한다
       return (node.content ?? []).map((n) => nodeToMarkdown(n)).join('');
   }
 }
 
 /**
- * JSONContent를 Markdown 파일로 변환하여 다운로드한다.
- * @param title - 게시글 제목 (파일명 및 문서 제목으로 사용)
- * @param content - Tiptap JSONContent
+ * 게시글을 Markdown 파일로 내려받는다.
+ * @param title - 문서 첫 줄의 `#` 제목과 파일명에 사용한다
  */
 export function exportToMarkdown(title: string, content: JSONContent): void {
   const body = nodeToMarkdown(content);
   const markdown = `# ${title}\n\n${body}`;
 
-  // 파일명 안전화: 특수문자 제거
   const safeFileName = title.replace(/[^a-zA-Z0-9가-힣\s-_]/g, '').trim() || 'post';
 
   const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
@@ -185,6 +176,5 @@ export function exportToMarkdown(title: string, content: JSONContent): void {
   link.download = `${safeFileName}.md`;
   link.click();
 
-  // 메모리 해제
   URL.revokeObjectURL(url);
 }

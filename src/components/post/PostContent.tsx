@@ -1,8 +1,7 @@
 /**
  * @file PostContent.tsx
- * @description 게시글 본문을 서버에서 정적으로 렌더링한다 (Tiptap JSON → React).
- *              편집 런타임 없이 HTML이 SSR에 실리므로 검색엔진·링크 미리보기·
- *              헤딩 딥링크가 동작하고, 읽기 페이지 번들에서 Tiptap이 빠진다.
+ * @description 게시글 본문(Tiptap JSON)을 서버에서 React로 정적 렌더링한다.
+ *              본문 HTML이 SSR 응답에 포함되어 검색엔진, 링크 미리보기, 헤딩 딥링크가 동작한다.
  */
 
 import Image from '@tiptap/extension-image';
@@ -23,8 +22,8 @@ import type { JSONContent } from '@tiptap/core';
 import type { Node as PMNode } from '@tiptap/pm/model';
 
 /**
- * TiptapEditor와 같은 노드·마크 집합. 노드뷰(React)는 필요 없으므로 스키마만 있는 기본 확장을 쓴다.
- * 여기 없는 노드 타입이 JSON에 있으면 렌더가 실패한다 — 에디터에 확장을 추가하면 여기도 추가하라.
+ * TiptapEditor와 같은 노드·마크 집합이다. 노드뷰가 필요하지 않아 스키마만 있는 확장을 쓴다.
+ * 여기에 없는 노드 타입이 JSON에 있으면 렌더링에 실패하므로, 에디터에 확장을 추가할 때 여기도 추가한다.
  */
 const POST_SCHEMA = [
   StarterKit.configure({ heading: false }),
@@ -40,10 +39,9 @@ const HEADING_LEVELS = [2, 3, 4] as const;
 type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
 /**
- * 표 셀 속성을 React 표기로 옮긴다.
- * 정적 렌더러는 class/style 말고는 속성명을 그대로 넘기는데, Tiptap은 이걸
- * HTML 표기(colspan/rowspan)로 내보내 React가 "Did you mean colSpan?"으로 경고한다.
- * 기본값 1은 아예 빼서 마크업을 깨끗하게 둔다. colwidth는 colgroup이 대신 처리한다.
+ * 표 셀 속성(colspan/rowspan)을 React 표기(colSpan/rowSpan)로 바꾼다.
+ * 정적 렌더러는 class/style 외의 속성명을 그대로 넘기므로, 바꾸지 않으면 React가 경고를 낸다.
+ * 기본값 1은 출력하지 않고, colwidth는 colgroup에서 처리한다.
  */
 function cellSpanProps(node: PMNode) {
   const colSpan = Number(node.attrs.colspan) || 1;
@@ -54,7 +52,7 @@ function cellSpanProps(node: PMNode) {
   };
 }
 
-/** 첫 행의 colwidth를 colgroup으로 편다 — 에디터에서 조정한 열 너비를 읽기 화면에서도 유지한다 */
+/** 첫 행의 colwidth로 colgroup을 만들어 에디터에서 조정한 열 너비를 읽기 화면에서도 유지한다 */
 function columnWidths(table: PMNode): (number | null)[] {
   const widths: (number | null)[] = [];
   table.firstChild?.forEach((cell) => {
@@ -72,7 +70,7 @@ interface PostContentProps {
 }
 
 export default function PostContent({ content, toc }: PostContentProps) {
-  // 목차와 같은 순서로 id를 소비한다. 텍스트 없는 헤딩은 추출기도 건너뛰므로 여기서도 건너뛴다
+  // 목차와 같은 순서로 id를 소비한다. 텍스트가 없는 헤딩은 추출기도 건너뛰므로 여기서도 건너뛴다
   const headingIds = toc.map((item) => item.id);
   let headingIndex = 0;
 
@@ -82,7 +80,7 @@ export default function PostContent({ content, toc }: PostContentProps) {
     options: {
       nodeMapping: {
         heading: ({ node, children }) => {
-          // ShiftedHeading이 허용하지 않는 레벨(옛 글의 h1 등)은 렌더러와 같이 h2로 떨어뜨린다
+          // ShiftedHeading이 허용하지 않는 레벨(h1 등)이 저장된 글은 h2로 렌더링한다
           const level: HeadingLevel = HEADING_LEVELS.includes(node.attrs.level)
             ? node.attrs.level
             : 2;
@@ -116,9 +114,8 @@ export default function PostContent({ content, toc }: PostContentProps) {
 
         mermaidBlock: ({ node }) => <MermaidDiagram code={node.attrs.code} />,
 
-        // 에디터는 resizable 노드뷰가 표를 .tableWrapper로 감싸고 colgroup을 그린다.
-        // 뷰어에는 그 노드뷰가 없으므로 둘 다 여기서 직접 만든다 — 래퍼가 없으면
-        // 넓은 표가 페이지를 가로로 민다 (globals.css .prose .tableWrapper)
+        // 에디터에서는 resizable 노드뷰가 .tableWrapper와 colgroup을 그리지만 정적 렌더에는 그 노드뷰가 없어
+        // 여기서 직접 만든다. 래퍼가 없으면 너비가 넓은 표가 페이지를 가로로 밀어낸다 (globals.css .prose .tableWrapper)
         table: ({ node, children }) => {
           const widths = columnWidths(node);
           return (

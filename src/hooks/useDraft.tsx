@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * @file useDraft.tsx
+ * @description 에디터 임시 저장 훅. localStorage에 1분마다 자동으로 저장하고, 진입할 때 저장본이 있으면 불러올지 묻는다.
+ *              변경 사항이 있으면 페이지를 떠나기 전에 경고한다.
+ */
+
 import { JSONContent } from '@tiptap/react';
 import { useCallback, useEffect, useState } from 'react';
 

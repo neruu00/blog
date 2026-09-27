@@ -47,7 +47,7 @@ export default function CodeBlockComponent({ node, updateAttributes, editor }: N
         )
       }
     >
-      {/* @ts-expect-error: @tiptap/react의 타입 정의가 'code' 태그를 완벽히 지원하지 않아 생기는 TS 에러 */}
+      {/* @ts-expect-error: @tiptap/react 타입 정의가 as='code'를 지원하지 않는다 */}
       <NodeViewContent as="code" className={`language-${node.attrs.language}`} />
     </CodeBlockFrame>
   );

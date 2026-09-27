@@ -4,7 +4,7 @@ interface TooltipProps {
   children: React.ReactNode;
   text: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
-  className?: string; // wrapper 래퍼에 추가할 클래스 (예: fixed 포지셔닝 등)
+  className?: string; // 래퍼 요소에 추가할 클래스 (예: fixed 포지셔닝)
 }
 
 export default function Tooltip({

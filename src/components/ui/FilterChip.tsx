@@ -1,7 +1,6 @@
 /**
  * @file FilterChip.tsx
- * @description 필터 탭용 알약 링크 (태그·뉴스 소스 필터).
- *              플랫 원칙에 따라 테두리 없이 배경색으로 활성 상태를 구분한다.
+ * @description 태그·뉴스 소스 필터에 쓰는 알약 모양 링크. 활성 상태는 배경색으로 구분한다.
  */
 
 import Link from 'next/link';

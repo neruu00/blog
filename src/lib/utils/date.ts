@@ -1,13 +1,9 @@
 /**
  * @file date.ts
- * @description 날짜 포맷팅 유틸리티.
+ * @description 화면 표시용 날짜 포맷 함수.
  */
 
-/**
- * Date 객체나 날짜 문자열을 한국어 날짜 형식으로 포맷팅
- * @param date - 포맷팅할 날짜
- * @returns "2026년 4월 23일" 형식의 문자열
- */
+/** 날짜를 "2026년 4월 23일" 형식으로 만든다. */
 export function formatDateKo(date: Date | string | number | undefined | null): string {
   if (!date) return '';
   const d = new Date(date);
@@ -20,11 +16,7 @@ export function formatDateKo(date: Date | string | number | undefined | null): s
   }).format(d);
 }
 
-/**
- * Date 객체나 날짜 문자열을 상대 시간으로 포맷팅
- * @param date - 포맷팅할 날짜
- * @returns "방금 전", "5분 전", "3일 전" 등의 문자열
- */
+/** 날짜를 "방금 전", "5분 전", "3일 전" 같은 상대 시간으로 만든다. */
 export function formatRelativeTime(date: Date | string | number | undefined | null): string {
   if (!date) return '';
   const d = new Date(date);

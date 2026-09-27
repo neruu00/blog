@@ -1,6 +1,6 @@
 /**
  * @file site.ts
- * @description 사이트 전역 메타 상수. sitemap/robots/RSS가 공유하는 절대 URL의 단일 출처.
+ * @description 사이트 절대 URL. sitemap·robots·RSS가 이 값을 함께 쓴다.
  */
 
 /** 배포 도메인. 커스텀 도메인으로 옮기면 이 값만 바꾸면 된다. */

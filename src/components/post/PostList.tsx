@@ -10,10 +10,7 @@ interface PostListProps {
   isAdmin?: boolean;
 }
 
-/**
- * 게시글 목록 컴포넌트.
- * 게시글이 없을 때 빈 상태(empty state)를 표시한다.
- */
+/** 게시글 목록. 글이 없으면 빈 상태를 보여준다. */
 export default function PostList({ posts, isAdmin }: PostListProps) {
   if (posts.length === 0) {
     return (

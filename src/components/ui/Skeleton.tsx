@@ -1,7 +1,6 @@
 /**
  * @file Skeleton.tsx
- * @description 로딩 상태를 표시하기 위한 스켈레톤 UI 컴포넌트.
- *              사이트의 모든 스켈레톤 색·애니메이션의 단일 출처.
+ * @description 로딩 스켈레톤. 사이트의 모든 스켈레톤 색과 애니메이션은 여기서 정한다.
  */
 
 import { cn } from '@/lib/utils';

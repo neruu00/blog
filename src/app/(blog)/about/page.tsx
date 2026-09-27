@@ -1,12 +1,6 @@
 /**
  * @file page.tsx
- * @description 포트폴리오(소개) 페이지.
- *              DB를 타지 않고 lib/constants/portfolio.ts만 읽으므로 완전 정적이다.
- *
- *              섹션 순서: 소개 → 기술 → 교육 → 프로젝트.
- *              배경(기술·교육)을 먼저 훑고 프로젝트로 들어가는 이력서 관습을 따른다.
- *              대신 기술·교육은 짧게 유지해야 한다 — 길어지면 리뷰어가 본문인
- *              프로젝트에 닿기 전에 지친다.
+ * @description 포트폴리오(소개) 페이지. DB 없이 lib/constants/portfolio.ts만 읽어 정적으로 렌더링된다.
  */
 
 import ProjectIndex from '@/components/portfolio/ProjectIndex';
@@ -21,7 +15,7 @@ export const metadata: Metadata = {
   description: PROFILE.summary,
 };
 
-/** 프로젝트 앵커 id — 인덱스와 섹션이 같은 값을 써야 한다 */
+/** 프로젝트 앵커 id. ProjectIndex와 ProjectSection이 같은 값을 써야 링크가 맞는다. */
 const projectAnchors = PROJECTS.map((project) => ({
   id: `project-${project.nameEn.toLowerCase().replace(/\s+/g, '-')}`,
   name: project.name,
@@ -30,24 +24,21 @@ const projectAnchors = PROJECTS.map((project) => ({
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-5xl">
-      {/* Reveal은 화면에 들어올 때까지 opacity-0이다. JS가 없으면 영영 안 나타나므로 되돌린다 */}
+      {/* Reveal은 화면에 들어오기 전까지 opacity-0이라, JS가 꺼져 있으면 보이도록 되돌린다 */}
       <noscript>
         <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
       </noscript>
-      {/* ─── Hero ─────────────────────────────────────── */}
       <header className="mb-16">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">{PROFILE.name}</h1>
         <p className="mt-1 text-sm font-medium text-orange-500">{PROFILE.title}</p>
       </header>
 
-      {/* ─── 소개 ─────────────────────────────────────── */}
       <Reveal>
         <section className="mb-20">
           <p className="text-lg leading-relaxed font-medium text-gray-900">{PROFILE.summary}</p>
         </section>
       </Reveal>
 
-      {/* ─── 기술 ─────────────────────────────────────── */}
       <Reveal>
         <section className="mb-20">
           <h2 className="mb-6 text-xl font-bold text-gray-900">기술</h2>
@@ -62,7 +53,6 @@ export default function AboutPage() {
         </section>
       </Reveal>
 
-      {/* ─── 교육 ─────────────────────────────────────── */}
       <section className="mb-20">
         <Reveal>
           <h2 className="mb-6 text-xl font-bold text-gray-900">교육</h2>
@@ -84,7 +74,6 @@ export default function AboutPage() {
           ))}
         </ol>
       </section>
-      {/* ─── 프로젝트 ──────────────────────────────────── */}
       <section className="mb-8">
         <Reveal>
           <h2 className="mb-2 text-xl font-bold text-gray-900">프로젝트</h2>

@@ -1,22 +1,25 @@
+/**
+ * @file route.ts
+ * @description 이미지 정리 크론. 업로드 후 24시간이 지나도 게시글에 연결되지 않은 이미지를
+ *              스토리지와 images 테이블에서 지운다.
+ */
+
 import { NextResponse } from 'next/server';
 
 import { supabase } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic'; // 항상 동적으로 실행되도록 강제
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
-  // 보안: Vercel Cron에서 보낸 요청인지 헤더 확인 (Vercel 설정 시 제공됨)
   const authHeader = req.headers.get('Authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   try {
-    // 1. 24시간 이전 시간 계산
     const yesterday = new Date();
     yesterday.setHours(yesterday.getHours() - 24);
 
-    // 2. 24시간이 지났는데 아직도 is_used가 false인 이미지 찾기
     const { data: orphanImages, error: fetchError } = await supabase
       .from('images')
       .select('id, url')
@@ -28,13 +31,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: '청소할 이미지가 없습니다.' });
     }
 
-    // 3. Storage에서 파일 삭제 (URL에서 파일명만 추출)
+    // 스토리지를 먼저 지운다. 실패하면 DB 레코드가 남아 다음 실행 때 다시 시도한다.
     const fileNames = orphanImages.map((img) => img.url.split('/').pop()!);
     const { error: storageError } = await supabase.storage.from('images').remove(fileNames);
 
     if (storageError) throw storageError;
 
-    // 4. DB 테이블에서 레코드 삭제
     const idsToDelete = orphanImages.map((img) => img.id);
     await supabase.from('images').delete().in('id', idsToDelete);
 

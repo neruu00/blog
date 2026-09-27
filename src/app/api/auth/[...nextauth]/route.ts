@@ -1,3 +1,8 @@
+/**
+ * @file route.ts
+ * @description NextAuth 인증 엔드포인트.
+ */
+
 import NextAuth from 'next-auth';
 
 import { authOptions } from '@/lib/auth';

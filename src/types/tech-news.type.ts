@@ -1,9 +1,8 @@
 /**
  * @file tech-news.type.ts
- * @description 기술 뉴스 큐레이션 관련 타입 정의.
+ * @description 기술 뉴스 타입과 소스별 표시 이름.
  */
 
-/** 뉴스 소스 종류 */
 export type TechNewsSource =
   | 'react'
   | 'nextjs'
@@ -12,7 +11,7 @@ export type TechNewsSource =
   | 'tailwindcss'
   | 'javascript';
 
-/** Supabase tech_news 테이블의 로우 타입 */
+/** `tech_news` 테이블 행 */
 export interface TechNewsRow {
   id: string;
   title: string;
@@ -23,7 +22,7 @@ export interface TechNewsRow {
   created_at: string;
 }
 
-/** 프론트엔드에서 사용하는 뉴스 타입 */
+/** 화면에서 쓰는 뉴스 (camelCase, 날짜는 Date) */
 export interface TechNews {
   id: string;
   title: string;
@@ -34,7 +33,6 @@ export interface TechNews {
   createdAt: Date;
 }
 
-/** 소스별 표시 레이블 */
 export const TECH_NEWS_SOURCE_LABELS: Record<TechNewsSource, string> = {
   react: 'React',
   nextjs: 'Next.js',

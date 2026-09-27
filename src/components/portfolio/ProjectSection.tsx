@@ -1,15 +1,9 @@
 /**
  * @file ProjectSection.tsx
  * @description 포트폴리오 프로젝트 하나를 렌더링한다.
- *
- *              읽는 순서를 강제한다:
- *              이름·한 줄 → 메타 → 왜 만들었나 → 구현 기능 → 해결한 과제 → 회고 → 스택
- *
- *              '해결한 과제'가 본문이고 나머지는 그 주변이다. 스택이 맨 뒤인 건 의도다.
- *              service·features·retrospective는 선택 — 없으면 그 블록을 건너뛴다.
- *
- *              '구현 기능'은 두 겹이다: 캡처가 있는 기능은 캐러셀로, 없는 기능은 그 아래 목록으로
- *              간다. 화면을 다 찍지 못한 프로젝트도 무엇을 만들었는지는 남길 수 있어야 한다.
+ *              블록 순서는 이름·한 줄 소개 → 메타 → 만든 이유 → 구현 기능 → 해결한 과제 → 회고 → 스택이다.
+ *              service·features·retrospective는 선택 항목이라 없으면 해당 블록을 건너뛴다.
+ *              구현 기능 중 캡처가 있는 항목은 캐러셀로, 없는 항목은 그 아래 목록으로 보여준다.
  */
 
 import { ArrowUpRight, Github } from 'lucide-react';
@@ -24,7 +18,6 @@ interface ProjectSectionProps {
   id: string;
 }
 
-/** 블록 제목 — 4종이 같은 무게로 보여야 독자가 구조를 파악한다 */
 function BlockLabel({ children }: { children: React.ReactNode }) {
   return <h4 className="mb-4 text-xs font-semibold text-gray-400">{children}</h4>;
 }
@@ -43,9 +36,7 @@ function Paragraphs({ text, className = '' }: { text: string; className?: string
 }
 
 /**
- * 캡처가 없는 기능 — 캐러셀은 media가 있는 항목만 칸으로 만들므로, 나머지는 여기서 글로 받는다.
- * 화면이 있는 기능은 이미 캡처 아래 캡션으로 붙어 있어 다시 적지 않는다.
- * 캡션보다 한 단계 작게 찍는다: 캡처가 걸린 기능이 이 블록의 주인공이어야 한다.
+ * 캡처가 없는 기능 목록. 캡처가 있는 기능은 캐러셀 캡션으로 이미 보여주므로 여기서 다시 적지 않는다.
  */
 function FeatureList({ features }: { features: Feature[] }) {
   const items = features.filter((feature) => !feature.media);
@@ -125,7 +116,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
         <Reveal>
           <div className="mb-14">
             <BlockLabel>왜 만들었나</BlockLabel>
-            {/* 이어지는 하나의 논증이다 — 중간을 박스로 떼지 않는다 */}
             <Paragraphs text={service} className="text-gray-500" />
           </div>
         </Reveal>
@@ -135,7 +125,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
         <Reveal>
           <div className="mb-14">
             <BlockLabel>구현 기능</BlockLabel>
-            {/* 화면이 4:3이라 세로로 쌓으면 한 장이 뷰포트를 먹는다 — 한 칸씩 넘겨 본다 */}
             <FeatureCarousel features={features} projectName={name} />
             <FeatureList features={features} />
           </div>
@@ -154,7 +143,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
           {challenges.map((challenge, i) => (
             <li key={challenge.title}>
               <Reveal delay={i * 60}>
-                {/* 정적 카드다 — 호버 효과를 주지 않는다. 이 안에서 누를 수 있는 건 '자세히'뿐 */}
                 <div className="rounded-xl bg-gray-50 p-6">
                   <div className="flex items-baseline gap-2.5">
                     <span className="text-xs font-semibold text-orange-500 tabular-nums">
@@ -165,7 +153,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
 
                   <p className="mt-3 text-sm leading-relaxed text-gray-500">{challenge.problem}</p>
 
-                  {/* 증상을 다시 정의한 문장 — 이 카드에서 유일하게 진하다 */}
                   {challenge.definition && (
                     <p className="mt-3 text-sm leading-relaxed font-medium text-gray-900">
                       {challenge.definition}
@@ -201,7 +188,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
 
       {retrospective && (
         <Reveal>
-          {/* 과제(회색)와 다른 색을 줘 '돌아본 말'로 읽히게 한다 — blockquote와 같은 처리 */}
           <div className="rounded-xl bg-orange-50 p-6">
             <BlockLabel>회고</BlockLabel>
             <Paragraphs text={retrospective} className="text-sm text-gray-500" />

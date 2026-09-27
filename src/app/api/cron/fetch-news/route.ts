@@ -1,20 +1,7 @@
 /**
  * @file route.ts
- * @description Vercel Cron Job: 기술 뉴스 RSS 피드 수집 및 LLM 요약 저장.
- *              매일 UTC 00:00 (KST 09:00)에 실행된다.
- *
- * 파이프라인:
- *   1. Authorization 헤더 검증 (CRON_SECRET)
- *   2. 날짜 필터 기준 계산 (기본: DEFAULT_SINCE_DAYS일)
- *   3. 각 RSS 피드 파싱
- *   4. 날짜 필터 → original_url 중복 체크
- *   5. 신규 기사의 원문 수집 (실패 시 충분한 RSS 설명으로 대체)
- *   6. GPT-4o-mini로 한국어 해설 생성
- *   7. tech_news 테이블에 INSERT
- *
- * 쿼리 파라미터 (수동 실행 시 사용):
- *   ?days=N         — 최근 N일 이내 기사만 처리 (기본값: DEFAULT_SINCE_DAYS = 2)
- *   ?since=YYYY-MM-DD — 특정 날짜 이후 기사만 처리
+ * @description 기술 뉴스 수집 크론. 매일 UTC 00:00(KST 09:00)에 RSS 피드의 새 기사를 모아
+ *              LLM으로 한국어 해설을 만들고 tech_news에 저장한다.
  */
 
 import { NextResponse } from 'next/server';
@@ -26,22 +13,20 @@ import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-// Vercel Cron 최대 실행 시간 (초). Pro 플랜 기준 300초.
+// Vercel 함수 최대 실행 시간(초). Pro 플랜 기준 상한이다.
 export const maxDuration = 300;
 
-/** 기본 날짜 필터: 최근 N일 (매일 실행 기준으로 2일이 적절 — 하루 실패 시 커버 가능) */
+/** 기본 수집 범위(일). 매일 실행하므로 2일로 두면 한 번 실패해도 빠지는 기사가 없다. */
 const DEFAULT_SINCE_DAYS = 2;
 
 export async function GET(req: Request) {
-  // 보안: Vercel Cron 또는 수동 테스트 요청인지 검증
   const authHeader = req.headers.get('Authorization');
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // 사전 검사: 요약에 필수인 키가 없으면 전건 실패가 확정이므로
-  // 조용한 200 대신 설정 오류를 즉시 알린다. (과거 이 침묵이 장애를 43일 감췄다)
+  // 키가 없으면 모든 기사가 실패하므로 200 대신 500으로 설정 오류를 바로 드러낸다.
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json(
       { error: 'OPENAI_API_KEY가 설정되지 않았습니다. Vercel 환경변수를 확인하세요.' },
@@ -50,12 +35,11 @@ export async function GET(req: Request) {
   }
 
   const startTime = Date.now();
-  const MAX_RUN_TIME = 250000; // 250초 (Vercel 300초 제한 대비 여유분)
+  const MAX_RUN_TIME = 250000; // maxDuration보다 여유를 둬 응답을 반환할 시간을 남긴다
 
-  // 날짜 필터 기준 계산
   const sinceDate = resolveSinceDate(req.url);
 
-  // 중복 체크를 위한 기존 URL 일괄 조회 (N+1 쿼리 방지)
+  // 기사마다 조회하지 않도록 기존 URL을 한꺼번에 가져온다.
   const { data: existingNews } = await supabase
     .from('tech_news')
     .select('original_url')
@@ -76,8 +60,7 @@ export async function GET(req: Request) {
   };
 
   for (const feed of RSS_FEEDS) {
-    // 시간 제한 체크: 피드 파싱 자체가 오래 걸릴 수 있으므로 바깥 루프에서 먼저 확인한다.
-    // (안쪽 루프에만 두면 아이템이 0개인 피드에서는 가드에 도달하지 못한다)
+    // 피드 파싱도 오래 걸릴 수 있고, 아이템이 없는 피드는 안쪽 검사에 닿지 않으므로 여기서도 확인한다.
     if (Date.now() - startTime > MAX_RUN_TIME) {
       console.warn('[fetch-news] 최대 실행 시간 초과, 남은 피드 처리를 중단합니다.');
       return NextResponse.json({ ...results, timeout: true });
@@ -87,7 +70,7 @@ export async function GET(req: Request) {
     try {
       items = await parseFeed(feed.url);
     } catch (error) {
-      // 피드 단위 실패를 집계하지 않으면 6개가 전부 죽어도 응답이 200 + 전부 0이 된다.
+      // 집계하지 않으면 모든 피드가 실패해도 200과 0건만 응답된다.
       results.feedsFailed++;
       const message = error instanceof Error ? error.message : String(error);
       results.errors.push(`[${feed.source}] 피드 파싱 실패 (${feed.url}): ${message}`);
@@ -101,27 +84,24 @@ export async function GET(req: Request) {
     }
 
     for (const item of items) {
-      // 시간 제한 체크 (타임아웃 방지)
       if (Date.now() - startTime > MAX_RUN_TIME) {
         console.warn('[fetch-news] 최대 실행 시간 초과, 남은 피드 처리를 중단합니다.');
         return NextResponse.json({ ...results, timeout: true });
       }
 
-      // 날짜 필터: sinceDate 이전 기사는 LLM 호출 없이 스킵
       if (item.publishedAt < sinceDate) {
         results.dateSkipped++;
         continue;
       }
 
       try {
-        // URL 중복 체크: 이미 저장된 기사는 스킵
         if (existingUrls.has(item.link)) {
           results.skipped++;
           continue;
         }
 
-        // RSS 설명은 대개 짧으므로 원문을 우선한다. 원문 수집 실패 시에도
-        // 충분한 RSS 본문이 있을 때만 생성해 제목만으로 내용을 추측하지 않게 한다.
+        // RSS 설명은 대개 짧아 원문을 우선한다. 원문 수집에 실패하면 RSS 본문이 충분할 때만 생성해
+        // 제목만으로 내용을 추측하지 않게 한다.
         const articleText = await fetchArticleText(item.link);
         const sourceText = articleText ?? item.description;
         if (sourceText.trim().length < 400) {
@@ -131,10 +111,8 @@ export async function GET(req: Request) {
         }
         if (!articleText) results.rssFallback++;
 
-        // GPT-4o-mini로 요약 생성 (기사 간 1초 딜레이로 rate limit 방지)
         const content = await summarizeToMarkdown(item.title, sourceText);
 
-        // Supabase에 저장
         const { error: insertError } = await supabase.from('tech_news').insert({
           title: item.title,
           original_url: item.link,
@@ -144,8 +122,7 @@ export async function GET(req: Request) {
         });
 
         if (insertError) {
-          // original_url UNIQUE 제약에 걸린 중복은 실패가 아니라 스킵이다.
-          // (백필을 여러 번 돌리거나 크론이 겹쳐 실행될 때 발생)
+          // original_url UNIQUE 위반은 백필 반복이나 크론 중복 실행으로 생기므로 스킵으로 센다.
           if (insertError.code === '23505') {
             results.skipped++;
           } else {
@@ -155,10 +132,10 @@ export async function GET(req: Request) {
           results.processed++;
         }
 
-        // 같은 URL이 다른 피드에 또 나와도 이번 실행 안에서 LLM을 재호출하지 않도록 기록
+        // 같은 URL이 다른 피드에 다시 나와도 LLM을 또 호출하지 않게 한다.
         existingUrls.add(item.link);
 
-        // 기사 간 1초 딜레이: OpenAI rate limit 방지
+        // OpenAI rate limit을 피하려고 기사 사이에 1초 쉰다.
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (error) {
         results.failed++;
@@ -178,25 +155,19 @@ export async function GET(req: Request) {
 }
 
 /**
- * 요청 URL의 쿼리 파라미터로부터 날짜 필터 기준을 계산한다.
- *
- * 우선순위:
- *   1. ?since=YYYY-MM-DD  — 명시적 날짜 지정
- *   2. ?days=N            — N일 전 기준
- *   3. 기본값             — DEFAULT_SINCE_DAYS일 전
+ * 수집 시작 날짜를 정한다. 수동 실행 시 쿼리 파라미터로 범위를 바꿀 수 있다.
+ * 우선순위는 `?since=YYYY-MM-DD` → `?days=N` → DEFAULT_SINCE_DAYS다.
  */
 function resolveSinceDate(url: string): Date {
   try {
     const { searchParams } = new URL(url);
 
-    // 1. ?since=YYYY-MM-DD
     const sinceParam = searchParams.get('since');
     if (sinceParam) {
       const parsed = new Date(sinceParam);
       if (!isNaN(parsed.getTime())) return parsed;
     }
 
-    // 2. ?days=N
     const daysParam = searchParams.get('days');
     if (daysParam) {
       const days = parseInt(daysParam, 10);
@@ -207,10 +178,9 @@ function resolveSinceDate(url: string): Date {
       }
     }
   } catch {
-    // URL 파싱 실패 시 기본값 사용
+    // URL을 파싱하지 못하면 기본값을 쓴다.
   }
 
-  // 3. 기본값: 최근 DEFAULT_SINCE_DAYS일
   const date = new Date();
   date.setDate(date.getDate() - DEFAULT_SINCE_DAYS);
   return date;

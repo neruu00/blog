@@ -1,13 +1,12 @@
 /**
  * @file mappers.ts
- * @description Supabase 행(snake_case)을 도메인 타입(camelCase)으로 변환하는 공용 매퍼.
- *              홈·목록 페이지가 각자 들고 있던 동일 매핑의 단일 출처.
+ * @description Supabase 행(snake_case)을 도메인 타입(camelCase)으로 바꾸는 매퍼.
  */
 
 import type { Post, PostCategory } from '@/types/post.type';
 import type { TechNewsSource } from '@/types/tech-news.type';
 
-/* Supabase 클라이언트가 제네릭 없이 생성돼 행 타입이 없다. 매퍼 경계에서 한 번만 느슨하게 받는다. */
+/* Supabase 클라이언트에 DB 타입 제네릭이 없어 행 타입이 없다. 매퍼 진입점에서만 느슨하게 받는다. */
 type Row = Record<string, unknown>;
 
 /** posts 테이블 행 → Post */

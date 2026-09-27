@@ -1,24 +1,18 @@
 /**
  * @file useIntersectionObserver.ts
- * @description IntersectionObserver를 래핑한 커스텀 훅.
- *              TOC 등에서 현재 화면에 보이는 요소를 감지하는 데 사용한다.
+ * @description 여러 요소 중 지금 화면에 보이는 요소의 id를 추적하는 훅. 목차의 현재 위치 표시에 쓴다.
  */
 
 import { useEffect, useRef, useState } from 'react';
 
 interface UseIntersectionObserverOptions {
-  /** Observer root margin */
   rootMargin?: string;
-  /** Observer threshold */
   threshold?: number | number[];
 }
 
 /**
- * 여러 요소를 관찰하여 현재 화면에 보이는 요소의 ID를 반환한다.
- *
- * @param elementIds - 관찰할 요소들의 ID 배열
- * @param options - IntersectionObserver 옵션
- * @returns 현재 화면에 보이는 요소의 ID
+ * `elementIds` 요소를 관찰해 화면에 보이는 요소의 id를 반환한다.
+ * 요소가 아직 DOM에 없으면 나타날 때까지 기다린 뒤 관찰을 시작한다.
  */
 export function useIntersectionObserver(
   elementIds: string[],
@@ -63,7 +57,7 @@ export function useIntersectionObserver(
           mutationObserver?.disconnect();
         }
       });
-      // 성능 최적화: document.body 전체 대신 실제 렌더링 영역(article 등) 감시
+      // body 전체 대신 본문(article)의 변화만 지켜본다
       const targetNode = document.querySelector('article') || document.body;
       mutationObserver.observe(targetNode, { childList: true, subtree: true });
     }

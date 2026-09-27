@@ -1,18 +1,11 @@
 /**
  * @file FeatureCarousel.tsx
- * @description 프로젝트의 화면(캡처·영상)을 한 칸씩 넘겨 보는 캐러셀.
+ * @description 프로젝트 화면(캡처·영상)을 한 칸씩 넘겨 보는 캐러셀.
+ *              스와이프·트랙패드·키보드 스크롤은 CSS scroll-snap으로 처리하고, JS는 마우스 드래그 스크롤,
+ *              현재 칸 계산과 캡션 전환만 맡는다.
  *
- *              라이브러리를 쓰지 않는다: CSS scroll-snap이 스와이프·트랙패드·키보드 스크롤을
- *              모두 처리한다. JS가 더하는 건 세 가지뿐이다 —
- *              (1) 마우스 드래그를 스크롤로 옮기고,
- *              (2) 지금 몇 번째 칸인지 읽고,
- *              (3) 그 칸의 설명으로 캡션을 페이드 전환한다.
- *
- *              캡션은 트랙 밖에 있다 — 화면만 넘어가고 글은 제자리에서 바뀌어야
- *              읽던 위치가 흔들리지 않는다.
- *
- *              영상은 보이는 칸 하나만 재생한다 — 여섯 개가 동시에 디코딩되면 그것만으로 페이지가 느려진다.
- *              캡처는 4:3, 랜딩은 와이드라 칸 비율을 3:2로 고정하고 object-contain으로 담는다.
+ *              영상이 동시에 디코딩되지 않도록 현재 보이는 칸 하나만 재생한다.
+ *              칸 비율은 3:2로 고정하고 미디어는 object-contain으로 담는다.
  */
 
 'use client';
@@ -49,7 +42,7 @@ function SlideMedia({ media, active, reducedMotion }: SlideMediaProps) {
     if (!video || reducedMotion) return;
 
     if (active) {
-      // 사용자 제스처 없이 부르면 브라우저가 거절할 수 있다. muted라 보통 통과하지만 실패해도 무시한다
+      // 사용자 제스처 없이 호출하면 브라우저가 거부할 수 있다. muted라 보통 통과하지만 실패해도 무시한다
       void video.play().catch(() => {});
     } else {
       video.pause();
@@ -58,8 +51,8 @@ function SlideMedia({ media, active, reducedMotion }: SlideMediaProps) {
   }, [active, reducedMotion]);
 
   /**
-   * 실패해도 ready로 올린다 — 영영 도는 스피너보다 깨진 이미지 아이콘이 정직하다.
-   * 미디어 위에 덮지 않고 뒤에 깔아둔다: 로드되면 미디어가 자연히 가린다.
+   * 로드에 실패해도 ready로 바꿔 스피너가 계속 돌지 않게 한다.
+   * 스피너는 미디어 뒤에 깔려 있어 로드가 끝나면 미디어가 가린다.
    */
   const done = () => setReady(true);
 
@@ -88,10 +81,10 @@ function SlideMedia({ media, active, reducedMotion }: SlideMediaProps) {
         loop
         playsInline
         controls={reducedMotion}
-        // 넘기기 전까지는 메타데이터만 받는다 — 여섯 개를 미리 받으면 캐러셀이 무거워진다
+        // 보이기 전까지는 메타데이터만 받는다
         preload="metadata"
         draggable={false}
-        // 첫 프레임이 그려지는 시점. loadedmetadata는 아직 화면이 비어 있어 이르다
+        // 첫 프레임이 그려지는 시점이다. loadedmetadata 시점에는 아직 화면이 비어 있다
         onLoadedData={done}
         onError={done}
         className="relative h-full w-full object-contain"
@@ -129,7 +122,7 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
   }, []);
 
   /**
-   * 칸 위치는 실제 li의 offsetLeft로 읽는다.
+   * 칸 위치는 실제 li의 offsetLeft에서 읽는다.
    * clientWidth에 인덱스를 곱하면 gap이 빠져 뒤로 갈수록 한 칸당 gap만큼 어긋난다.
    * 트랙이 position:relative라 offsetLeft가 곧 목표 scrollLeft다.
    */
@@ -182,7 +175,7 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
     const track = trackRef.current;
     if (!start || !track) return;
 
-    // 드래그 중엔 snap을 꺼둔다(아래 className) — 켜둔 채 scrollLeft를 밀면 칸마다 튄다
+    // 드래그 중에는 snap을 끈다(아래 className) — 켠 채로 scrollLeft를 밀면 칸마다 튄다
     track.scrollLeft = start.scrollLeft - (event.clientX - start.x);
   };
 
@@ -215,7 +208,7 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         className={cn(
-          // relative여야 li의 offsetLeft가 트랙 기준이 된다 — nearestIndex 계산의 전제다
+          // relative여야 li의 offsetLeft가 트랙을 기준으로 잡힌다 — nearestIndex 계산의 전제다
           'no-scrollbar relative flex gap-6 overflow-x-auto',
           dragging ? 'cursor-grabbing snap-none select-none' : 'cursor-grab snap-x snap-mandatory',
         )}
@@ -235,18 +228,10 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
         ))}
       </ul>
 
-      {/* 한 칸뿐이면 넘길 곳이 없다 — 눌리지 않는 화살표와 점 하나는 조작할 수 있다는 거짓말이다 */}
       {slides.length > 1 && (
-        /* 점은 이동 수단이자 전체 개수 표시다. 트랙과 같은 3:2 상자를 겹쳐 깔아
-           화면 칸의 아래쪽에 정확히 붙인다 */
+        /* 트랙과 같은 3:2 상자를 겹쳐 깔아 화살표와 점을 화면 칸 기준으로 배치한다 */
         <div className="pointer-events-none absolute inset-x-0 top-0 aspect-3/2">
-          {/* 화살표는 화면 칸의 세로 중앙 양옆에 띄운다.
-              점과 같은 처리(반투명 흰 배경 + 그림자) — 캡처 위에 떠 있는 요소라 같은 규칙을 따른다.
-
-              인터랙션은 FAB·EditorActions의 원형 플로팅 버튼과 같은 어휘다:
-              hover에 뜨고(그림자 강화) 누르면 들어간다(scale-95).
-              다만 세로 중앙 고정이라 위로 띄우는 대신 '갈 방향으로' 밀어 방향을 함께 알린다.
-              끝 칸에서는 이동·그림자를 되돌린다 — 눌리지 않는 버튼이 반응하면 거짓말이 된다 */}
+          {/* 끝 칸에서 비활성화된 화살표는 hover 이동과 그림자를 되돌려 반응하지 않게 한다 */}
           <Button
             variant="outline"
             size="icon"
@@ -270,7 +255,6 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
           </Button>
 
           <div className="absolute inset-x-0 bottom-4 flex justify-center">
-            {/* 캡처 위에 떠 있는 요소라 배경과 그림자를 준다 — 밝은 화면에서 점이 묻힌다 */}
             <div className="pointer-events-auto flex gap-2 rounded-full bg-white/85 px-3 py-2 shadow-sm backdrop-blur-sm">
               {slides.map((slide, i) => (
                 <button
@@ -278,7 +262,7 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
                   onClick={() => goTo(i)}
                   aria-label={`${i + 1}번째 화면: ${slide.title}`}
                   aria-current={i === index}
-                  // 공용 Button을 쓰지 않는 예외 — size가 전부 h-9 고정이라 6px 알약과 맞지 않는다
+                  // 공용 Button의 size는 모두 h-9 이상이라 6px 알약 모양을 만들 수 없어 예외로 둔다
                   className={cn(
                     'h-1.5 rounded-full transition-all',
                     i === index ? 'w-6 bg-orange-500' : 'w-1.5 bg-gray-300 hover:bg-gray-400',
@@ -290,9 +274,8 @@ export default function FeatureCarousel({ features, projectName }: FeatureCarous
         </div>
       )}
 
-      {/* 캡션은 한 자리에 겹쳐 쌓고 활성만 보여준다.
-          타이머로 갈아끼우지 않는 이유: 전부 깔려 있어야 높이가 가장 긴 글에 맞춰 고정되고,
-          글이 바뀔 때 아래 내용이 밀리지 않는다 */}
+      {/* 캡션을 모두 한 자리에 겹쳐 두고 활성 캡션만 보여준다. 가장 긴 캡션에 맞춰 높이가 고정되어
+          캡션이 바뀌어도 아래 내용이 밀리지 않는다 */}
       <div className="mt-4 grid">
         {slides.map((slide, i) => (
           <div

@@ -35,7 +35,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
   const isInsideTable = editor.isActive('table');
 
   const handleImageUpload = async () => {
-    // 가장 심플한 파일 선택 방식 (input 태그 동적 생성)
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -44,29 +43,25 @@ export default function Toolbar({ editor }: ToolbarProps) {
       if (!file) return;
 
       try {
-        // WebP로 변환 (용량 최적화)
         const webpFile = await convertToWebP(file);
 
         const formData = new FormData();
         formData.append('file', webpFile);
 
-        // 1. 업로드 중인 스켈레톤 먼저 삽입
-        // base64로 미리보기 기능을 넣을 수도 있지만, 여기서는 단순 스켈레톤만 표시
+        // 업로드가 끝날 때까지 스켈레톤 이미지 노드를 먼저 넣어 둔다
         editor
           ?.chain()
           .focus()
           .setImage({
-            src: '', // 아직 URL이 없음
+            src: '',
             uploading: true,
           })
           .run();
 
-        // 서버 액션 호출하여 업로드
         const result = await uploadImage(formData);
 
         if (result.success && result.url) {
-          // 2. 성공 시 스켈레톤을 실제 이미지로 교체
-          // Tiptap의 트랜잭션을 사용하여 현재 로딩 중인 이미지를 찾아 업데이트
+          // uploading 상태인 이미지 노드를 찾아 실제 URL로 바꾼다
           editor.view.state.doc.descendants((node, pos) => {
             if (node.type.name === 'image' && node.attrs.uploading === true) {
               editor
@@ -78,11 +73,11 @@ export default function Toolbar({ editor }: ToolbarProps) {
                 })
                 .focus()
                 .run();
-              return false; // 중단
+              return false;
             }
           });
         } else {
-          // 업로드 실패 시 스켈레톤 제거
+          // 실패하면 스켈레톤 노드를 지운다
           editor.view.state.doc.descendants((node, pos) => {
             if (node.type.name === 'image' && node.attrs.uploading === true) {
               editor.chain().setNodeSelection(pos).deleteSelection().run();
@@ -101,7 +96,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
 
   return (
     <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-      {/* H1 버튼 — 사용자에게는 H1로 보이나 내부적으로 level: 2 (ShiftedHeading) */}
+      {/* H1~H3 버튼은 ShiftedHeading에 따라 실제로는 level 2~4를 만든다 */}
       <Button
         variant="ghost"
         size="icon"
@@ -111,7 +106,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Heading1 className="h-5 w-5" />
       </Button>
-      {/* H2 버튼 — 내부적으로 level: 3 */}
       <Button
         variant="ghost"
         size="icon"
@@ -121,7 +115,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Heading2 className="h-5 w-5" />
       </Button>
-      {/* H3 버튼 — 내부적으로 level: 4 */}
       <Button
         variant="ghost"
         size="icon"
@@ -131,7 +124,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Heading3 className="h-5 w-5" />
       </Button>
-      <div className="mx-1 h-6 w-px bg-gray-200" /> {/* 구분선 */}
+      <div className="mx-1 h-6 w-px bg-gray-200" />
       <Button
         variant="ghost"
         size="icon"
@@ -160,7 +153,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <Strikethrough className="h-5 w-5" />
       </Button>
       <div className="mx-1 h-6 w-px bg-gray-200" />
-      {/* Superscript / Subscript */}
       <Button
         variant="ghost"
         size="icon"
@@ -189,7 +181,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Code className="h-5 w-5" />
       </Button>
-      {/* Mermaid 확장 도구 모음 */}
       <Button
         variant="ghost"
         size="icon"
@@ -210,7 +201,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Workflow className="h-5 w-5" />
       </Button>
-      {/* 테이블 관리 드롭다운 */}
       <DropdownMenu
         align="left"
         trigger={(triggerProps) => (
@@ -239,7 +229,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Quote className="h-5 w-5" />
       </Button>
-      <div className="mx-1 h-6 w-px bg-gray-200" /> {/* 구분선 */}
+      <div className="mx-1 h-6 w-px bg-gray-200" />
       <Button
         variant="ghost"
         size="icon"
@@ -263,7 +253,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
 }
 
 /**
- * 테이블 삽입 폼 / 행·열 관리 메뉴.
+ * 테이블 삽입 폼과 행·열 관리 메뉴.
  * DropdownMenu의 children으로만 쓴다 — useClose가 컨텍스트를 필요로 한다.
  */
 function TableMenu({ editor, isInsideTable }: { editor: Editor; isInsideTable: boolean }) {

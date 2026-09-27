@@ -1,5 +1,11 @@
 'use server';
 
+/**
+ * @file post.ts
+ * @description 게시글 생성·수정·삭제와 조회수 증가 서버 액션.
+ *              게시글 저장과 함께 본문 이미지의 연결 상태(is_used, post_id)를 맞추고, 실패하면 롤백한다.
+ */
+
 import { revalidatePath } from 'next/cache';
 
 import { isAdmin } from '@/lib/auth';
@@ -8,9 +14,7 @@ import { extractImageUrlsFromTiptap } from '@/lib/utils/tiptap';
 import { postSchema } from '@/schemas/post.schema';
 import type { ActionResult, PostActionResult } from '@/types/action.type';
 
-/**
- * SECTION - 게시글 생성
- */
+/** 게시글을 생성하고 본문에 쓰인 이미지를 새 게시글에 연결한다. */
 export async function createPost(formData: FormData): Promise<PostActionResult> {
   if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
@@ -26,7 +30,6 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
-  // Zod 검증
   const validatedFields = postSchema.safeParse({
     title,
     content: contentString,
@@ -54,7 +57,6 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
   };
 
   try {
-    // 1. 게시글 데이터 DB에 저장 및 새로 생성된 게시글 ID 가져오기
     const { data: newPost, error: postError } = await supabase
       .from('posts')
       .insert([body])
@@ -63,7 +65,6 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
 
     if (postError) throw postError;
 
-    // 2. 이미지 URL 추출 및 이미지 레코드 업데이트
     const usedImageUrls = extractImageUrlsFromTiptap(content);
 
     if (usedImageUrls.length > 0) {
@@ -72,7 +73,7 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
         .update({ is_used: true, post_id: newPost.id })
         .in('url', usedImageUrls);
 
-      // FALLBACK: 이미지 레코드 업데이트 실패 시, 게시글도 롤백 처리
+      // 이미지 연결에 실패하면 게시글도 지워 롤백한다
       if (imageError) {
         await supabase.from('posts').delete().eq('id', newPost.id);
         throw imageError;
@@ -86,10 +87,10 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
 }
-// !SECTION - 게시글 생성
 
 /**
- * SECTION - 게시글 수정
+ * 게시글을 수정하고 이미지 연결을 본문에 맞춘다.
+ * 새로 사용한 이미지는 연결하고, 본문에서 빠진 이미지는 고아 상태로 되돌려 정리 크론이 삭제하게 한다.
  */
 export async function updatePost(formData: FormData): Promise<PostActionResult> {
   if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
@@ -111,7 +112,6 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '태그 형식이 잘못되었습니다.' };
   }
 
-  // Zod 검증
   const validatedFields = postSchema.safeParse({
     title,
     content: contentString,
@@ -144,7 +144,6 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     const removedImages = previousImages?.filter((img) => !currentUrls.includes(img.url)) || [];
     const addedUrls = currentUrls.filter((url) => !previousUrls.includes(url));
 
-    // 2. 새로 추가된 이미지 URL 사용 여부 업데이트, 게시글과 연결
     if (addedUrls.length > 0) {
       const { error: addError } = await supabase
         .from('images')
@@ -154,7 +153,6 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
       if (addError) throw addError;
     }
 
-    // 3. 게시글 업데이트
     const { error: updateError } = await supabase
       .from('posts')
       .update({
@@ -166,7 +164,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
       })
       .eq('id', postId);
 
-    // FALLBACK: 게시글 업데이트 실패 시, 새로 추가된 이미지들은 다시 고아 상태로 롤백 처리
+    // 게시글 수정에 실패하면 방금 연결한 이미지를 다시 고아 상태로 되돌린다
     if (updateError) {
       if (addedUrls.length > 0) {
         await supabase
@@ -177,7 +175,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
       throw updateError;
     }
 
-    // FALLBACK: 기존에 연결되어 있었지만 현재 콘텐츠에서 제거된 이미지들은 고아 상태로 전환
+    // 본문에서 빠진 이미지는 고아 상태로 돌린다
     if (removedImages.length > 0) {
       const removedUrls = removedImages.map((img) => img.url);
 
@@ -186,7 +184,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
         .update({ is_used: false, post_id: null })
         .in('url', removedUrls);
 
-      // FALLBACK: 고아 상태 전환 실패 시, 좀비 이미지 방지를 위해 직접 삭제 시도
+      // 고아 상태로 돌리지 못하면 크론이 찾지 못해 스토리지에 남으므로 직접 삭제한다
       if (orphanError) {
         console.warn('고아 상태 전환 실패, 직접 삭제를 시도:', orphanError);
 
@@ -212,16 +210,12 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '게시글 수정에 실패했습니다.' };
   }
 }
-// !SECTION - 게시글 수정
 
-/**
- * SECTION - 게시글 삭제
- */
+/** 게시글을 삭제하고 연결된 이미지를 고아 상태로 돌린다. */
 export async function deletePost(postId: string): Promise<ActionResult> {
   if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   try {
-    // 1. 게시글에 연결된 이미지 URL 조회
     const { data: images, error: fetchError } = await supabase
       .from('images')
       .select('id, url')
@@ -229,7 +223,6 @@ export async function deletePost(postId: string): Promise<ActionResult> {
 
     if (fetchError) throw fetchError;
 
-    // 2. 연결된 이미지가 있다면, 먼저 고아 상태로 전환 시도
     const urls = images?.map((img) => img.url) || [];
     let needsHardDelete = false;
 
@@ -239,17 +232,16 @@ export async function deletePost(postId: string): Promise<ActionResult> {
         .update({ is_used: false, post_id: null })
         .in('url', urls);
 
-      // 고아 상태 전환 실패 시, 좀비 이미지 방지를 위해 직접 삭제 플래그 설정
+      // 고아 상태로 돌리지 못한 이미지는 게시글을 지운 뒤 직접 삭제한다
       if (orphanError) {
         console.warn('고아 상태 전환 실패, 게시글 삭제 후 직접 삭제를 실행합니다:', orphanError);
-        needsHardDelete = true; // 실패 시 하드 딜리트 플래그
+        needsHardDelete = true;
       }
     }
 
-    // 3. 게시글 삭제
     const { error: dbError } = await supabase.from('posts').delete().eq('id', postId);
 
-    // FALLBACK: 게시글 삭제 실패 시, 이미지 레코드도 롤백 처리
+    // 게시글 삭제에 실패하면 이미지 연결을 원래대로 되돌린다
     if (dbError) {
       if (urls.length > 0 && !needsHardDelete) {
         await supabase.from('images').update({ is_used: true, post_id: postId }).in('url', urls);
@@ -257,7 +249,7 @@ export async function deletePost(postId: string): Promise<ActionResult> {
       throw dbError;
     }
 
-    // FALLBACK: 게시글 삭제는 성공했지만 이미지 레코드 업데이트가 실패한 경우, 좀비 이미지 방지를 위해 직접 삭제 시도
+    // 게시글은 지웠지만 이미지를 고아 상태로 돌리지 못한 경우, 스토리지에 남지 않도록 직접 삭제한다
     if (needsHardDelete && images && images.length > 0) {
       try {
         const urls = images.map((img) => img.url);
@@ -280,10 +272,10 @@ export async function deletePost(postId: string): Promise<ActionResult> {
     return { success: false, error: '게시글 삭제에 실패했습니다.' };
   }
 }
-// !SECTION - 게시글 삭제
 
 /**
- * SECTION - 게시글 조회수 증가
+ * 게시글 조회수를 1 올린다.
+ * 인증 없이 누구나 호출할 수 있으며, 중복 방지는 클라이언트 쿠키로만 처리한다.
  */
 export async function incrementViewCount(postId: string): Promise<ActionResult> {
   try {
@@ -295,4 +287,3 @@ export async function incrementViewCount(postId: string): Promise<ActionResult> 
     return { success: false, error: '조회수 업데이트 실패' };
   }
 }
-// !SECTION - 게시글 조회수 증가

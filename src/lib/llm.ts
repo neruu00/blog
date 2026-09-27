@@ -5,27 +5,24 @@
 
 import OpenAI from 'openai';
 
-/** LLM 호출 재시도 설정 */
 const MAX_RETRIES = 3;
-const RETRY_BASE_DELAY_MS = 2000; // 2초 → 4초 → 8초 (지수 백오프)
+const RETRY_BASE_DELAY_MS = 2000; // 2초 → 4초 → 8초로 늘어난다
 
 let openaiClient: OpenAI | null = null;
 
 function getOpenAIClient(): OpenAI {
   if (!openaiClient) {
-    // 빌드 타임 평가를 방지하기 위해 최초 호출 시에만 초기화한다.
+    // 모듈 최상단에서 만들면 키가 없는 빌드 단계에서 평가되므로 첫 호출 때 만든다
     openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
   return openaiClient;
 }
 
 /**
- * 기사 제목과 원문을 받아 구조화된 마크다운 해설을 반환한다.
- * Rate limit(429) 발생 시 지수 백오프로 최대 MAX_RETRIES회 재시도한다.
+ * 기사 제목과 원문을 바탕으로 한국어 마크다운 해설을 만든다.
+ * 429와 5xx는 지수 백오프로 최대 MAX_RETRIES회 재시도하고, 크레딧이 소진되면 바로 실패한다.
  *
- * @param title - RSS 피드에서 추출한 기사 제목
- * @param sourceText - 원문에서 추출한 본문 또는 충분한 길이의 RSS 설명
- * @returns 마크다운 형식의 요약 문자열
+ * @param sourceText - 원문에서 추출한 본문. 원문을 가져오지 못했으면 RSS 설명
  */
 export async function summarizeToMarkdown(title: string, sourceText: string): Promise<string> {
   const openai = getOpenAIClient();
@@ -63,7 +60,7 @@ export async function summarizeToMarkdown(title: string, sourceText: string): Pr
     } catch (err) {
       const isRateLimit = err instanceof OpenAI.APIError && err.status === 429;
 
-      // quota exceeded(크레딧 소진)는 재시도해도 의미 없으므로 즉시 실패
+      // 크레딧 소진도 429로 오지만 재시도해도 풀리지 않는다
       if (isRateLimit) {
         const isQuotaExceeded = String(err.message).includes('exceeded your current quota');
         if (isQuotaExceeded) {
@@ -71,16 +68,14 @@ export async function summarizeToMarkdown(title: string, sourceText: string): Pr
         }
       }
 
-      // 마지막 시도였으면 그냥 던짐
       if (attempt === MAX_RETRIES) throw err;
 
-      // rate limit이거나 일시적 오류면 지수 백오프 후 재시도
       if (isRateLimit || (err instanceof OpenAI.APIError && err.status >= 500)) {
         const delay = RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1);
         console.warn(`[LLM] ${attempt}/${MAX_RETRIES}회 실패, ${delay}ms 후 재시도...`);
         await sleep(delay);
       } else {
-        throw err; // 재시도 불필요한 오류 (4xx 등)
+        throw err;
       }
     }
   }
@@ -88,7 +83,6 @@ export async function summarizeToMarkdown(title: string, sourceText: string): Pr
   throw new Error('최대 재시도 횟수 초과');
 }
 
-/** ms 단위로 대기 */
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

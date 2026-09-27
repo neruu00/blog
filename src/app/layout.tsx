@@ -1,7 +1,7 @@
 /**
  * @file layout.tsx
- * @description 루트 레이아웃. AuthProvider, 폰트, 분석 도구를 설정한다.
- *              실제 페이지 레이아웃(SideNav, Header 등)은 라우트 그룹별 layout에서 담당.
+ * @description 루트 레이아웃. AuthProvider, 폰트, 전역 모달·토스트, 분석 도구를 설정한다.
+ *              화면 골격(SideNav 등)은 라우트 그룹 레이아웃이 맡는다.
  */
 
 import { Analytics } from '@vercel/analytics/next';
@@ -49,7 +49,6 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
 
-        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-ZL70EZYFER"
           strategy="afterInteractive"

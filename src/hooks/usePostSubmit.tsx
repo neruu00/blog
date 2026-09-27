@@ -1,5 +1,10 @@
 'use client';
 
+/**
+ * @file usePostSubmit.tsx
+ * @description 게시글 작성·수정 화면의 제출, 삭제, 뒤로 가기 처리 훅.
+ */
+
 import { JSONContent } from '@tiptap/react';
 import { useRouter } from 'next/navigation';
 

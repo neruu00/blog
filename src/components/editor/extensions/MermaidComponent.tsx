@@ -12,7 +12,7 @@ export default function MermaidComponent(props: NodeViewProps) {
 
   const code = node.attrs.code as string;
 
-  // 작성된 코드에 맞춰 공식 문서 URL 동적 반환
+  // 다이어그램 종류에 맞는 Mermaid 공식 문서 URL을 돌려준다
   const getDocsUrl = (codeStr: string) => {
     const firstWord =
       codeStr
@@ -33,7 +33,7 @@ export default function MermaidComponent(props: NodeViewProps) {
 
   const docsUrl = getDocsUrl(code);
 
-  // textarea 클릭 시 Tiptap이 이 블록을 '선택된 상태'로 인지하도록 강제
+  // textarea를 클릭하면 Tiptap이 이 블록을 선택된 상태로 인식하도록 선택을 옮긴다
   const handleTextareaFocus = () => {
     if (typeof getPos === 'function') {
       const pos = getPos();
@@ -49,7 +49,6 @@ export default function MermaidComponent(props: NodeViewProps) {
     <NodeViewWrapper
       className={`my-6 overflow-hidden rounded-xl bg-white ${isEditable ? 'border border-gray-200 shadow-sm' : ''}`}
     >
-      {/* 툴바 헤더 - 편집 모드에서만 표시 */}
       {isEditable && (
         <div
           className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-4 py-1.5"
@@ -62,7 +61,6 @@ export default function MermaidComponent(props: NodeViewProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* 다이어그램 템플릿 셀렉터 */}
             <select
               value={(() => {
                 if (code.startsWith('graph') || code.startsWith('flowchart')) return 'flowchart';
@@ -119,7 +117,6 @@ export default function MermaidComponent(props: NodeViewProps) {
         </div>
       )}
 
-      {/* 컨텐츠 영역 */}
       <div className={isEditable ? 'p-4' : 'py-4'}>
         {isEditable && isEditMode ? (
           <textarea
@@ -135,7 +132,6 @@ export default function MermaidComponent(props: NodeViewProps) {
         )}
       </div>
 
-      {/* 푸터 영역 - 편집 모드에서만 표시 */}
       {isEditable && (
         <div className="flex items-center justify-end border-t border-gray-200 bg-gray-50 px-4 py-2">
           <a

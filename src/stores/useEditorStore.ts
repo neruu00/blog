@@ -1,6 +1,6 @@
 /**
  * @file useEditorStore.ts
- * @description 게시글 에디터(PostEditor) 상태를 관리하는 Zustand 스토어.
+ * @description 게시글 작성·수정 화면의 제목·본문·태그와 제출 상태를 담는 스토어.
  */
 
 import { JSONContent } from '@tiptap/react';
