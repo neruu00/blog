@@ -1,20 +1,17 @@
 /**
  * @file useInViewOnce.ts
- * @description 요소가 화면에 처음 들어온 순간을 한 번만 알려주는 훅.
- *              Reveal(등장 애니메이션)과 MermaidDiagram(지연 렌더)이 공유한다.
- *
- *              ID로 "지금 보이는 요소"를 좇는 useIntersectionObserver(TOC용)와는 다르다.
- *              여기는 ref 하나에 대해 "봤는지 여부"만 필요하고, 한 번 true가 되면 되돌아오지 않는다.
+ * @description 요소가 화면에 처음 들어오는 순간을 한 번만 알려 주는 훅. `Reveal`과 `MermaidDiagram`이 쓴다.
+ *              한 번 true가 되면 다시 false로 돌아가지 않는다.
  */
 
 import { useEffect, useRef, useState } from 'react';
 
 interface UseInViewOnceOptions {
-  /** 진입 판정 여유. 미리 준비시키려면 양수로 (예: '200px 0px') */
+  /** 진입 판정 여유. 미리 준비하려면 양수로 준다 (예: '200px 0px') */
   rootMargin?: string;
-  /** 배열을 받지 않는다 — 렌더마다 새 배열이 들어오면 옵저버가 매번 재생성된다 */
+  /** 숫자 하나만 받는다. 배열은 렌더링할 때마다 새로 만들어져 옵저버가 매번 다시 생성된다 */
   threshold?: number;
-  /** true면 관찰을 건너뛰고 즉시 보인 것으로 친다 (모션 최소화 설정 등) */
+  /** true면 관찰하지 않고 바로 보인 것으로 처리한다 (모션 최소화 설정 등) */
   skip?: boolean;
 }
 
@@ -40,7 +37,7 @@ export function useInViewOnce<T extends HTMLElement>({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // 한 번만 알린다 — 스크롤을 오르내릴 때마다 다시 발동하면 소비하는 쪽이 깜빡인다
+        // 스크롤할 때마다 다시 알리면 사용하는 쪽이 깜빡이므로 한 번만 알린다
         if (entry.isIntersecting) {
           setInView(true);
           observer.disconnect();

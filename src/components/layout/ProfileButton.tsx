@@ -9,7 +9,7 @@ import Tooltip from '@/components/ui/Tooltip';
 export default function ProfileButton({ session }: { session: Session }) {
   return (
     <Tooltip text="로그아웃" position="top" className="w-full">
-      {/* Button이 아니라 사이드바 행이다 — NavLinks와 같은 형태라 오버라이드가 더 길어진다 */}
+      {/* Button 대신 NavLinks와 같은 사이드바 행 형태를 쓴다. Button으로 감싸면 덮어써야 할 스타일이 더 많아진다 */}
       <button
         className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
         onClick={() => signOut()}

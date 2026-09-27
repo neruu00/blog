@@ -23,11 +23,11 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
   const editor = useEditor({
     content: content || '',
-    immediatelyRender: false, // SSR 에러 방지
+    immediatelyRender: false, // SSR 중 하이드레이션 불일치를 막는다
     extensions: [
       StarterKit.configure({
         codeBlock: false,
-        // ShiftedHeading으로 대체하므로 StarterKit 내장 Heading 비활성화
+        // 헤딩은 ShiftedHeading이 맡는다
         heading: false,
       }),
       ShiftedHeading,
@@ -40,21 +40,20 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     ],
     editorProps: {
       attributes: {
-        // prose는 typography 플러그인 클래스입니다.
         class: 'prose prose-orange max-w-none w-full min-h-[500px] p-6 outline-none',
       },
     },
     onUpdate: ({ editor }) => {
       onChange(editor.getJSON());
     },
-    // 툴바 상태 업데이트용 강제 리렌더링 트리거
+    // 트랜잭션마다 다시 렌더링해 툴바의 활성 상태를 갱신한다
     onTransaction: () => {
       forceUpdate((prev) => !prev);
     },
   });
 
-  // 툴바를 본문 카드 밖 형제로 둔다: 카드의 overflow-hidden 안에 있으면
-  // sticky가 뷰포트가 아닌 카드 내부에만 고정되고, focus 링도 툴바까지 번진다.
+  // 툴바는 본문 카드 밖 형제로 둔다. 카드의 overflow-hidden 안에 있으면 sticky가 카드 안에서만 고정되고
+  // focus 링도 툴바까지 번진다.
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-2">
       <Toolbar editor={editor} />

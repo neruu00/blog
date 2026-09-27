@@ -1,6 +1,6 @@
 /**
  * @file comment.type.ts
- * @description 댓글 관련 전역 타입 정의.
+ * @description 댓글 타입.
  */
 
 export interface CommentUser {

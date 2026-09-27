@@ -1,7 +1,6 @@
 /**
  * @file PostExportButtons.tsx
- * @description 게시글 상세 페이지에서 사용되는 내보내기(Markdown) 버튼 컴포넌트.
- *              DropdownMenu 프리미티브를 활용한다.
+ * @description 게시글 상세의 Markdown 내보내기 버튼.
  */
 
 'use client';

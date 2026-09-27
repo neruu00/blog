@@ -1,6 +1,6 @@
 /**
  * @file nav.ts
- * @description 사이드바 및 모바일 헤더 네비게이션 상수
+ * @description 사이드 네비와 모바일 헤더가 함께 쓰는 메뉴 항목.
  */
 
 import { FileText, Home, Newspaper, User } from 'lucide-react';

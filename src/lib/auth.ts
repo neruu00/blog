@@ -1,7 +1,6 @@
 /**
  * @file auth.ts
- * @description NextAuth.js 설정 및 인증 관련 헬퍼 함수.
- *              Google OAuth와 Supabase Adapter를 사용한다.
+ * @description NextAuth 설정(Google OAuth + Supabase Adapter)과 관리자 판별 헬퍼.
  */
 
 import { SupabaseAdapter } from '@auth/supabase-adapter';
@@ -43,13 +42,9 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-/**
- * 현재 세션 유저가 관리자(admin)인지 확인
- * 관리자 기준: 로그인한 유저의 이메일이 환경변수 ADMIN_EMAIL과 일치하는지 판별
- */
+/** 로그인한 사용자의 이메일이 `ADMIN_EMAIL`과 같으면 관리자로 본다. */
 export async function isAdmin(): Promise<boolean> {
-  // fail-closed: ADMIN_EMAIL 미설정 시 undefined === undefined 로
-  // 비로그인 방문자까지 admin 이 되는 것을 방지한다.
+  // ADMIN_EMAIL이 없으면 undefined === undefined가 되어 비로그인 방문자까지 관리자로 통과하므로 막는다
   const adminEmail = process.env.ADMIN_EMAIL;
   if (!adminEmail) return false;
 

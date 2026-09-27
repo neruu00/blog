@@ -1,11 +1,9 @@
 /**
  * @file AuthSection.tsx
- * @description 세션 상태에 따라 프로필/로그인 버튼을 렌더링하는 공용 클라이언트 컴포넌트.
- *              SideNav(데스크톱)와 MobileHeader(모바일)의 하단 푸터가 공유한다.
+ * @description 세션 상태에 따라 프로필 또는 로그인 버튼을 보여준다. SideNav와 MobileHeader 하단에서 함께 쓴다.
  *
- *              반드시 클라이언트에서 세션을 읽어야 한다: 레이아웃이 force-static(ISR)
- *              경로에 포함되면 서버의 getServerSession은 쿠키를 못 읽어 세션이 항상
- *              null로 구워진다 — 데스크톱 사이드 푸터에 로그인 정보가 안 보이던 원인.
+ *              세션은 반드시 클라이언트에서 읽는다. 레이아웃이 force-static(ISR) 경로에 포함되면
+ *              서버의 getServerSession이 쿠키를 읽지 못해 세션이 항상 null로 고정된다.
  */
 
 'use client';
@@ -20,7 +18,7 @@ import ProfileButton from './ProfileButton';
 export default function AuthSection() {
   const { data: session, status } = useSession();
 
-  // 로딩 없는 대기 금지 — 세션 확인 중 "Log in"이 번쩍이지 않도록 스켈레톤 표시
+  // 세션을 확인하는 동안 "Log in"이 잠깐 나타났다 사라지지 않도록 스켈레톤을 보여준다
   if (status === 'loading') {
     return <Skeleton className="h-16 w-full rounded-lg" />;
   }

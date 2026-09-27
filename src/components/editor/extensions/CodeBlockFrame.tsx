@@ -1,15 +1,14 @@
 /**
  * @file CodeBlockFrame.tsx
- * @description Mac 스타일 코드블록 껍데기(다크 표면 + 신호등 헤더 + pre).
- *              에디터 노드뷰(CodeBlockComponent)와 정적 렌더러(StaticCodeBlock)가 같은 프레임을 쓴다.
+ * @description Mac 스타일 코드블록 프레임. 에디터 노드뷰(CodeBlockComponent)와 정적 렌더러(StaticCodeBlock)가 함께 쓴다.
  */
 
 import type { ElementType, ReactNode } from 'react';
 
 interface CodeBlockFrameProps {
-  /** 바깥 요소 — 에디터는 NodeViewWrapper여야 하고, 정적 렌더는 div */
+  /** 바깥 요소. 에디터에서는 NodeViewWrapper여야 하고, 정적 렌더에서는 div를 쓴다 */
   as?: ElementType;
-  /** 헤더 우측 — 에디터는 언어 <select>, 뷰어는 언어 라벨 */
+  /** 헤더 우측 영역. 에디터는 언어 <select>, 읽기 화면은 언어 라벨을 넣는다 */
   headerRight: ReactNode;
   children: ReactNode;
 }

@@ -11,16 +11,15 @@ export default function Modal() {
 
   useEffect(() => {
     if (isOpen) {
-      // 현재 포커스된 요소 저장
+      // 닫을 때 포커스를 되돌릴 수 있도록 현재 포커스 요소를 저장한다
       previousFocusRef.current = document.activeElement as HTMLElement;
-      // 스크롤 잠금
       document.body.style.overflow = 'hidden';
-      // 모달에 포커스 주기 (잠시 후 실행하여 렌더링 완료 보장)
+      // 렌더링이 끝난 뒤 포커스를 옮기도록 다음 틱으로 미룬다
       const timer = setTimeout(() => {
         modalRef.current?.focus();
       }, 0);
 
-      // ESC 키 이벤트 핸들러
+      // ESC로 닫고, Tab 포커스가 모달 밖으로 나가지 않게 가둔다
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') close();
         if (e.key === 'Tab' && modalRef.current) {
@@ -48,7 +47,6 @@ export default function Modal() {
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
         document.body.style.overflow = 'auto';
-        // 이전 포커스 복원
         previousFocusRef.current?.focus();
         clearTimeout(timer);
       };
@@ -59,14 +57,12 @@ export default function Modal() {
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-      {/* 오버레이 */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={close}
         aria-hidden="true"
       />
 
-      {/* 모달 컨텐츠 */}
       <div
         ref={modalRef}
         role="dialog"

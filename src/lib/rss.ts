@@ -1,13 +1,12 @@
 /**
  * @file rss.ts
- * @description RSS 피드 소스 상수 및 파싱 유틸리티.
+ * @description 뉴스 수집 대상 RSS 피드 목록과 피드 파서.
  */
 
 import Parser from 'rss-parser';
 
 import type { TechNewsSource } from '@/types/tech-news.type';
 
-/** RSS 피드 소스 정의 */
 export const RSS_FEEDS: { source: TechNewsSource; url: string }[] = [
   {
     source: 'react',
@@ -35,7 +34,6 @@ export const RSS_FEEDS: { source: TechNewsSource; url: string }[] = [
   },
 ];
 
-/** RSS 아이템 파싱 결과 타입 */
 export interface ParsedFeedItem {
   title: string;
   link: string;
@@ -44,8 +42,8 @@ export interface ParsedFeedItem {
 }
 
 /**
- * 피드 하나가 hang 하면 크론 함수 전체가 maxDuration에 걸려 죽는다.
- * rss-parser 기본 timeout이 60초이므로 명시적으로 낮춘다.
+ * 피드 하나가 응답하지 않으면 크론 전체가 maxDuration에 걸려 종료된다.
+ * rss-parser의 기본 timeout은 60초라서 직접 낮춘다.
  */
 const parser = new Parser({
   timeout: 15000,
@@ -55,12 +53,10 @@ const parser = new Parser({
 });
 
 /**
- * RSS 피드 URL을 파싱하여 아이템 목록을 반환한다.
- * description은 HTML 태그를 제거한 순수 텍스트로 반환한다.
+ * 피드를 파싱해 아이템 목록을 반환한다. description은 HTML을 걷어 낸 텍스트다.
  *
- * 파싱 실패 시 예외를 그대로 던진다. 여기서 삼키고 빈 배열을 반환하면
- * 호출부가 "기사가 없는 피드"와 "죽은 피드"를 구분하지 못해
- * 크론이 200 OK로 성공을 위장하게 된다.
+ * 파싱에 실패하면 예외를 그대로 던진다. 빈 배열로 삼키면 호출부가
+ * "기사가 없는 피드"와 "죽은 피드"를 구분하지 못해 크론이 성공으로 응답한다.
  */
 export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
   const feed = await parser.parseURL(url);
@@ -68,7 +64,7 @@ export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
   return feed.items
     .filter((item) => item.link && item.title)
     .map((item) => {
-      // isoDate는 rss-parser가 RSS/Atom 양쪽을 정규화한 값이라 pubDate보다 안전하다.
+      // isoDate는 rss-parser가 RSS/Atom 형식을 통일한 값이라 pubDate보다 믿을 만하다
       const rawDate = item.isoDate ?? item.pubDate;
       const parsedDate = rawDate ? new Date(rawDate) : new Date();
       return {
@@ -82,7 +78,7 @@ export async function parseFeed(url: string): Promise<ParsedFeedItem[]> {
     });
 }
 
-/** HTML 태그와 엔티티를 제거하고 순수 텍스트만 추출 */
+/** HTML 태그와 주요 엔티티를 걷어 내고 텍스트만 남긴다. */
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]+>/g, ' ')
@@ -94,5 +90,5 @@ function stripHtml(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 6000); // 원문 수집 실패 시에도 충분한 판단 근거를 남긴다.
+    .slice(0, 6000); // 원문을 못 가져오면 이 설명이 요약 입력이 되므로 넉넉히 남긴다
 }

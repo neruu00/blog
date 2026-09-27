@@ -1,8 +1,7 @@
 /**
  * @file page.tsx
- * @description 게시글 상세 페이지.
- *              게시글 제목, 메타 정보, 본문(Tiptap)을 표시한다.
- *              admin인 경우 수정/삭제 버튼을 표시한다.
+ * @description 게시글 상세 페이지. 본문, 목차, 이전/다음 글, 댓글을 보여주고
+ *              관리자에게는 수정·삭제 버튼을 보여준다.
  */
 
 import { notFound } from 'next/navigation';
@@ -75,7 +74,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   if (error || !post) notFound();
 
-  // 이전(더 오래된)/다음(더 최신) 글 — 목록 정렬 기준인 created_at으로 인접 글을 찾는다
+  // 목록과 같은 created_at 기준으로 이전 글(더 오래된 글)과 다음 글(더 최신 글)을 찾는다.
   const [{ data: prevPost }, { data: nextPost }] = await Promise.all([
     supabase
       .from('posts')
@@ -97,13 +96,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <>
-      {/* 상단 네비게이션 */}
       <BackLink href="/posts">목록으로</BackLink>
 
       <div className="relative flex xl:gap-8">
         <ViewCounter postId={post.id} />
         <article className="mx-auto max-w-3xl flex-1">
-          {/* 좌측 정렬 + text-3xl — 목록(PageHeader)·뉴스 상세와 제목 위계·정렬 통일 */}
           <header className="mb-10">
             <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
               {post.title}

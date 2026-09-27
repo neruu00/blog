@@ -8,7 +8,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/constants/site';
 import { supabase } from '@/lib/supabase';
 import { extractTextFromTiptap } from '@/lib/utils/tiptap';
 
-/** 1시간 캐시 — 글 발행 빈도 대비 충분하다. */
+/** 1시간마다 다시 생성한다. */
 export const revalidate = 3600;
 
 const FEED_ITEM_LIMIT = 20;

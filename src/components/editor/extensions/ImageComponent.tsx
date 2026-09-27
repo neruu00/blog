@@ -1,7 +1,6 @@
 /**
  * @file ImageComponent.tsx
- * @description Tiptap 에디터 내에서 이미지를 렌더링하는 React 컴포넌트.
- *              로딩 중이거나 업로드 중일 때 스켈레톤 UI를 표시합니다.
+ * @description 에디터의 이미지 노드뷰. 업로드 중이거나 이미지를 불러오는 동안 스켈레톤을 보여준다.
  */
 
 'use client';
@@ -18,7 +17,7 @@ export default function ImageComponent({ node }: NodeViewProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // 소스가 바뀌거나 업로드가 시작되면 로딩 상태 초기화
+    // 소스가 바뀌거나 업로드가 시작되면 로딩 상태를 다시 잡는다
     setIsLoaded(false);
 
     if (!uploading && src) {
@@ -34,7 +33,6 @@ export default function ImageComponent({ node }: NodeViewProps) {
   return (
     <NodeViewWrapper className="relative my-4 flex justify-center">
       <div className="relative w-full overflow-hidden rounded-lg border border-gray-100">
-        {/* 스켈레톤: 업로드 중이거나 아직 이미지가 로드되지 않았을 때 표시 */}
         {(uploading || !isLoaded) && (
           <div className="flex h-[300px] w-full items-center justify-center bg-gray-50">
             <Skeleton className="h-full w-full" />
@@ -49,9 +47,8 @@ export default function ImageComponent({ node }: NodeViewProps) {
           </div>
         )}
 
-        {/* 실제 이미지: 업로드 중이 아닐 때만 렌더링 (또는 투명하게 미리 렌더링하여 로드 체크) */}
-        {/* 에디터 NodeView는 사용자 업로드 이미지의 원본 비율·크기를 그대로 따라야 하는데,
-            next/image는 width/height 고정 또는 fill(크기 확정된 부모)을 요구해 부적합하다. */}
+        {/* 업로드한 이미지의 원본 비율과 크기를 그대로 따라야 한다. next/image는 width/height나
+            크기가 정해진 부모(fill)를 요구하므로 쓸 수 없다. */}
         {src && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

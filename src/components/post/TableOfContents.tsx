@@ -3,10 +3,7 @@
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import type { TocItem } from '@/lib/utils/tiptap';
 
-/**
- * 헤딩 id는 PostContent가 서버 렌더 시 같은 배열로 붙인다.
- * 클라이언트에서 DOM을 뒤져 심는 방식은 첫 로드 해시 스크롤을 놓쳤다.
- */
+/** 헤딩 id는 PostContent가 서버 렌더링 때 같은 배열로 붙인다. */
 export default function TableOfContents({ items }: { items: TocItem[] }) {
   const itemIds = items.map((item) => item.id);
   const activeId = useIntersectionObserver(itemIds, { rootMargin: '0% 0% -80% 0%' });

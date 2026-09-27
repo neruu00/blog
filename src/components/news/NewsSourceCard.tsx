@@ -61,7 +61,7 @@ export default function NewsSourceCard({
             </div>
           )
         ) : (
-          // 원문마다 호스트가 달라 next/image allowlist를 유지할 수 없어 브라우저 이미지로 표시한다.
+          // 원문마다 호스트가 달라 next/image allowlist를 관리하기 어려우므로 <img>를 쓴다
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={`/api/news/${newsId}/image`}

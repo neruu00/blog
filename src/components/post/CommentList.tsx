@@ -70,7 +70,6 @@ export default function CommentList({ postId, comments }: CommentListProps) {
 
         return (
           <div key={comment.id} className="flex gap-4">
-            {/* 프로필 이미지 */}
             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-100">
               {comment.user?.image ? (
                 <Image
@@ -86,7 +85,6 @@ export default function CommentList({ postId, comments }: CommentListProps) {
               )}
             </div>
 
-            {/* 댓글 내용 */}
             <div className="flex-1 space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

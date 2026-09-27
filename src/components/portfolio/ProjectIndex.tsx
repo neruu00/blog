@@ -1,7 +1,6 @@
 /**
  * @file ProjectIndex.tsx
- * @description 프로젝트 목록 좌측 고정 인덱스. 현재 보고 있는 프로젝트를 강조한다.
- *              게시글 상세의 TableOfContents와 같은 패턴 — 훅도 같은 걸 쓴다.
+ * @description 프로젝트 목록 왼쪽의 고정 인덱스. 현재 보고 있는 프로젝트를 강조한다.
  *              표시 여부(hidden xl:block)는 부모가 정한다.
  */
 

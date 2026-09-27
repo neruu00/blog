@@ -1,7 +1,6 @@
 /**
  * @file DropdownMenu.tsx
- * @description 재사용 가능한 드롭다운 메뉴 UI 프리미티브.
- *              트리거 버튼과 오버레이 패널을 조합하여 드롭다운 패턴을 추상화한다.
+ * @description 트리거와 패널로 구성된 드롭다운 메뉴. 외부 클릭이나 ESC로 닫힌다.
  */
 
 'use client';
@@ -9,8 +8,6 @@
 import { useState, useRef, useEffect, createContext, useContext } from 'react';
 
 import { cn } from '@/lib/utils';
-
-// ---- Context ---------------------------------------------------------------
 
 interface DropdownContextValue {
   isOpen: boolean;
@@ -24,8 +21,6 @@ function useDropdownContext() {
   if (!ctx) throw new Error('DropdownMenu.Item must be used inside DropdownMenu');
   return ctx;
 }
-
-// ---- Item ------------------------------------------------------------------
 
 interface ItemProps {
   children: React.ReactNode;
@@ -59,8 +54,6 @@ function Item({ children, onClick, icon, className = '', closeOnClick = true }: 
   );
 }
 
-// ---- Root ------------------------------------------------------------------
-
 interface TriggerProps {
   onClick: () => void;
   'aria-expanded': boolean;
@@ -90,7 +83,6 @@ export default function DropdownMenu({
   const close = () => setIsOpen(false);
   const toggle = () => setIsOpen((prev) => !prev);
 
-  // 외부 클릭 감지
   useEffect(() => {
     if (!isOpen) return;
     const handleOutsideClick = (e: MouseEvent) => {
@@ -102,7 +94,6 @@ export default function DropdownMenu({
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [isOpen]);
 
-  // Escape 키 닫기
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -120,7 +111,6 @@ export default function DropdownMenu({
       <div ref={containerRef} className={`relative ${className}`}>
         {trigger({ onClick: toggle, 'aria-expanded': isOpen })}
 
-        {/* 드롭다운 패널 */}
         {isOpen && (
           <div
             className={`absolute ${alignClass} ${directionClass} z-50 min-w-[180px] overflow-hidden rounded-xl border border-gray-100 bg-white py-1.5 shadow-xl`}

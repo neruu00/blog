@@ -40,18 +40,19 @@
 src/
 ├── actions/          # Server Actions (post, comment, image)
 ├── app/
-│   ├── (blog)/       # 공개 페이지 (홈, 게시글, 기술 뉴스)
+│   ├── (blog)/       # 공개 페이지 (홈, 게시글, 기술 뉴스, 포트폴리오)
 │   ├── (protected)/  # 관리자 전용 (글쓰기, 수정)
 │   └── api/          # NextAuth + Cron (뉴스 수집, 고아 이미지 청소)
 ├── components/
 │   ├── editor/       # Tiptap 에디터 + 확장 (CodeBlock, Mermaid)
 │   ├── layout/       # SideNav, MobileHeader, Footer
+│   ├── portfolio/    # /about 포트폴리오
 │   ├── post/         # PostCard, PostList, CommentSection
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
 ├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
-├── lib/              # auth, supabase, rss, llm, analytics
+├── lib/              # auth, supabase, rss, article, llm, export
 ├── schemas/          # Zod 검증 스키마
-├── stores/           # Zustand (toast, modal, sidebar, like)
+├── stores/           # Zustand (editor, toast, modal, sidebar)
 └── types/            # TypeScript 타입 정의
 ```
 
@@ -70,8 +71,8 @@ src/
 # 의존성 설치
 pnpm install
 
-# 환경 변수 설정
-cp .env.example .env.local
+# 환경 변수 설정: 아래 값을 채워 .env.local을 만든다
+touch .env.local
 ```
 
 ### 환경 변수 (.env.local)

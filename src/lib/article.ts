@@ -5,7 +5,7 @@
 
 const FETCH_TIMEOUT_MS = 12000;
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
-// 현재 피드는 영문 기술 문서가 중심이라 36,000자는 프롬프트를 포함해 약 12,000토큰 안에 든다.
+// 영문 원문 기준으로 프롬프트까지 합쳐 약 12,000토큰에 들어오는 길이다.
 const MAX_ARTICLE_CHARS = 36000;
 
 /** 원문 요청에 실패하거나 유효한 본문을 찾지 못하면 null을 반환한다. */
@@ -87,7 +87,7 @@ function extractPreviewImage(html: string, articleUrl: string): string | null {
         const imageUrl = new URL(decodeEntities(content), articleUrl).toString();
         if (isPublicHttpUrl(imageUrl)) return imageUrl;
       } catch {
-        // 잘못된 메타데이터는 다음 후보를 확인한다.
+        // URL이 잘못된 메타 태그는 건너뛰고 다음 후보를 본다.
       }
     }
   }

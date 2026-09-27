@@ -1,8 +1,6 @@
 /**
- * Fix CLI for `eslint.config.mjs`
- * ```
- * npx eslint --fix  eslint.config.mjs
- * ```
+ * @file eslint.config.mjs
+ * @description ESLint 설정. Next.js 권장 규칙에 import 순서와 코드 품질 규칙을 더한다.
  */
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -27,11 +25,10 @@ const eslintConfig = [
       import: importPlugin,
     },
     rules: {
-      // ===/!== 강제. 단 `x != null`(null/undefined 동시 검사 관용구)은 허용
+      // `x != null`은 null과 undefined를 한 번에 검사하는 관용구라 허용한다.
       eqeqeq: ['error', 'always', { null: 'ignore' }],
-      // base no-unused-vars 는 TS 인터페이스/타입 시그니처의 파라미터 이름을
-      // 미사용으로 오탐한다. 미사용 코드 검출은 tsconfig 의
-      // noUnusedLocals / noUnusedParameters (tsc, pnpm verify에 포함)가 담당한다.
+      // 기본 규칙은 TS 타입 시그니처의 파라미터 이름을 미사용으로 오탐한다.
+      // 미사용 코드는 tsconfig의 noUnusedLocals / noUnusedParameters가 잡는다.
       'no-unused-vars': 'off',
       'prefer-const': ['error', { destructuring: 'all' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -44,14 +41,14 @@ const eslintConfig = [
         'error',
         {
           groups: [
-            'builtin', // Node.js 내장 모듈 (예: 'path', 'fs')
-            'external', // npm 패키지 (예: 'react', 'next')
-            'internal', // 내부 모듈 (@/...)
-            'parent', // 부모 디렉토리 ('../')
-            'sibling', // 형제 디렉토리 ('./')
-            'index', // 현재 디렉토리의 index 파일 ('./index')
-            'object', // <object> 태그 타입
-            'type', // type import (import type { ... })
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'object',
+            'type',
           ],
           pathGroups: [
             {
@@ -60,14 +57,12 @@ const eslintConfig = [
               position: 'after',
             },
           ],
-          // 그룹 사이에 항상 한 줄의 공백을 추가하여 가독성을 높입니다.
           'newlines-between': 'always',
-          // pathGroups에서 설정한 패턴을 다른 그룹과 중복해서 처리하지 않도록 합니다.
+          // builtin·external로 분류된 import에는 pathGroups를 적용하지 않는다.
           pathGroupsExcludedImportTypes: ['builtin', 'external'],
-          // 그룹 내에서도 알파벳 순으로 정렬합니다.
           alphabetize: {
-            order: 'asc', // 오름차순
-            caseInsensitive: true, // 대소문자 구분 없이
+            order: 'asc',
+            caseInsensitive: true,
           },
         },
       ],

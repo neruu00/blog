@@ -8,19 +8,15 @@ interface ViewCounterProps {
   postId: string;
 }
 
-/**
- * 조회수 카운터 컴포넌트.
- * 쿠키 기반으로 24시간 내 동일 게시글 재카운트를 방지한다.
- */
+/** 마운트할 때 조회수를 올린다. 쿠키를 사용해 같은 글은 24시간 안에 다시 세지 않는다. */
 export default function ViewCounter({ postId }: ViewCounterProps) {
   const isFetched = useRef(false);
 
   useEffect(() => {
-    // Strict Mode에서 두 번 호출되는 것을 방지하기 위해 useRef 사용
+    // Strict Mode에서 effect가 두 번 실행돼도 한 번만 세도록 ref로 막는다
     if (isFetched.current) return;
     isFetched.current = true;
 
-    // 쿠키에서 이미 조회한 게시글 목록 확인
     const cookieName = 'viewed_posts';
     const cookies = document.cookie.split('; ').reduce(
       (acc, cookie) => {
@@ -38,13 +34,10 @@ export default function ViewCounter({ postId }: ViewCounterProps) {
       viewedPosts = [];
     }
 
-    // 이미 조회한 게시글이면 카운트하지 않음
     if (viewedPosts.includes(postId)) return;
 
-    // 조회수 증가 API 호출
     incrementViewCount(postId);
 
-    // 쿠키에 현재 게시글 ID 추가 (24시간 유효)
     viewedPosts.push(postId);
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString();
     document.cookie = `${cookieName}=${encodeURIComponent(JSON.stringify(viewedPosts))}; expires=${expires}; path=/`;

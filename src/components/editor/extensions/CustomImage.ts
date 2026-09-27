@@ -6,9 +6,7 @@ import ImageComponent from './ImageComponent';
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     customImage: {
-      /**
-       * Add an image
-       */
+      /** 이미지 노드를 삽입한다 */
       setImage: (options: {
         src: string;
         alt?: string;

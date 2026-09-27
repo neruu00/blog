@@ -1,3 +1,8 @@
+/**
+ * @file page.tsx
+ * @description 게시글 수정 페이지. 기존 글을 조회해 에디터에 넘긴다.
+ */
+
 import { notFound } from 'next/navigation';
 
 import { supabase } from '@/lib/supabase';

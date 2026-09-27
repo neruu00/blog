@@ -1,8 +1,7 @@
 /**
  * @file MermaidDiagram.tsx
- * @description Mermaid 코드를 SVG로 렌더링하는 클라이언트 컴포넌트.
- *              에디터 미리보기(MermaidComponent)와 읽기 화면(PostContent)이 공유한다.
- *              mermaid는 브라우저 전용이라 서버에서는 스켈레톤만 나가고 마운트 후 그려진다.
+ * @description Mermaid 코드를 SVG로 렌더링하는 클라이언트 컴포넌트. 에디터 미리보기와 읽기 화면에서 함께 쓴다.
+ *              mermaid는 브라우저 전용이라 서버에서는 스켈레톤만 내보내고 마운트한 뒤 그린다.
  */
 
 'use client';
@@ -15,9 +14,8 @@ import { useInViewOnce } from '@/hooks/useInViewOnce';
 type MermaidApi = (typeof import('mermaid'))['default'];
 
 /**
- * mermaid를 정적 import하면 d3·dompurify까지 읽기 페이지의 라우트 번들에 들어간다.
- * 다이어그램이 없는 글도 그걸 내려받아 실행하느라 본문 첫 페인트가 밀렸다 —
- * 실제로 그릴 때만 받아오고, initialize도 그때 한 번만 돈다.
+ * mermaid는 실제로 그릴 때만 동적으로 불러오고, initialize도 그때 한 번만 실행한다.
+ * 정적 import하면 d3·dompurify까지 라우트 번들에 들어가 다이어그램이 없는 글도 그 비용을 치른다.
  */
 let mermaidPromise: Promise<MermaidApi> | null = null;
 
@@ -26,7 +24,7 @@ function loadMermaid() {
     mermaid.initialize({
       startOnLoad: false,
       theme: 'default',
-      securityLevel: 'loose', // 텍스트 렌더링 호환성 향상
+      securityLevel: 'loose', // 노드 라벨의 HTML 텍스트가 렌더링되도록 허용한다
     });
     return mermaid;
   });
@@ -38,8 +36,7 @@ interface MermaidDiagramProps {
 }
 
 export default function MermaidDiagram({ code }: MermaidDiagramProps) {
-  // 글 하나에 다이어그램이 여럿이고 대개 첫 화면 밖이다. 전부 로드 시점에 그리면
-  // 메인스레드를 붙잡아 본문 LCP를 늦춘다 — 가까워지면 그린다.
+  // 뷰포트에 가까워졌을 때만 그린다. 로드할 때 모두 그리면 메인 스레드를 점유해 본문 LCP가 늦어진다.
   const [ref, inView] = useInViewOnce<HTMLDivElement>({ rootMargin: '200px 0px' });
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +54,8 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
       try {
         const mermaid = await loadMermaid();
         if (!isMounted) return;
-        // mermaid.render는 같은 ID로 두 번 이상 부르면 다이어그램 타입에 따라
-        // 이전 DOM 캐시가 꼬인다. 매번 새 일회용 ID로 렌더링을 강제한다.
+        // mermaid.render를 같은 ID로 여러 번 호출하면 다이어그램 종류에 따라 이전 DOM 캐시가 꼬인다.
+        // 그래서 매번 새 일회용 ID로 렌더링한다.
         const id = `mermaid-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const result = await mermaid.render(id, code);
         if (isMounted) {

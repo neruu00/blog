@@ -1,6 +1,6 @@
 /**
  * @file SectionHeader.tsx
- * @description 섹션 제목 + 우측 "전체 보기" 링크. 홈의 뉴스/최신 글 섹션 등에서 사용.
+ * @description 섹션 제목과 우측 "전체 보기" 링크.
  */
 
 import { ArrowRight } from 'lucide-react';

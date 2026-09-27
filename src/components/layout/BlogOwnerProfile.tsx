@@ -6,11 +6,9 @@ import Tooltip from '@/components/ui/Tooltip';
 export default function BlogOwnerProfile() {
   return (
     <div className="flex flex-col items-center">
-      {/* 이름 및 직업 */}
       <h2 className="text-lg font-bold text-gray-900">neruu00</h2>
       <p className="mt-1 text-xs text-gray-400">Developer</p>
 
-      {/* 소셜 링크 */}
       <div className="mt-5 flex items-center gap-3">
         <Tooltip text="GitHub" position="top">
           <Button

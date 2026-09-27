@@ -27,7 +27,7 @@ export default function PostEditor({ mode, initialData, postId, onSubmit }: Post
     setInitialData(initialData || {});
     return () => reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 마운트 시 단 한 번만 실행
+  }, []);
 
   const { handleManualSave, isChanged, DRAFT_KEY } = useDraft({
     mode,

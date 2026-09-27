@@ -1,25 +1,26 @@
+/**
+ * @file middleware.ts
+ * @description /write, /edit 경로는 관리자만 접근할 수 있게 막는다. 서버 액션 호출은 막지 못하므로
+ *              액션마다 권한을 따로 검사해야 한다.
+ */
+
 import { NextResponse } from 'next/server';
 import { withAuth } from 'next-auth/middleware';
 
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
-    // fail-closed: ADMIN_EMAIL 미설정 시 아무도 통과하지 못한다 (isAdmin()과 동일 원칙)
+    // fail-closed: ADMIN_EMAIL이 없으면 아무도 통과하지 못한다. isAdmin()과 같은 기준이다.
     const isAdmin = !!process.env.ADMIN_EMAIL && token?.email === process.env.ADMIN_EMAIL;
 
-    // 관리자 권한이 필요한 경로에 접근했지만 관리자가 아닌 경우
     if (!isAdmin) {
-      // 홈으로 리다이렉트 (로그인은 되어 있으므로 signin으로 보내면 루프 발생 가능)
+      // 이미 로그인한 상태라 로그인 페이지로 보내면 리다이렉트 루프가 생길 수 있어 홈으로 보낸다.
       return NextResponse.redirect(new URL('/', req.url));
     }
   },
   {
     callbacks: {
-      /**
-       * @description 일차적으로 로그인 여부만 확인
-       * true를 반환하면 위 middleware 함수가 실행됨
-       * false를 반환하면 자동으로 로그인 페이지로 리다이렉트됨
-       */
+      // 로그인 여부만 확인한다. false면 로그인 페이지로 보내고, true면 위 middleware에서 관리자 여부를 검사한다.
       authorized: ({ token }) => !!token,
     },
   },

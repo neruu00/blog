@@ -1,6 +1,6 @@
 /**
  * @file Pagination.tsx
- * @description 목록 하단에 표시되는 도메인 중립 페이지네이션 컴포넌트.
+ * @description 목록 하단의 페이지네이션. 페이지 번호를 쿼리 파라미터로 붙인 링크로 렌더링한다.
  */
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -25,7 +25,7 @@ export default function Pagination({ currentPage, totalPages, basePath, params }
     return queryString ? `${basePath}?${queryString}` : basePath;
   };
 
-  // 표시할 페이지 번호 범위 계산 (최대 5개)
+  // 현재 페이지를 가운데에 두고 번호를 최대 5개까지 보여준다
   const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
   const endPage = Math.min(totalPages, startPage + 4);
   const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
@@ -37,7 +37,6 @@ export default function Pagination({ currentPage, totalPages, basePath, params }
 
   return (
     <nav className="mt-12 flex items-center justify-center gap-2">
-      {/* 이전 페이지 */}
       <Link
         href={getPageLink(currentPage - 1)}
         className={`${cell} ${currentPage > 1 ? idle : blocked}`}
@@ -46,7 +45,6 @@ export default function Pagination({ currentPage, totalPages, basePath, params }
         <ChevronLeft className="h-4 w-4" />
       </Link>
 
-      {/* 페이지 번호 */}
       {pages.map((page) => {
         const isCurrent = page === currentPage;
         return (
@@ -60,7 +58,6 @@ export default function Pagination({ currentPage, totalPages, basePath, params }
         );
       })}
 
-      {/* 다음 페이지 */}
       <Link
         href={getPageLink(currentPage + 1)}
         className={`${cell} ${currentPage < totalPages ? idle : blocked}`}
