@@ -15,7 +15,7 @@ export const MermaidBlockSchema = Node.create({
   addAttributes() {
     return {
       code: {
-        default: 'graph TD;\n  A-->B;',
+        default: '',
       },
     };
   },

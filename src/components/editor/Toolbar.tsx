@@ -23,7 +23,27 @@ import { useState } from 'react';
 import { uploadImage } from '@/actions/image';
 import Button from '@/components/ui/Button';
 import DropdownMenu from '@/components/ui/DropdownMenu';
+import Tooltip from '@/components/ui/Tooltip';
 import { convertToWebP } from '@/lib/image-converter';
+
+import type { ButtonHTMLAttributes } from 'react';
+
+interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
+  /** 툴팁과 aria-label에 함께 쓰이는 버튼 이름 */
+  label: string;
+}
+
+/**
+ * 툴바 아이콘 버튼. 아이콘만 있으므로 마우스·키보드용 Tooltip과 스크린리더용 aria-label을 함께 단다.
+ * 툴팁은 sticky 툴바가 화면 위에 붙어도 잘리지 않도록 아래쪽에 띄운다.
+ */
+function ToolbarButton({ label, ...rest }: ToolbarButtonProps) {
+  return (
+    <Tooltip text={label} position="bottom">
+      <Button variant="ghost" size="icon" aria-label={label} {...rest} />
+    </Tooltip>
+  );
+}
 
 interface ToolbarProps {
   editor: Editor | null;
@@ -97,157 +117,114 @@ export default function Toolbar({ editor }: ToolbarProps) {
   return (
     <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
       {/* H1~H3 버튼은 ShiftedHeading에 따라 실제로는 level 2~4를 만든다 */}
-      <Button
-        variant="ghost"
-        size="icon"
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         aria-pressed={editor.isActive('heading', { level: 2 })}
-        title="Heading 1"
+        label="제목 1"
       >
         <Heading1 className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         aria-pressed={editor.isActive('heading', { level: 3 })}
-        title="Heading 2"
+        label="제목 2"
       >
         <Heading2 className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
         aria-pressed={editor.isActive('heading', { level: 4 })}
-        title="Heading 3"
+        label="제목 3"
       >
         <Heading3 className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
       <div className="mx-1 h-6 w-px bg-gray-200" />
-      <Button
-        variant="ghost"
-        size="icon"
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         aria-pressed={editor.isActive('bold')}
-        title="Bold"
+        label="굵게"
       >
         <Bold className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
         aria-pressed={editor.isActive('italic')}
-        title="Italic"
+        label="기울임"
       >
         <Italic className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleStrike().run()}
         aria-pressed={editor.isActive('strike')}
-        title="Strikethrough"
+        label="취소선"
       >
         <Strikethrough className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
       <div className="mx-1 h-6 w-px bg-gray-200" />
-      <Button
-        variant="ghost"
-        size="icon"
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleSuperscript().run()}
         aria-pressed={editor.isActive('superscript')}
-        title="Superscript (위 첨자)"
+        label="위 첨자"
       >
         <Superscript className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleSubscript().run()}
         aria-pressed={editor.isActive('subscript')}
-        title="Subscript (아래 첨자)"
+        label="아래 첨자"
       >
         <Subscript className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
       <div className="mx-1 h-6 w-px bg-gray-200" />
-      <Button
-        variant="ghost"
-        size="icon"
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         aria-pressed={editor.isActive('codeBlock')}
-        title="Code Block"
+        label="코드 블록"
       >
         <Code className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() =>
-          editor
-            .chain()
-            .focus()
-            .insertContent({
-              type: 'mermaidBlock',
-              attrs: {
-                code: 'graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result 1];\n  B -->|No| D[Result 2];',
-              },
-            })
-            .run()
-        }
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => editor.chain().focus().insertContent({ type: 'mermaidBlock' }).run()}
         aria-pressed={editor.isActive('mermaidBlock')}
-        title="Insert Diagram (Mermaid)"
+        label="다이어그램 (Mermaid)"
       >
         <Workflow className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
       <DropdownMenu
         align="left"
         trigger={(triggerProps) => (
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-pressed={isInsideTable}
-            title="Table Menu"
-            {...triggerProps}
-          >
+          <ToolbarButton aria-pressed={isInsideTable} label="표" {...triggerProps}>
             <Table className="h-5 w-5" />
-          </Button>
+          </ToolbarButton>
         )}
       >
         <TableMenu editor={editor} isInsideTable={isInsideTable} />
       </DropdownMenu>
-      <Button variant="ghost" size="icon" onClick={handleImageUpload} title="Upload Image">
+      <ToolbarButton onClick={handleImageUpload} label="이미지 업로드">
         <ImageIcon className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         aria-pressed={editor.isActive('blockquote')}
-        title="Blockquote"
+        label="인용문"
       >
         <Quote className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
       <div className="mx-1 h-6 w-px bg-gray-200" />
-      <Button
-        variant="ghost"
-        size="icon"
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         aria-pressed={editor.isActive('bulletList')}
-        title="Bullet List"
+        label="글머리 기호 목록"
       >
         <List className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         aria-pressed={editor.isActive('orderedList')}
-        title="Ordered List"
+        label="번호 목록"
       >
         <ListOrdered className="h-5 w-5" />
-      </Button>
+      </ToolbarButton>
     </div>
   );
 }

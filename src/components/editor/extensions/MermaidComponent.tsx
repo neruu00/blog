@@ -1,14 +1,18 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Code, Eye, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import Tooltip from '@/components/ui/Tooltip';
 
 import MermaidDiagram from './MermaidDiagram';
+
+import type { MouseEvent } from 'react';
 
 export default function MermaidComponent(props: NodeViewProps) {
   const { node, updateAttributes, getPos, editor } = props;
   const [isEditMode, setIsEditMode] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const code = node.attrs.code as string;
 
@@ -45,56 +49,42 @@ export default function MermaidComponent(props: NodeViewProps) {
 
   const isEditable = editor.isEditable;
 
+  // 블록 안 어디를 눌러도 입력창으로 포커스를 옮긴다. 미리보기 중이면 코드 보기로 돌아간다
+  const handleBlockClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isEditable) return;
+    if ((e.target as HTMLElement).closest('button, a, textarea')) return;
+    setIsEditMode(true);
+    requestAnimationFrame(() => textareaRef.current?.focus());
+  };
+
   return (
     <NodeViewWrapper
-      className={`my-6 overflow-hidden rounded-xl bg-white ${isEditable ? 'border border-gray-200 shadow-sm' : ''}`}
+      onClick={handleBlockClick}
+      className={`my-6 overflow-hidden rounded-xl bg-white ${
+        isEditable ? 'cursor-text border border-gray-200 shadow-sm' : ''
+      }`}
     >
       {isEditable && (
         <div
           className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-4 py-1.5"
           contentEditable={false}
         >
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-gray-500 select-none">
-              Diagram (Mermaid)
-            </span>
+          <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 select-none">
+            Diagram
+            <Tooltip text="사용법 보기" position="right">
+              <a
+                href={docsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Mermaid 사용법 보기"
+                className="flex items-center gap-1 rounded text-xs font-medium transition-colors hover:text-orange-600"
+              >
+                Mermaid <ExternalLink className="h-3 w-3" />
+              </a>
+            </Tooltip>
           </div>
 
           <div className="flex items-center gap-2">
-            <select
-              value={(() => {
-                if (code.startsWith('graph') || code.startsWith('flowchart')) return 'flowchart';
-                if (code.startsWith('mindmap')) return 'mindmap';
-                if (code.startsWith('sequenceDiagram')) return 'sequence';
-                return 'custom';
-              })()}
-              onChange={(e) => {
-                const templateType = e.target.value;
-                let newCode = '';
-                if (templateType === 'flowchart') {
-                  newCode =
-                    'graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result 1];\n  B -->|No| D[Result 2];';
-                } else if (templateType === 'mindmap') {
-                  newCode =
-                    'mindmap\n  root((Mindmap))\n    Child 1\n      Grandchild 1\n    Child 2';
-                } else if (templateType === 'sequence') {
-                  newCode =
-                    'sequenceDiagram\n  participant Client\n  participant Server\n  Client->>Server: Request\n  Server-->>Client: Response';
-                }
-
-                if (newCode) {
-                  updateAttributes({ code: newCode });
-                  setIsEditMode(true);
-                }
-              }}
-              className="mr-2 rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-500 outline-none hover:border-gray-300 focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
-            >
-              <option value="custom">Custom Code</option>
-              <option value="flowchart">Flowchart</option>
-              <option value="mindmap">Mindmap (Tree)</option>
-              <option value="sequence">Sequence Diagram</option>
-            </select>
-
             <Button
               variant="ghost"
               size="icon"
@@ -117,32 +107,19 @@ export default function MermaidComponent(props: NodeViewProps) {
         </div>
       )}
 
-      <div className={isEditable ? 'p-4' : 'py-4'}>
-        {isEditable && isEditMode ? (
-          <textarea
-            className="min-h-[150px] w-full resize-y rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-sm text-gray-900 outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400"
-            value={code}
-            onChange={(e) => updateAttributes({ code: e.target.value })}
-            onFocus={handleTextareaFocus}
-            placeholder="Mermaid 문법을 작성하세요..."
-            spellCheck={false}
-          />
-        ) : (
+      {isEditable && isEditMode ? (
+        <textarea
+          ref={textareaRef}
+          className="block field-sizing-content min-h-[150px] w-full resize-none bg-white p-4 font-mono text-sm leading-relaxed text-gray-900 outline-none placeholder:text-gray-400"
+          value={code}
+          onChange={(e) => updateAttributes({ code: e.target.value })}
+          onFocus={handleTextareaFocus}
+          placeholder="Mermaid 문법을 작성하세요..."
+          spellCheck={false}
+        />
+      ) : (
+        <div className={isEditable ? 'p-4' : 'py-4'}>
           <MermaidDiagram code={code} />
-        )}
-      </div>
-
-      {isEditable && (
-        <div className="flex items-center justify-end border-t border-gray-200 bg-gray-50 px-4 py-2">
-          <a
-            href={docsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs font-medium text-gray-500 transition-colors hover:text-orange-600"
-            title="해당 다이어그램 문법 보기"
-          >
-            사용법 보기 <ExternalLink className="h-3 w-3" />
-          </a>
         </div>
       )}
     </NodeViewWrapper>
