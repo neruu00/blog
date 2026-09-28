@@ -184,18 +184,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <Code className="h-5 w-5" />
       </ToolbarButton>
       <ToolbarButton
-        onClick={() =>
-          editor
-            .chain()
-            .focus()
-            .insertContent({
-              type: 'mermaidBlock',
-              attrs: {
-                code: 'graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result 1];\n  B -->|No| D[Result 2];',
-              },
-            })
-            .run()
-        }
+        onClick={() => editor.chain().focus().insertContent({ type: 'mermaidBlock' }).run()}
         aria-pressed={editor.isActive('mermaidBlock')}
         label="다이어그램 (Mermaid)"
       >

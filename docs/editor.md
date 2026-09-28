@@ -11,7 +11,7 @@
 | **ShiftedHeading** | SEO 최적화 헤딩 (레벨 +1 시프트) | `Heading` 상속 + `# ` 입력 시 `h2` 파싱 |
 | **CustomTable** | 테이블 (행/열 관리 및 삽입 폼) | `@tiptap/extension-table` TableKit 래핑 |
 | **CustomCodeBlock** | Mac 스타일 코드 블록 + 구문 강조 | `CodeBlockLowlight` 상속 + React NodeView |
-| **MermaidBlock** | 다이어그램 (flowchart, sequence, mindmap) | Tiptap Node Extension + mermaid.js 렌더링 |
+| **MermaidBlock** | 다이어그램 | Tiptap Node Extension + mermaid.js 렌더링 |
 | **Image** | 이미지 삽입 | Supabase Storage 업로드 |
 | **Superscript** / **Subscript** | 위/아래 첨자 | `@tiptap/extension-superscript` / `-subscript` |
 
@@ -45,8 +45,11 @@
 ## MermaidBlock
 
 - `MermaidBlock.tsx` — Tiptap Node Extension 정의
-- `MermaidComponent.tsx` — React NodeView (헤더, 셀렉터, 코드/프리뷰)
-- 에디터: 다이어그램 템플릿(Flowchart, Mindmap 등) + 실시간 미리보기
+- `MermaidComponent.tsx` — React NodeView (헤더, 코드/프리뷰)
+- 에디터: 빈 코드로 삽입되며, Code/Preview 토글로 코드 편집 화면과 미리보기를 전환한다
+  - 입력창은 코드 블록처럼 헤더 바로 아래에 붙인다. 포커스되어도 테두리는 표시하지 않고 캐럿만 보인다
+  - 블록 안을 클릭하면 어디서든 입력창에 포커스가 간다. 미리보기 상태라면 코드 보기로 돌아간다(버튼·링크 클릭 제외)
+  - 헤더의 `Mermaid`를 누르면 입력한 코드 유형에 맞는 Mermaid 문법 문서가 새 탭에서 열린다
 - 뷰어: 편집 UI 숨김, SVG 결과물만 렌더링
 
 ## 파일 구성
