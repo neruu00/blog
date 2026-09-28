@@ -1,33 +1,23 @@
 /**
  * @file page.tsx
- * @description 포트폴리오(소개) 페이지. DB 없이 lib/constants/portfolio.ts만 읽어 정적으로 렌더링된다.
+ * @description 포트폴리오 페이지. 소개·기술·교육 및 프로젝트 카드 목록을 보여준다.
+ *              DB를 거치지 않고 lib/constants/portfolio.ts만 참조해 정적으로 렌더링한다.
  */
 
-import ProjectIndex from '@/components/portfolio/ProjectIndex';
-import ProjectSection from '@/components/portfolio/ProjectSection';
+import ProjectCard from '@/components/portfolio/ProjectCard';
 import Reveal from '@/components/ui/Reveal';
 import { EDUCATIONS, PROFILE, PROJECTS, SKILL_GROUPS } from '@/lib/constants/portfolio';
 
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: 'Projects',
   description: PROFILE.summary,
 };
 
-/** 프로젝트 앵커 id. ProjectIndex와 ProjectSection이 같은 값을 써야 링크가 맞는다. */
-const projectAnchors = PROJECTS.map((project) => ({
-  id: `project-${project.nameEn.toLowerCase().replace(/\s+/g, '-')}`,
-  name: project.name,
-}));
-
-export default function AboutPage() {
+export default function ProjectsPage() {
   return (
     <div className="mx-auto max-w-5xl">
-      {/* Reveal은 화면에 들어오기 전까지 opacity-0이라, JS가 꺼져 있으면 보이도록 되돌린다 */}
-      <noscript>
-        <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
-      </noscript>
       <header className="mb-16">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">{PROFILE.name}</h1>
         <p className="mt-1 text-sm font-medium text-orange-500">{PROFILE.title}</p>
@@ -77,22 +67,20 @@ export default function AboutPage() {
       <section className="mb-8">
         <Reveal>
           <h2 className="mb-2 text-xl font-bold text-gray-900">프로젝트</h2>
-          <p className="mb-4 text-sm text-gray-400">
+          <p className="mb-6 text-sm text-gray-400">
             무엇을 썼는지보다, 무엇이 막혔고 어떻게 풀었는지를 적었습니다.
           </p>
         </Reveal>
 
-        <div className="flex gap-10">
-          <div className="min-w-0 flex-1">
-            {PROJECTS.map((project, i) => (
-              <ProjectSection key={project.nameEn} project={project} id={projectAnchors[i].id} />
-            ))}
-          </div>
-
-          <div className="hidden xl:block">
-            <ProjectIndex items={projectAnchors} />
-          </div>
-        </div>
+        <ul className="grid gap-6 sm:grid-cols-2">
+          {PROJECTS.map((project, i) => (
+            <li key={project.slug}>
+              <Reveal delay={(i % 2) * 60}>
+                <ProjectCard project={project} />
+              </Reveal>
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

@@ -59,7 +59,7 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 
 ### 상세 페이지 — 이전/다음 글
 
-- 본문 하단(내보내기 버튼 아래, 댓글 위)에 `PostNavigation` 표시
+- 본문 하단(내보내기 버튼 아래, 댓글 위)에 `AdjacentNav` 표시
 - `created_at` 기준으로 인접 글 2건을 `maybeSingle()`로 조회 — 이전 글 = 더 오래된 글, 다음 글 = 더 최신 글
 - 양쪽 모두 없으면(글이 1개뿐이면) 렌더링하지 않음
 

@@ -8,12 +8,12 @@ import { notFound } from 'next/navigation';
 import { cache, Suspense } from 'react';
 
 import { getComments } from '@/actions/comment';
+import AdjacentNav from '@/components/common/AdjacentNav';
 import BackLink from '@/components/common/BackLink';
 import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import PostContent from '@/components/post/PostContent';
 import PostExportButtons from '@/components/post/PostExportButtons';
-import PostNavigation from '@/components/post/PostNavigation';
 import TableOfContents from '@/components/post/TableOfContents';
 import ViewCounter from '@/components/post/ViewCounter';
 import Button from '@/components/ui/Button';
@@ -136,7 +136,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </div>
 
-          <PostNavigation prev={prevPost} next={nextPost} />
+          <AdjacentNav
+            prev={prevPost && { href: `/posts/${prevPost.id}`, title: prevPost.title }}
+            next={nextPost && { href: `/posts/${nextPost.id}`, title: nextPost.title }}
+            prevLabel="이전 글"
+            nextLabel="다음 글"
+          />
 
           <Suspense fallback={<Skeleton className="mt-16 h-32 w-full rounded-xl" />}>
             <PostCommentSection postId={post.id} />

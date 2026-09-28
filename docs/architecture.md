@@ -45,12 +45,12 @@
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]`, `/about` | SideNav + Footer | 불필요 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]`, `/projects`, `/projects/[projectName]` | SideNav + Footer | 불필요 |
 | `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 (`middleware.ts` + 서버 액션 이중 검증) |
 | `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 크론은 `CRON_SECRET` Bearer 검증 |
 | 메타 | `/sitemap.xml`, `/robots.txt`, `/feed.xml` | 없음 | 불필요 (1h ISR) |
 
-`/about`는 포트폴리오 페이지다. DB를 거치지 않고 `lib/constants/portfolio.ts`만 읽어 완전히 정적으로 렌더링된다.
+`/projects`는 포트폴리오 페이지다. 소개·기술·교육 및 프로젝트 카드 목록을 보여준다. `/projects/[projectName]`은 프로젝트 상세 페이지이며, `projectName`에는 `Project.slug`(소문자 영문명)가 들어간다. 두 페이지 모두 DB를 거치지 않고 `lib/constants/portfolio.ts`만 참조한다. 상세 페이지는 `generateStaticParams`를 사용해 빌드 시점에 모두 생성하며, `dynamicParams = false`이므로 목록에 없는 이름은 404를 반환한다. `/about`은 `next.config.ts`에서 `/projects`로 영구 리다이렉트된다.
 
 ## 데이터 흐름
 
