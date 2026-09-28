@@ -73,6 +73,9 @@
 | Image | 이미지 업로드 (Supabase Storage) |
 | Diagram | Mermaid 블록 삽입 |
 
+- 모든 버튼은 `Toolbar.tsx`의 `ToolbarButton`으로 렌더링한다. `label`은 `Tooltip`(마우스·키보드)과 `aria-label`(스크린 리더)에서 함께 사용한다. 브라우저 기본 툴팁과 겹치지 않도록 `title`은 사용하지 않는다
+- 툴바가 화면 상단에 sticky로 고정돼도 잘리지 않도록 툴팁은 버튼 아래(`position="bottom"`)에 표시한다
+
 ## EditorActions (작성/수정 페이지 전용)
 
 오른쪽 아래에 고정된 플로팅 아이콘 버튼 묶음 (`fixed right-6 bottom-6`, 세로 스택).
