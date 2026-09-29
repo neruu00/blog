@@ -4,6 +4,7 @@
  * @file post.ts
  * @description 게시글 생성·수정·삭제와 조회수 증가 서버 액션.
  *              게시글 저장과 함께 본문 이미지의 연결 상태(is_used, post_id)를 맞추고, 실패하면 롤백한다.
+ *              시리즈는 기존 시리즈 id나 새 시리즈 이름으로 받고, 속한 글이 없어진 시리즈는 지운다.
  */
 
 import { revalidatePath } from 'next/cache';
@@ -13,6 +14,130 @@ import { supabase } from '@/lib/supabase';
 import { extractImageUrlsFromTiptap } from '@/lib/utils/tiptap';
 import { postSchema } from '@/schemas/post.schema';
 import type { ActionResult, PostActionResult } from '@/types/action.type';
+
+/** 이름이 같은 시리즈가 있으면 그 id를, 없으면 새로 만들어 id를 반환한다. */
+async function findOrCreateSeries(title: string): Promise<string> {
+  const { data, error } = await supabase
+    .from('series')
+    .upsert({ title }, { onConflict: 'title' })
+    .select('id')
+    .single();
+
+  if (error) throw error;
+  return data.id;
+}
+
+type ResolvedSeries = { seriesId: string | null } | { error: string };
+
+/**
+ * 글을 넣을 시리즈 id를 정한다. 새 시리즈 이름이 있으면 찾거나 만들고, 기존 시리즈 id는 아직 있는지 확인한다.
+ * 기존 시리즈가 그사이 삭제됐으면 시리즈 없이 저장하지 않고 에러를 돌려준다.
+ */
+async function resolveSeries(seriesId: string, newSeriesTitle: string): Promise<ResolvedSeries> {
+  if (newSeriesTitle) return { seriesId: await findOrCreateSeries(newSeriesTitle) };
+  if (!seriesId) return { seriesId: null };
+
+  const { data, error } = await supabase
+    .from('series')
+    .select('id')
+    .eq('id', seriesId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { error: '선택한 시리즈가 삭제되었습니다. 시리즈를 다시 선택해주세요.' };
+  return { seriesId };
+}
+
+/**
+ * 글을 시리즈 안 `after` 위치에 끼워 넣고 시리즈 전체 순서를 1부터 다시 매긴다.
+ * `after`가 가리키는 글이 시리즈에 없으면 맨 끝에 둔다.
+ * 순서가 바뀐 글만 나눠서 UPDATE하므로 중간에 실패하면 순서가 겹칠 수 있다. 겹쳐도 created_at으로
+ * 정렬이 이어지고 다음 저장 때 다시 정리되므로, 실패해도 게시글 저장은 성공으로 두고 로그만 남긴다.
+ */
+async function placePostInSeries(seriesId: string, postId: string, after: string) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('id, series_order')
+    .eq('series_id', seriesId)
+    .order('series_order', { ascending: true, nullsFirst: false })
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.warn('시리즈 순서 조회 실패:', error);
+    return;
+  }
+
+  const others = data.filter((post) => post.id !== postId);
+  const afterIndex = others.findIndex((post) => post.id === after);
+  const insertAt = after === 'first' ? 0 : afterIndex === -1 ? others.length : afterIndex + 1;
+  const orderedIds = [
+    ...others.slice(0, insertAt).map((post) => post.id),
+    postId,
+    ...others.slice(insertAt).map((post) => post.id),
+  ];
+
+  const currentOrder = new Map(data.map((post) => [post.id, post.series_order]));
+  const changes = orderedIds
+    .map((id, index) => ({ id, order: index + 1 }))
+    .filter(({ id, order }) => currentOrder.get(id) !== order);
+
+  const results = await Promise.all(
+    changes.map(({ id, order }) =>
+      supabase.from('posts').update({ series_order: order }).eq('id', id),
+    ),
+  );
+  const failed = results.find((result) => result.error);
+  if (failed) console.warn('시리즈 순서 변경 실패:', failed.error);
+}
+
+/** 시리즈의 마지막 순서 다음 값을 반환한다. `excludePostId`는 순서 계산에서 뺀다. */
+async function getNextSeriesOrder(seriesId: string, excludePostId?: string): Promise<number> {
+  let query = supabase
+    .from('posts')
+    .select('series_order')
+    .eq('series_id', seriesId)
+    .not('series_order', 'is', null);
+  if (excludePostId) query = query.neq('id', excludePostId);
+
+  const { data, error } = await query
+    .order('series_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.series_order ?? 0) + 1;
+}
+
+/** 속한 글이 없는 시리즈를 지운다. 실패해도 게시글 작업은 성공으로 두고 로그만 남긴다. */
+async function deleteSeriesIfEmpty(seriesId: string) {
+  const { count, error } = await supabase
+    .from('posts')
+    .select('id', { count: 'exact', head: true })
+    .eq('series_id', seriesId);
+
+  if (error) {
+    console.warn('빈 시리즈 확인 실패:', error);
+    return;
+  }
+  if (count !== 0) return;
+
+  const { error: deleteError } = await supabase.from('series').delete().eq('id', seriesId);
+  if (deleteError) console.warn('빈 시리즈 삭제 실패:', deleteError);
+}
+
+/**
+ * 시리즈에 속한 글의 상세 페이지를 모두 갱신한다.
+ * 글 하나가 시리즈에 들어오거나 빠지면 같은 시리즈 다른 글의 시리즈 목록과 이전/다음 글도 바뀐다.
+ */
+async function revalidateSeriesPosts(seriesIds: (string | null)[]) {
+  const ids = [...new Set(seriesIds.filter((id): id is string => !!id))];
+  if (ids.length === 0) return;
+
+  const { data, error } = await supabase.from('posts').select('id').in('series_id', ids);
+  if (error) {
+    console.warn('시리즈 글 목록 조회 실패:', error);
+    return;
+  }
+  data.forEach((post) => revalidatePath(`/posts/${post.id}`));
+}
 
 /** 게시글을 생성하고 본문에 쓰인 이미지를 새 게시글에 연결한다. */
 export async function createPost(formData: FormData): Promise<PostActionResult> {
@@ -35,6 +160,9 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     content: contentString,
     tags,
     category,
+    seriesId: formData.get('seriesId') ?? '',
+    newSeriesTitle: formData.get('newSeriesTitle') ?? '',
+    seriesAfter: formData.get('seriesAfter') || undefined,
   });
 
   if (!validatedFields.success) {
@@ -48,15 +176,27 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
   }
 
-  const body = {
-    title: validatedFields.data.title,
-    content,
-    tags: validatedFields.data.tags,
-    category: validatedFields.data.category,
-    author: 'admin',
-  };
+  const { seriesAfter } = validatedFields.data;
+  let seriesId: string | null = null;
 
   try {
+    const resolved = await resolveSeries(
+      validatedFields.data.seriesId,
+      validatedFields.data.newSeriesTitle,
+    );
+    if ('error' in resolved) return { success: false, error: resolved.error };
+    seriesId = resolved.seriesId;
+
+    const body = {
+      title: validatedFields.data.title,
+      content,
+      tags: validatedFields.data.tags,
+      category: validatedFields.data.category,
+      author: 'admin',
+      series_id: seriesId,
+      series_order: seriesId ? await getNextSeriesOrder(seriesId) : null,
+    };
+
     const { data: newPost, error: postError } = await supabase
       .from('posts')
       .insert([body])
@@ -80,9 +220,14 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
       }
     }
 
+    if (seriesId && seriesAfter) await placePostInSeries(seriesId, newPost.id, seriesAfter);
+
     revalidatePath('/posts');
+    await revalidateSeriesPosts([seriesId]);
     return { success: true, data: { postId: newPost.id } };
   } catch (err) {
+    // 이 글을 위해 만든 시리즈가 빈 채로 남지 않게 지운다
+    if (seriesId) await deleteSeriesIfEmpty(seriesId);
     console.error('게시글 생성 중 오류 발생:', err);
     return { success: false, error: '게시글 저장에 실패했습니다.' };
   }
@@ -117,6 +262,9 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     content: contentString,
     tags,
     category,
+    seriesId: formData.get('seriesId') ?? '',
+    newSeriesTitle: formData.get('newSeriesTitle') ?? '',
+    seriesAfter: formData.get('seriesAfter') || undefined,
   });
 
   if (!validatedFields.success) {
@@ -130,7 +278,37 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
   }
 
+  const { seriesAfter } = validatedFields.data;
+  let seriesId: string | null = null;
+  let previousSeriesId: string | null = null;
+
   try {
+    const { data: previousPost, error: previousPostError } = await supabase
+      .from('posts')
+      .select('series_id, series_order')
+      .eq('id', postId)
+      .single();
+
+    if (previousPostError) throw previousPostError;
+    previousSeriesId = previousPost.series_id;
+
+    const resolved = await resolveSeries(
+      validatedFields.data.seriesId,
+      validatedFields.data.newSeriesTitle,
+    );
+    if ('error' in resolved) return { success: false, error: resolved.error };
+    seriesId = resolved.seriesId;
+
+    // 같은 시리즈에 남는 글은 원래 순서를, 새로 들어온 글은 마지막 다음 순서를 받는다.
+    // 위치를 지정했으면 저장 뒤 placePostInSeries가 다시 매긴다.
+    let nextSeriesOrder: number | null = null;
+    if (seriesId) {
+      nextSeriesOrder =
+        seriesId === previousSeriesId && previousPost.series_order !== null
+          ? previousPost.series_order
+          : await getNextSeriesOrder(seriesId, postId);
+    }
+
     const currentUrls = extractImageUrlsFromTiptap(content);
 
     const { data: previousImages, error: fetchError } = await supabase
@@ -160,6 +338,8 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
         content,
         tags: validatedFields.data.tags,
         category: validatedFields.data.category,
+        series_id: seriesId,
+        series_order: nextSeriesOrder,
         updated_at: new Date().toISOString(),
       })
       .eq('id', postId);
@@ -173,6 +353,12 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
           .in('url', addedUrls);
       }
       throw updateError;
+    }
+
+    if (seriesId && seriesAfter) await placePostInSeries(seriesId, postId, seriesAfter);
+
+    if (previousSeriesId && previousSeriesId !== seriesId) {
+      await deleteSeriesIfEmpty(previousSeriesId);
     }
 
     // 본문에서 빠진 이미지는 고아 상태로 돌린다
@@ -203,9 +389,12 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     revalidatePath(`/posts/${postId}`);
     revalidatePath('/posts');
     revalidatePath('/');
+    await revalidateSeriesPosts([previousSeriesId, seriesId]);
 
     return { success: true, data: { postId } };
   } catch (err) {
+    // 이 글을 옮기려고 만든 시리즈가 빈 채로 남지 않게 지운다
+    if (seriesId && seriesId !== previousSeriesId) await deleteSeriesIfEmpty(seriesId);
     console.error('게시글 수정 에러:', err);
     return { success: false, error: '게시글 수정에 실패했습니다.' };
   }
@@ -216,12 +405,15 @@ export async function deletePost(postId: string): Promise<ActionResult> {
   if (!(await isAdmin())) return { success: false, error: '관리자 권한이 필요합니다.' };
 
   try {
-    const { data: images, error: fetchError } = await supabase
-      .from('images')
-      .select('id, url')
-      .eq('post_id', postId);
+    const [{ data: images, error: fetchError }, { data: post, error: postFetchError }] =
+      await Promise.all([
+        supabase.from('images').select('id, url').eq('post_id', postId),
+        supabase.from('posts').select('series_id').eq('id', postId).maybeSingle(),
+      ]);
 
     if (fetchError) throw fetchError;
+    if (postFetchError) throw postFetchError;
+    const seriesId: string | null = post?.series_id ?? null;
 
     const urls = images?.map((img) => img.url) || [];
     let needsHardDelete = false;
@@ -261,6 +453,11 @@ export async function deletePost(postId: string): Promise<ActionResult> {
       } catch (hardDeleteError) {
         console.error('좀비 이미지 강제 삭제 최종 실패 - 수동 확인 필요:', hardDeleteError);
       }
+    }
+
+    if (seriesId) {
+      await deleteSeriesIfEmpty(seriesId);
+      await revalidateSeriesPosts([seriesId]);
     }
 
     revalidatePath('/posts');
