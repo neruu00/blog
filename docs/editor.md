@@ -41,12 +41,15 @@
 - `CustomCodeBlock.ts` — `CodeBlockLowlight` 상속 Extension
 - `CodeBlockComponent.tsx` — React NodeView (Mac 스타일 헤더: 빨강/노랑/초록 트래픽 라이트)
 - 언어 선택 드롭다운 (JS, TS, Java, HTML, CSS, JSON, Bash) + `lowlight` 구문 강조
+- 마크다운 입력: 문단 맨 앞에서 ` ``` `(뒤에 언어 이름을 붙여도 된다) + Space/Enter를 입력하면 코드 블록이 된다 (Tiptap 기본 규칙)
 
 ## MermaidBlock
 
-- `MermaidBlock.tsx` — Tiptap Node Extension 정의
+- `MermaidBlock.tsx` — Tiptap Node Extension 정의, 입력 규칙
 - `MermaidComponent.tsx` — React NodeView (헤더, 코드/프리뷰)
+- 마크다운 입력: 빈 문단에서 ` ```` `(백틱 4개) + Space/Enter를 입력하면 다이어그램 블록이 된다. 코드 블록 규칙은 네 번째 백틱에서 매치되지 않아 겹치지 않는다. 문단에 다른 글자가 있으면 바꾸지 않고, 문서 끝이면 블록 뒤에 빈 문단을 붙인다
 - 에디터: 빈 코드로 삽입되며, Code/Preview 토글로 코드 편집 화면과 미리보기를 전환한다
+  - 빈 블록이 선택되면(` ```` ` 입력 직후 등) 입력창으로 포커스를 옮겨 바로 코드를 쓸 수 있다
   - 입력창은 코드 블록처럼 헤더 바로 아래에 붙인다. 포커스되어도 테두리는 표시하지 않고 캐럿만 보인다
   - 블록 안을 클릭하면 어디서든 입력창에 포커스가 간다. 미리보기 상태라면 코드 보기로 돌아간다(버튼·링크 클릭 제외)
   - 헤더의 `Mermaid`를 누르면 입력한 코드 유형에 맞는 Mermaid 문법 문서가 새 탭에서 열린다

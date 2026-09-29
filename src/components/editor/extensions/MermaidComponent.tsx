@@ -1,6 +1,6 @@
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import { Code, Eye, ExternalLink } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Button from '@/components/ui/Button';
 import Tooltip from '@/components/ui/Tooltip';
@@ -10,11 +10,17 @@ import MermaidDiagram from './MermaidDiagram';
 import type { MouseEvent } from 'react';
 
 export default function MermaidComponent(props: NodeViewProps) {
-  const { node, updateAttributes, getPos, editor } = props;
+  const { node, updateAttributes, getPos, editor, selected } = props;
   const [isEditMode, setIsEditMode] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const code = node.attrs.code as string;
+
+  // 빈 블록이 선택되면(```` 입력 직후 등) 바로 코드를 쓸 수 있게 입력창으로 포커스를 옮긴다
+  useEffect(() => {
+    if (!selected || !editor.isEditable || code !== '') return;
+    requestAnimationFrame(() => textareaRef.current?.focus());
+  }, [selected, editor, code]);
 
   // 다이어그램 종류에 맞는 Mermaid 공식 문서 URL을 돌려준다
   const getDocsUrl = (codeStr: string) => {
