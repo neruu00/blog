@@ -31,7 +31,8 @@ export function usePostSubmit({
   isChanged,
   onSubmit,
 }: UsePostSubmitProps) {
-  const { title, content, tags, isSubmitting, setIsSubmitting } = useEditorStore();
+  const { title, content, tags, seriesTitle, seriesOrder, isSubmitting, setIsSubmitting } =
+    useEditorStore();
   const { open, close } = useModalStore();
   const router = useRouter();
   const addToast = useToastStore((state) => state.addToast);
@@ -122,6 +123,8 @@ export function usePostSubmit({
       formData.append('title', title);
       formData.append('content', JSON.stringify(content));
       formData.append('tags', JSON.stringify(tags));
+      formData.append('seriesTitle', seriesTitle);
+      if (seriesTitle && seriesOrder !== null) formData.append('seriesOrder', String(seriesOrder));
 
       const result = await onSubmit(formData);
 

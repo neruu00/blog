@@ -18,6 +18,8 @@ export interface DraftInitialData {
   title: string;
   content: JSONContent | null;
   tags: string[];
+  seriesTitle?: string;
+  seriesOrder?: number | null;
 }
 
 interface UseDraftProps {
@@ -27,8 +29,19 @@ interface UseDraftProps {
 }
 
 export function useDraft({ mode, postId, initialData }: UseDraftProps) {
-  const { title, content, tags, setTitle, setContent, setTags, incrementEditorKey } =
-    useEditorStore();
+  const {
+    title,
+    content,
+    tags,
+    seriesTitle,
+    seriesOrder,
+    setTitle,
+    setContent,
+    setTags,
+    setSeriesTitle,
+    setSeriesOrder,
+    incrementEditorKey,
+  } = useEditorStore();
   const { open, close } = useModalStore();
   const addToast = useToastStore((state) => state.addToast);
 
@@ -40,18 +53,28 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
     const changed =
       title !== (initialData?.title || '') ||
       JSON.stringify(content) !== JSON.stringify(initialData?.content || null) ||
-      JSON.stringify(tags) !== JSON.stringify(initialData?.tags || []);
+      JSON.stringify(tags) !== JSON.stringify(initialData?.tags || []) ||
+      seriesTitle !== (initialData?.seriesTitle || '') ||
+      seriesOrder !== (initialData?.seriesOrder ?? null);
     setIsChanged(changed);
-  }, [title, content, tags, initialData]);
+  }, [title, content, tags, seriesTitle, seriesOrder, initialData]);
 
   const handleRestoreDraft = useCallback(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
     if (savedDraft) {
       try {
-        const { title: dTitle, content: dContent, tags: dTags } = JSON.parse(savedDraft);
+        const {
+          title: dTitle,
+          content: dContent,
+          tags: dTags,
+          seriesTitle: dSeriesTitle,
+          seriesOrder: dSeriesOrder,
+        } = JSON.parse(savedDraft);
         setTitle(dTitle || '');
         setContent(dContent || null);
         setTags(dTags || []);
+        setSeriesTitle(typeof dSeriesTitle === 'string' ? dSeriesTitle : '');
+        setSeriesOrder(typeof dSeriesOrder === 'number' ? dSeriesOrder : null);
         incrementEditorKey();
         addToast('임시저장 데이터를 불러왔습니다.', 'success');
       } catch (e) {
@@ -59,7 +82,17 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
       }
     }
     close();
-  }, [DRAFT_KEY, setTitle, setContent, setTags, incrementEditorKey, addToast, close]);
+  }, [
+    DRAFT_KEY,
+    setTitle,
+    setContent,
+    setTags,
+    setSeriesTitle,
+    setSeriesOrder,
+    incrementEditorKey,
+    addToast,
+    close,
+  ]);
 
   useEffect(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
@@ -82,10 +115,10 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
   }, [DRAFT_KEY]);
 
   const saveDraft = useCallback(() => {
-    if (mode === 'create' && !title && !content && tags.length === 0) return;
-    const draftData = { title, content, tags };
+    if (mode === 'create' && !title && !content && tags.length === 0 && !seriesTitle) return;
+    const draftData = { title, content, tags, seriesTitle, seriesOrder };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  }, [DRAFT_KEY, title, content, tags, mode]);
+  }, [DRAFT_KEY, title, content, tags, seriesTitle, seriesOrder, mode]);
 
   useEffect(() => {
     const timer = setInterval(() => {

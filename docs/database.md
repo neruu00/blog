@@ -9,10 +9,11 @@
 
 변경 절차: 이 파일을 수정 → 라이브 DB(Supabase SQL Editor)에 해당 구문 실행 → 커밋 → 이 문서의 표 갱신.
 
-⚠️ **라이브 DB 미적용 항목 2건** (파일 안에 ⚠️ 주석으로 표시, 실행 후 주석 삭제):
+⚠️ **라이브 DB 미적용 항목 3건** (파일 안에 ⚠️ 주석으로 표시, 실행 후 주석 삭제):
 
 1. `tech_news` 중복 정리 + `original_url` UNIQUE 인덱스 블록 (`PLAN.md` T-308)
 2. 좋아요 테이블·RPC·`posts.like_count` DROP 블록 (`PLAN.md` T-312)
+3. 게시글 시리즈 블록 — `series` 테이블, `posts.series_id`·`series_order` 컬럼 (`PLAN.md` T-319)
 
 > `posts` / `images`의 CREATE 문과 RPC 함수 본문은 호출부 코드로 재구성한 것이다. 라이브 DB와 어긋나면 **라이브 정의가 우선**이다.
 
@@ -29,8 +30,20 @@
 | `author` | TEXT | `'admin'` | 작성자 |
 | `category` | TEXT | `'tech'` | 카테고리 |
 | `view_count` | INTEGER | `0` | 조회수 |
+| `series_id` | UUID | `NULL` | FK → series(id) ON DELETE SET NULL. 소속 시리즈 |
+| `series_order` | INTEGER | `NULL` | 시리즈 내 순서. 같으면 `created_at` 순 |
 | `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
 | `updated_at` | TIMESTAMPTZ | `now()` | 수정일 |
+
+### series
+
+| 컬럼 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `id` | UUID | `gen_random_uuid()` | PK |
+| `title` | TEXT | — | 시리즈 이름 (UNIQUE) |
+| `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
+
+시리즈를 별도로 관리하는 화면은 없다. 글 작성 화면에서 이름을 입력하면 `actions/post.ts`가 같은 이름의 시리즈를 찾거나 새로 만들고(`upsert` on `title`), 소속 글이 하나도 남지 않으면 삭제한다.
 
 ### comments
 
