@@ -157,6 +157,13 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
                   <p className="mt-3 text-sm leading-relaxed text-gray-500">{challenge.solution}</p>
 
+                  {challenge.verification && (
+                    <p className="mt-3 text-sm leading-relaxed text-gray-500">
+                      <span className="mr-1.5 font-semibold text-gray-400">검증</span>
+                      {challenge.verification}
+                    </p>
+                  )}
+
                   {(challenge.metric || challenge.postHref) && (
                     <div className="mt-4 flex flex-wrap items-center gap-3">
                       {challenge.metric && (
