@@ -4,7 +4,7 @@
  * @file post.ts
  * @description 게시글 생성·수정·삭제와 조회수 증가 서버 액션.
  *              게시글 저장과 함께 본문 이미지의 연결 상태(is_used, post_id)를 맞추고, 실패하면 롤백한다.
- *              시리즈는 이름으로 받아 없으면 만들고, 속한 글이 없어진 시리즈는 지운다.
+ *              시리즈는 기존 시리즈 id나 새 시리즈 이름으로 받고, 속한 글이 없어진 시리즈는 지운다.
  */
 
 import { revalidatePath } from 'next/cache';
@@ -25,6 +25,68 @@ async function findOrCreateSeries(title: string): Promise<string> {
 
   if (error) throw error;
   return data.id;
+}
+
+type ResolvedSeries = { seriesId: string | null } | { error: string };
+
+/**
+ * 글을 넣을 시리즈 id를 정한다. 새 시리즈 이름이 있으면 찾거나 만들고, 기존 시리즈 id는 아직 있는지 확인한다.
+ * 기존 시리즈가 그사이 삭제됐으면 시리즈 없이 저장하지 않고 에러를 돌려준다.
+ */
+async function resolveSeries(seriesId: string, newSeriesTitle: string): Promise<ResolvedSeries> {
+  if (newSeriesTitle) return { seriesId: await findOrCreateSeries(newSeriesTitle) };
+  if (!seriesId) return { seriesId: null };
+
+  const { data, error } = await supabase
+    .from('series')
+    .select('id')
+    .eq('id', seriesId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { error: '선택한 시리즈가 삭제되었습니다. 시리즈를 다시 선택해주세요.' };
+  return { seriesId };
+}
+
+/**
+ * 글을 시리즈 안 `after` 위치에 끼워 넣고 시리즈 전체 순서를 1부터 다시 매긴다.
+ * `after`가 가리키는 글이 시리즈에 없으면 맨 끝에 둔다.
+ * 순서가 바뀐 글만 나눠서 UPDATE하므로 중간에 실패하면 순서가 겹칠 수 있다. 겹쳐도 created_at으로
+ * 정렬이 이어지고 다음 저장 때 다시 정리되므로, 실패해도 게시글 저장은 성공으로 두고 로그만 남긴다.
+ */
+async function placePostInSeries(seriesId: string, postId: string, after: string) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('id, series_order')
+    .eq('series_id', seriesId)
+    .order('series_order', { ascending: true, nullsFirst: false })
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.warn('시리즈 순서 조회 실패:', error);
+    return;
+  }
+
+  const others = data.filter((post) => post.id !== postId);
+  const afterIndex = others.findIndex((post) => post.id === after);
+  const insertAt = after === 'first' ? 0 : afterIndex === -1 ? others.length : afterIndex + 1;
+  const orderedIds = [
+    ...others.slice(0, insertAt).map((post) => post.id),
+    postId,
+    ...others.slice(insertAt).map((post) => post.id),
+  ];
+
+  const currentOrder = new Map(data.map((post) => [post.id, post.series_order]));
+  const changes = orderedIds
+    .map((id, index) => ({ id, order: index + 1 }))
+    .filter(({ id, order }) => currentOrder.get(id) !== order);
+
+  const results = await Promise.all(
+    changes.map(({ id, order }) =>
+      supabase.from('posts').update({ series_order: order }).eq('id', id),
+    ),
+  );
+  const failed = results.find((result) => result.error);
+  if (failed) console.warn('시리즈 순서 변경 실패:', failed.error);
 }
 
 /** 시리즈의 마지막 순서 다음 값을 반환한다. `excludePostId`는 순서 계산에서 뺀다. */
@@ -98,8 +160,9 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     content: contentString,
     tags,
     category,
-    seriesTitle: formData.get('seriesTitle') ?? '',
-    seriesOrder: formData.get('seriesOrder') || undefined,
+    seriesId: formData.get('seriesId') ?? '',
+    newSeriesTitle: formData.get('newSeriesTitle') ?? '',
+    seriesAfter: formData.get('seriesAfter') || undefined,
   });
 
   if (!validatedFields.success) {
@@ -113,11 +176,16 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
   }
 
-  const { seriesTitle, seriesOrder } = validatedFields.data;
+  const { seriesAfter } = validatedFields.data;
   let seriesId: string | null = null;
 
   try {
-    if (seriesTitle) seriesId = await findOrCreateSeries(seriesTitle);
+    const resolved = await resolveSeries(
+      validatedFields.data.seriesId,
+      validatedFields.data.newSeriesTitle,
+    );
+    if ('error' in resolved) return { success: false, error: resolved.error };
+    seriesId = resolved.seriesId;
 
     const body = {
       title: validatedFields.data.title,
@@ -126,7 +194,7 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
       category: validatedFields.data.category,
       author: 'admin',
       series_id: seriesId,
-      series_order: seriesId ? (seriesOrder ?? (await getNextSeriesOrder(seriesId))) : null,
+      series_order: seriesId ? await getNextSeriesOrder(seriesId) : null,
     };
 
     const { data: newPost, error: postError } = await supabase
@@ -151,6 +219,8 @@ export async function createPost(formData: FormData): Promise<PostActionResult> 
         throw imageError;
       }
     }
+
+    if (seriesId && seriesAfter) await placePostInSeries(seriesId, newPost.id, seriesAfter);
 
     revalidatePath('/posts');
     await revalidateSeriesPosts([seriesId]);
@@ -192,8 +262,9 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     content: contentString,
     tags,
     category,
-    seriesTitle: formData.get('seriesTitle') ?? '',
-    seriesOrder: formData.get('seriesOrder') || undefined,
+    seriesId: formData.get('seriesId') ?? '',
+    newSeriesTitle: formData.get('newSeriesTitle') ?? '',
+    seriesAfter: formData.get('seriesAfter') || undefined,
   });
 
   if (!validatedFields.success) {
@@ -207,7 +278,7 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     return { success: false, error: '콘텐츠 형식이 잘못되었습니다.' };
   }
 
-  const { seriesTitle, seriesOrder } = validatedFields.data;
+  const { seriesAfter } = validatedFields.data;
   let seriesId: string | null = null;
   let previousSeriesId: string | null = null;
 
@@ -221,16 +292,21 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
     if (previousPostError) throw previousPostError;
     previousSeriesId = previousPost.series_id;
 
-    if (seriesTitle) seriesId = await findOrCreateSeries(seriesTitle);
+    const resolved = await resolveSeries(
+      validatedFields.data.seriesId,
+      validatedFields.data.newSeriesTitle,
+    );
+    if ('error' in resolved) return { success: false, error: resolved.error };
+    seriesId = resolved.seriesId;
 
-    // 순서를 비워 두면 같은 시리즈에 남는 글은 원래 순서를, 새로 들어온 글은 마지막 다음 순서를 받는다
+    // 같은 시리즈에 남는 글은 원래 순서를, 새로 들어온 글은 마지막 다음 순서를 받는다.
+    // 위치를 지정했으면 저장 뒤 placePostInSeries가 다시 매긴다.
     let nextSeriesOrder: number | null = null;
     if (seriesId) {
       nextSeriesOrder =
-        seriesOrder ??
-        (seriesId === previousSeriesId && previousPost.series_order !== null
+        seriesId === previousSeriesId && previousPost.series_order !== null
           ? previousPost.series_order
-          : await getNextSeriesOrder(seriesId, postId));
+          : await getNextSeriesOrder(seriesId, postId);
     }
 
     const currentUrls = extractImageUrlsFromTiptap(content);
@@ -278,6 +354,8 @@ export async function updatePost(formData: FormData): Promise<PostActionResult> 
       }
       throw updateError;
     }
+
+    if (seriesId && seriesAfter) await placePostInSeries(seriesId, postId, seriesAfter);
 
     if (previousSeriesId && previousSeriesId !== seriesId) {
       await deleteSeriesIfEmpty(previousSeriesId);

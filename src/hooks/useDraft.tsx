@@ -10,7 +10,11 @@ import { JSONContent } from '@tiptap/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import { useEditorStore } from '@/stores/useEditorStore';
+import {
+  EMPTY_SERIES_SELECTION,
+  useEditorStore,
+  type SeriesSelection,
+} from '@/stores/useEditorStore';
 import { useModalStore } from '@/stores/useModalStore';
 import { useToastStore } from '@/stores/useToastStore';
 
@@ -18,8 +22,18 @@ export interface DraftInitialData {
   title: string;
   content: JSONContent | null;
   tags: string[];
-  seriesTitle?: string;
-  seriesOrder?: number | null;
+  seriesId?: string | null;
+}
+
+/** 임시저장본의 시리즈 선택을 읽는다. 형식이 맞지 않으면 시리즈 없음으로 본다. */
+function parseDraftSeries(value: unknown): SeriesSelection {
+  if (typeof value !== 'object' || value === null) return EMPTY_SERIES_SELECTION;
+  const { seriesId, newSeriesTitle, seriesAfter } = value as Record<string, unknown>;
+  return {
+    seriesId: typeof seriesId === 'string' ? seriesId : null,
+    newSeriesTitle: typeof newSeriesTitle === 'string' ? newSeriesTitle : '',
+    seriesAfter: typeof seriesAfter === 'string' ? seriesAfter : null,
+  };
 }
 
 interface UseDraftProps {
@@ -33,13 +47,11 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
     title,
     content,
     tags,
-    seriesTitle,
-    seriesOrder,
+    series,
     setTitle,
     setContent,
     setTags,
-    setSeriesTitle,
-    setSeriesOrder,
+    setSeries,
     incrementEditorKey,
   } = useEditorStore();
   const { open, close } = useModalStore();
@@ -54,10 +66,11 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
       title !== (initialData?.title || '') ||
       JSON.stringify(content) !== JSON.stringify(initialData?.content || null) ||
       JSON.stringify(tags) !== JSON.stringify(initialData?.tags || []) ||
-      seriesTitle !== (initialData?.seriesTitle || '') ||
-      seriesOrder !== (initialData?.seriesOrder ?? null);
+      series.seriesId !== (initialData?.seriesId ?? null) ||
+      series.newSeriesTitle !== '' ||
+      series.seriesAfter !== null;
     setIsChanged(changed);
-  }, [title, content, tags, seriesTitle, seriesOrder, initialData]);
+  }, [title, content, tags, series, initialData]);
 
   const handleRestoreDraft = useCallback(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
@@ -67,14 +80,12 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
           title: dTitle,
           content: dContent,
           tags: dTags,
-          seriesTitle: dSeriesTitle,
-          seriesOrder: dSeriesOrder,
+          series: dSeries,
         } = JSON.parse(savedDraft);
         setTitle(dTitle || '');
         setContent(dContent || null);
         setTags(dTags || []);
-        setSeriesTitle(typeof dSeriesTitle === 'string' ? dSeriesTitle : '');
-        setSeriesOrder(typeof dSeriesOrder === 'number' ? dSeriesOrder : null);
+        setSeries(parseDraftSeries(dSeries));
         incrementEditorKey();
         addToast('임시저장 데이터를 불러왔습니다.', 'success');
       } catch (e) {
@@ -82,17 +93,7 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
       }
     }
     close();
-  }, [
-    DRAFT_KEY,
-    setTitle,
-    setContent,
-    setTags,
-    setSeriesTitle,
-    setSeriesOrder,
-    incrementEditorKey,
-    addToast,
-    close,
-  ]);
+  }, [DRAFT_KEY, setTitle, setContent, setTags, setSeries, incrementEditorKey, addToast, close]);
 
   useEffect(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
@@ -115,10 +116,11 @@ export function useDraft({ mode, postId, initialData }: UseDraftProps) {
   }, [DRAFT_KEY]);
 
   const saveDraft = useCallback(() => {
-    if (mode === 'create' && !title && !content && tags.length === 0 && !seriesTitle) return;
-    const draftData = { title, content, tags, seriesTitle, seriesOrder };
+    const hasSeries = series.seriesId !== null || series.newSeriesTitle !== '';
+    if (mode === 'create' && !title && !content && tags.length === 0 && !hasSeries) return;
+    const draftData = { title, content, tags, series };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  }, [DRAFT_KEY, title, content, tags, seriesTitle, seriesOrder, mode]);
+  }, [DRAFT_KEY, title, content, tags, series, mode]);
 
   useEffect(() => {
     const timer = setInterval(() => {

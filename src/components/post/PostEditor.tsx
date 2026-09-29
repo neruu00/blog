@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 import EditorActions from '@/components/editor/EditorActions';
 import PostTitleInput from '@/components/editor/PostTitleInput';
-import SeriesInputField from '@/components/editor/SeriesInputField';
 import TagInputField from '@/components/editor/TagInputField';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 import { useDraft, type DraftInitialData } from '@/hooks/useDraft';
@@ -16,7 +15,7 @@ interface PostEditorProps {
   mode: 'create' | 'edit';
   initialData?: DraftInitialData;
   postId?: string;
-  /** 시리즈 입력칸의 자동완성 목록 */
+  /** 시리즈 다이얼로그의 선택지 */
   seriesOptions: SeriesOption[];
   onSubmit: (
     formData: FormData,
@@ -30,20 +29,8 @@ export default function PostEditor({
   seriesOptions,
   onSubmit,
 }: PostEditorProps) {
-  const {
-    tags,
-    setTags,
-    seriesTitle,
-    setSeriesTitle,
-    seriesOrder,
-    setSeriesOrder,
-    content,
-    setContent,
-    isSubmitting,
-    editorKey,
-    setInitialData,
-    reset,
-  } = useEditorStore();
+  const { tags, setTags, content, setContent, isSubmitting, editorKey, setInitialData, reset } =
+    useEditorStore();
 
   useEffect(() => {
     setInitialData(initialData || {});
@@ -68,19 +55,10 @@ export default function PostEditor({
   return (
     <main className="min-h-screen px-4 py-10 pb-24 font-sans">
       <form onSubmit={handleSubmit}>
-        <PostTitleInput mode={mode} />
+        <PostTitleInput mode={mode} seriesOptions={seriesOptions} postId={postId} />
 
         <div className="mx-auto w-full max-w-4xl space-y-6">
           <TagInputField tags={tags} onChange={setTags} />
-          <SeriesInputField
-            options={seriesOptions}
-            seriesTitle={seriesTitle}
-            seriesOrder={seriesOrder}
-            initialSeriesTitle={initialData?.seriesTitle}
-            initialSeriesOrder={initialData?.seriesOrder}
-            onSeriesTitleChange={setSeriesTitle}
-            onSeriesOrderChange={setSeriesOrder}
-          />
           <TiptapEditor key={editorKey} content={content} onChange={setContent} />
         </div>
 

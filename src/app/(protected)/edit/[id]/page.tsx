@@ -14,17 +14,11 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   const [{ data: post, error }, seriesOptions] = await Promise.all([
-    supabase
-      .from('posts')
-      .select('id, title, content, tags, series_id, series_order')
-      .eq('id', id)
-      .single(),
+    supabase.from('posts').select('id, title, content, tags, series_id').eq('id', id).single(),
     getSeriesOptions(),
   ]);
 
   if (error || !post) notFound();
-
-  const seriesTitle = seriesOptions.find((option) => option.id === post.series_id)?.title ?? '';
 
   return (
     <EditPostClient
@@ -33,8 +27,7 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
         title: post.title,
         content: post.content,
         tags: post.tags,
-        seriesTitle,
-        seriesOrder: seriesTitle ? post.series_order : null,
+        seriesId: post.series_id,
       }}
       seriesOptions={seriesOptions}
     />

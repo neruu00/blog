@@ -6,30 +6,41 @@
 import { JSONContent } from '@tiptap/react';
 import { create } from 'zustand';
 
+/** 이 글의 시리즈 선택. 글을 저장할 때 서버에 넘긴다. */
+export interface SeriesSelection {
+  /** 기존 시리즈 id. `newSeriesTitle`과 동시에 채우지 않는다 */
+  seriesId: string | null;
+  /** 저장할 때 만들 새 시리즈 이름. 빈 문자열이면 새로 만들지 않는다 */
+  newSeriesTitle: string;
+  /** 시리즈 안 위치. `first`면 맨 앞, 글 id면 그 글 뒤, null이면 서버가 정한다 */
+  seriesAfter: string | null;
+}
+
+export const EMPTY_SERIES_SELECTION: SeriesSelection = {
+  seriesId: null,
+  newSeriesTitle: '',
+  seriesAfter: null,
+};
+
 interface EditorInitialData {
   title?: string;
   content?: JSONContent | null;
   tags?: string[];
-  seriesTitle?: string;
-  seriesOrder?: number | null;
+  seriesId?: string | null;
 }
 
 interface EditorState {
   title: string;
   content: JSONContent | null;
   tags: string[];
-  /** 빈 문자열이면 시리즈에 넣지 않는다 */
-  seriesTitle: string;
-  /** null이면 저장할 때 서버가 순서를 정한다 */
-  seriesOrder: number | null;
+  series: SeriesSelection;
   isSubmitting: boolean;
   editorKey: number;
 
   setTitle: (title: string) => void;
   setContent: (content: JSONContent | null) => void;
   setTags: (tags: string[] | ((prev: string[]) => string[])) => void;
-  setSeriesTitle: (seriesTitle: string) => void;
-  setSeriesOrder: (seriesOrder: number | null) => void;
+  setSeries: (series: SeriesSelection) => void;
   setIsSubmitting: (isSubmitting: boolean) => void;
   incrementEditorKey: () => void;
   setInitialData: (data: EditorInitialData) => void;
@@ -40,8 +51,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   title: '',
   content: null,
   tags: [],
-  seriesTitle: '',
-  seriesOrder: null,
+  series: EMPTY_SERIES_SELECTION,
   isSubmitting: false,
   editorKey: 0,
 
@@ -49,8 +59,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setContent: (content) => set({ content }),
   setTags: (tags) =>
     set((state) => ({ tags: typeof tags === 'function' ? tags(state.tags) : tags })),
-  setSeriesTitle: (seriesTitle) => set({ seriesTitle }),
-  setSeriesOrder: (seriesOrder) => set({ seriesOrder }),
+  setSeries: (series) => set({ series }),
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
   incrementEditorKey: () => set((state) => ({ editorKey: state.editorKey + 1 })),
   setInitialData: (data) =>
@@ -58,8 +67,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       title: data.title || '',
       content: data.content || null,
       tags: data.tags || [],
-      seriesTitle: data.seriesTitle || '',
-      seriesOrder: data.seriesOrder ?? null,
+      series: { ...EMPTY_SERIES_SELECTION, seriesId: data.seriesId ?? null },
       editorKey: state.editorKey + 1,
     })),
   reset: () =>
@@ -67,8 +75,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       title: '',
       content: null,
       tags: [],
-      seriesTitle: '',
-      seriesOrder: null,
+      series: EMPTY_SERIES_SELECTION,
       isSubmitting: false,
       editorKey: 0,
     }),

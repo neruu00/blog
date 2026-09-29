@@ -4,13 +4,31 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import type { PostSeries, SeriesOption } from '@/types/series.type';
+import type { PostSeries, SeriesOption, SeriesPost } from '@/types/series.type';
+
+interface SeriesPostRow {
+  id: string;
+  title: string;
+  series_order: number | null;
+  created_at: string;
+}
+
+/** 시리즈 안 순서로 정렬한다. 순서가 없는 글은 뒤로 보내고, 순서가 같으면 먼저 쓴 글이 앞선다. */
+function sortSeriesPosts(rows: SeriesPostRow[]): SeriesPost[] {
+  return [...rows]
+    .sort(
+      (a, b) =>
+        (a.series_order ?? Infinity) - (b.series_order ?? Infinity) ||
+        a.created_at.localeCompare(b.created_at),
+    )
+    .map(({ id, title }) => ({ id, title }));
+}
 
 /** 에디터에서 고를 수 있는 시리즈 목록을 이름순으로 반환한다. 조회에 실패하면 빈 배열을 반환한다. */
 export async function getSeriesOptions(): Promise<SeriesOption[]> {
   const { data, error } = await supabase
     .from('series')
-    .select('id, title, posts(series_order)')
+    .select('id, title, posts(id, title, series_order, created_at)')
     .order('title', { ascending: true });
 
   if (error) {
@@ -21,10 +39,7 @@ export async function getSeriesOptions(): Promise<SeriesOption[]> {
   return data.map((row) => ({
     id: row.id,
     title: row.title,
-    maxOrder: Math.max(
-      0,
-      ...row.posts.map((post: { series_order: number | null }) => post.series_order ?? 0),
-    ),
+    posts: sortSeriesPosts(row.posts),
   }));
 }
 

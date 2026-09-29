@@ -9,11 +9,10 @@
 
 변경 절차: 이 파일을 수정 → 라이브 DB(Supabase SQL Editor)에 해당 구문 실행 → 커밋 → 이 문서의 표 갱신.
 
-⚠️ **라이브 DB 미적용 항목 3건** (파일 안에 ⚠️ 주석으로 표시, 실행 후 주석 삭제):
+⚠️ **라이브 DB 미적용 항목 2건** (파일 안에 ⚠️ 주석으로 표시, 실행 후 주석 삭제):
 
 1. `tech_news` 중복 정리 + `original_url` UNIQUE 인덱스 블록 (`PLAN.md` T-308)
 2. 좋아요 테이블·RPC·`posts.like_count` DROP 블록 (`PLAN.md` T-312)
-3. 게시글 시리즈 블록 — `series` 테이블, `posts.series_id`·`series_order` 컬럼 (`PLAN.md` T-319)
 
 > `posts` / `images`의 CREATE 문과 RPC 함수 본문은 호출부 코드로 재구성한 것이다. 라이브 DB와 어긋나면 **라이브 정의가 우선**이다.
 
@@ -43,7 +42,7 @@
 | `title` | TEXT | — | 시리즈 이름 (UNIQUE) |
 | `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
 
-시리즈를 별도로 관리하는 화면은 없다. 글 작성 화면에서 이름을 입력하면 `actions/post.ts`가 같은 이름의 시리즈를 찾거나 새로 만들고(`upsert` on `title`), 소속 글이 하나도 남지 않으면 삭제한다.
+시리즈를 별도로 관리하는 화면은 없다. 글 작성 화면의 시리즈 다이얼로그에서 새 시리즈를 고르고 글을 저장하면 `actions/post.ts`가 같은 이름의 시리즈를 찾거나 새로 만들고(`upsert` on `title`), 속한 글이 하나도 없으면 삭제한다. 이름 변경과 삭제는 `actions/series.ts`가 처리한다. 삭제할 때는 속한 글의 `series_id`·`series_order`를 먼저 비운다. FK의 `ON DELETE SET NULL`은 `series_order`를 남기기 때문이다.
 
 ### comments
 

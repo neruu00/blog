@@ -18,9 +18,7 @@ interface EditPostClientProps {
     title: string;
     content: JSONContent;
     tags: string[];
-    /** 시리즈에 속하지 않으면 빈 문자열 */
-    seriesTitle: string;
-    seriesOrder: number | null;
+    seriesId: string | null;
   };
   seriesOptions: SeriesOption[];
 }
@@ -31,10 +29,9 @@ export default function EditPostClient({ post, seriesOptions }: EditPostClientPr
       title: post.title,
       content: post.content,
       tags: post.tags || [],
-      seriesTitle: post.seriesTitle,
-      seriesOrder: post.seriesOrder,
+      seriesId: post.seriesId,
     }),
-    [post.title, post.content, post.tags, post.seriesTitle, post.seriesOrder],
+    [post.title, post.content, post.tags, post.seriesId],
   );
 
   return (

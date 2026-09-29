@@ -1,8 +1,8 @@
 -- 라이브 Supabase DB의 목표 스키마. 전체가 idempotent라 통째로 다시 실행해도 안전하다.
 -- 스키마를 바꿀 때는 이 파일을 고치고, Supabase SQL Editor에서 해당 구문을 실행한 뒤 커밋한다.
 --
--- ⚠️ 라이브 DB 미적용 블록이 세 개 있다: "tech_news 중복 정리 + original_url UNIQUE",
---    "좋아요 기능 제거" DROP, "게시글 시리즈". 실행한 뒤 해당 블록의 ⚠️ 주석을 지운다.
+-- ⚠️ 라이브 DB 미적용 블록이 두 개 있다: "tech_news 중복 정리 + original_url UNIQUE"와
+--    "좋아요 기능 제거" DROP. 실행한 뒤 해당 블록의 ⚠️ 주석을 지운다.
 --
 -- posts·images의 CREATE 문과 RPC 본문은 호출부 코드에서 재구성한 것이라,
 -- 라이브 정의와 다르면 라이브가 우선이다.
@@ -49,10 +49,7 @@ CREATE TABLE IF NOT EXISTS tech_news (
   created_at   TIMESTAMPTZ DEFAULT now()
 );
 
--- 게시글 시리즈
--- ⚠️ 라이브 DB 미적용. Supabase SQL Editor에서 실행한 뒤 이 주석을 지운다.
---
--- 시리즈는 글 작성 화면에서 이름으로 만들고, 속한 글이 없어지면 actions/post.ts가 지운다.
+-- series: 글 작성 화면에서 글을 저장할 때 만들고, 속한 글이 없어지면 actions/post.ts가 지운다.
 -- 시리즈 안 순서는 series_order → created_at 순으로 정한다.
 CREATE TABLE IF NOT EXISTS series (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
