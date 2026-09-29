@@ -43,7 +43,7 @@ export default async function PostsPage({
 
   let query = supabase
     .from('posts')
-    .select('*', { count: 'exact' })
+    .select('*, series(title)', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to);
 

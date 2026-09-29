@@ -21,7 +21,11 @@ export const revalidate = 300;
 export default async function HomePage() {
   const [{ data: posts, error: postsError }, { data: newsRows, error: newsError }] =
     await Promise.all([
-      supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(6),
+      supabase
+        .from('posts')
+        .select('*, series(title)')
+        .order('created_at', { ascending: false })
+        .limit(6),
       supabase
         .from('tech_news')
         .select('id, title, source, published_at')
