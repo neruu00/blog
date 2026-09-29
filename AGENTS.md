@@ -115,9 +115,10 @@ export async function createPost(formData: FormData) {
 | 컴포넌트 | 위치 | 용도 |
 |---|---|---|
 | `EmptyState` | `common/` | 빈 목록 플레이스홀더 (점선 박스 + 안내 문구, 액션은 children) |
-| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. **h1 스타일의 단일 출처** |
+| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. **h1 스타일의 단일 출처**. 제목 옆 보조 표기는 `titleAside`, 설명 아래 메타 정보는 children |
 | `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
 | `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
+| `AdjacentNav` | `common/` | 상세 페이지 하단의 이전/다음 항목 링크 (게시글·프로젝트 상세에서 공통으로 사용) |
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
 | `Button` | `ui/` | **모든 버튼의 단일 출처** — variant: primary/outline/ghost/destructive, size: sm/md/icon. `href`를 주면 `next/link`로 렌더. 토글은 `aria-pressed` |
@@ -146,7 +147,7 @@ page.tsx (서버)
 | `components/common/` | 도메인 무관 공통 (Pagination, ConfirmDialog) |
 | `components/post/` | 게시글 도메인 |
 | `components/news/` | 뉴스 도메인 |
-| `components/portfolio/` | 포트폴리오(`/about`) 도메인 |
+| `components/project/` | 프로젝트(`/projects`) 도메인 |
 | `components/editor/` | Tiptap 에디터 |
 | `components/layout/` | SideNav, Footer 등 |
 

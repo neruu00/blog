@@ -1,6 +1,6 @@
 /**
- * @file ProjectSection.tsx
- * @description 포트폴리오 프로젝트 하나를 렌더링한다.
+ * @file ProjectDetail.tsx
+ * @description 프로젝트 상세 페이지 본문. 페이지의 h1부터 렌더링한다.
  *              블록 순서는 이름·한 줄 소개 → 메타 → 만든 이유 → 구현 기능 → 해결한 과제 → 회고 → 스택이다.
  *              service·features·retrospective는 선택 항목이라 없으면 해당 블록을 건너뛴다.
  *              구현 기능 중 캡처가 있는 항목은 캐러셀로, 없는 항목은 그 아래 목록으로 보여준다.
@@ -8,18 +8,17 @@
 
 import { ArrowUpRight, Github } from 'lucide-react';
 
-import FeatureCarousel from '@/components/portfolio/FeatureCarousel';
+import PageHeader from '@/components/common/PageHeader';
+import FeatureCarousel from '@/components/project/FeatureCarousel';
 import Reveal from '@/components/ui/Reveal';
 import type { Feature, Project } from '@/lib/constants/portfolio';
 
-interface ProjectSectionProps {
+interface ProjectDetailProps {
   project: Project;
-  /** 목차와 맞물리는 앵커 id */
-  id: string;
 }
 
 function BlockLabel({ children }: { children: React.ReactNode }) {
-  return <h4 className="mb-4 text-xs font-semibold text-gray-400">{children}</h4>;
+  return <h2 className="mb-4 text-xs font-semibold text-gray-400">{children}</h2>;
 }
 
 /** 데이터에 \n\n으로 들어온 문단 구분을 살린다 */
@@ -46,7 +45,7 @@ function FeatureList({ features }: { features: Feature[] }) {
     <ul className="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2">
       {items.map((feature) => (
         <li key={feature.title}>
-          <h5 className="text-sm font-semibold text-gray-900">{feature.title}</h5>
+          <h3 className="text-sm font-semibold text-gray-900">{feature.title}</h3>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">{feature.description}</p>
         </li>
       ))}
@@ -57,7 +56,7 @@ function FeatureList({ features }: { features: Feature[] }) {
 const LINK_CLASS =
   'inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 transition-all hover:-translate-y-0.5 hover:border-orange-300 hover:text-orange-600';
 
-export default function ProjectSection({ project, id }: ProjectSectionProps) {
+export default function ProjectDetail({ project }: ProjectDetailProps) {
   const {
     name,
     nameEn,
@@ -75,16 +74,13 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
   } = project;
 
   return (
-    <section id={id} className="scroll-mt-24 border-t border-gray-100 py-16 first:border-t-0">
+    <article>
       <Reveal>
-        <header className="mb-10">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h3 className="text-2xl font-bold tracking-tight text-gray-900">{name}</h3>
-            <span className="text-sm font-medium text-gray-400">{nameEn}</span>
-          </div>
-
-          <p className="mt-3 leading-relaxed text-gray-500">{tagline}</p>
-
+        <PageHeader
+          title={name}
+          titleAside={<span className="text-sm font-medium text-gray-400">{nameEn}</span>}
+          description={tagline}
+        >
           <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-400">
             <span>{period}</span>
             <span aria-hidden>·</span>
@@ -109,7 +105,7 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
               )}
             </div>
           )}
-        </header>
+        </PageHeader>
       </Reveal>
 
       {service && (
@@ -148,7 +144,7 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
                     <span className="text-xs font-semibold text-orange-500 tabular-nums">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <h5 className="text-base font-semibold text-gray-900">{challenge.title}</h5>
+                    <h3 className="text-base font-semibold text-gray-900">{challenge.title}</h3>
                   </div>
 
                   <p className="mt-3 text-sm leading-relaxed text-gray-500">{challenge.problem}</p>
@@ -204,6 +200,6 @@ export default function ProjectSection({ project, id }: ProjectSectionProps) {
           ))}
         </ul>
       </Reveal>
-    </section>
+    </article>
   );
 }

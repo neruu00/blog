@@ -1,6 +1,6 @@
 /**
  * @file portfolio.ts
- * @description /about 포트폴리오 페이지에 표시하는 데이터. 배열 순서가 곧 화면 순서다.
+ * @description /projects 포트폴리오 페이지에 표시하는 데이터. 배열 순서가 곧 화면 순서다.
  */
 
 export interface Challenge {
@@ -37,6 +37,8 @@ export interface Feature {
 }
 
 export interface Project {
+  /** URL 경로(/projects/[projectName])에 쓰는 소문자 영문 식별자. 바꾸면 기존 링크가 깨진다 */
+  slug: string;
   name: string;
   nameEn: string;
   /** 프로젝트 한 줄 소개 */
@@ -78,6 +80,7 @@ export const PROFILE = {
 /** 최신순이 아니라 소유자가 정한 순서다. 정렬하지 않는다 */
 export const PROJECTS: Project[] = [
   {
+    slug: 'secome',
     name: '세코미',
     nameEn: 'SeCoMe',
     tagline: '음성 회의를 회의록으로 정리하고, 그 내용을 팀 문서에 바로 반영하는 협업 서비스',
@@ -205,10 +208,11 @@ export const PROJECTS: Project[] = [
     stack: ['Next.js 15', 'React 19', 'TypeScript', 'WebSocket', 'STOMP', 'WebRTC'],
   },
   {
+    slug: 'penguin-milk',
     name: '펭귄밀크',
     nameEn: 'Penguin Milk',
     tagline: '뉴스를 토픽과 업종으로 정리하고, 관련 종목을 찾아 실제 시세로 모의 투자하는 서비스',
-    period: '2026.08 ~ 진행 중',
+    period: '2026.08 ~ 2026.09',
     team: '6인',
     role: '프론트엔드',
     links: { demo: 'https://j15e103.p.ssafy.io/' },
@@ -285,6 +289,7 @@ export const PROJECTS: Project[] = [
     stack: ['Next.js 15', 'React 19', 'TypeScript', 'Tailwind CSS', 'TanStack Query', 'Zustand'],
   },
   {
+    slug: 'baristation',
     name: '바리스테이션',
     nameEn: 'Baristation',
     tagline: '사용자 맞춤 원두 추천과 바리스타 클래스 예약 제공 플랫폼',
@@ -365,6 +370,7 @@ export const PROJECTS: Project[] = [
     stack: ['Next.js 15', 'React 19', 'TypeScript', 'Tailwind CSS'],
   },
   {
+    slug: 'gourming',
     name: '구루밍',
     nameEn: 'Gourming',
     tagline: '지도 기반 맛집 저장·리뷰 SNS',
@@ -423,6 +429,7 @@ export const PROJECTS: Project[] = [
     stack: ['Vue 3', 'TypeScript', 'Pinia', 'Tailwind CSS', 'Spring Boot'],
   },
   {
+    slug: 'cushion',
     name: '쿠션',
     nameEn: 'Cushion',
     tagline: '프로젝트 문서를 한 곳에 모으고, 에이전트가 필요한 섹션만 읽고 쓰는 협업 서비스',
@@ -518,6 +525,16 @@ export const PROJECTS: Project[] = [
     stack: ['Next.js 16', 'React 19', 'TypeScript', 'shadcn/ui', 'Vercel', 'Supabase'],
   },
 ];
+
+/** slug에 맞는 프로젝트를 찾는다. 없으면 undefined */
+export function getProjectBySlug(slug: string): Project | undefined {
+  return PROJECTS.find((project) => project.slug === slug);
+}
+
+/** 카드 썸네일과 OG 이미지로 쓰는 대표 캡처. 영상은 제외하고 첫 번째 이미지를 고른다 */
+export function getCoverImage(project: Project): Media | undefined {
+  return project.features?.find((feature) => feature.media?.kind === 'image')?.media;
+}
 
 export const SKILL_GROUPS: { label: string; items: string[] }[] = [
   {
