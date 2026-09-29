@@ -9,7 +9,7 @@
 import { ArrowUpRight, Github } from 'lucide-react';
 
 import PageHeader from '@/components/common/PageHeader';
-import FeatureCarousel from '@/components/portfolio/FeatureCarousel';
+import FeatureCarousel from '@/components/project/FeatureCarousel';
 import Reveal from '@/components/ui/Reveal';
 import type { Feature, Project } from '@/lib/constants/portfolio';
 

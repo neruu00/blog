@@ -212,7 +212,7 @@ export const PROJECTS: Project[] = [
     name: '펭귄밀크',
     nameEn: 'Penguin Milk',
     tagline: '뉴스를 토픽과 업종으로 정리하고, 관련 종목을 찾아 실제 시세로 모의 투자하는 서비스',
-    period: '2026.08 ~ 진행 중',
+    period: '2026.08 ~ 2026.09',
     team: '6인',
     role: '프론트엔드',
     links: { demo: 'https://j15e103.p.ssafy.io/' },

@@ -46,8 +46,8 @@ src/
 ├── components/
 │   ├── editor/       # Tiptap 에디터 + 확장 (CodeBlock, Mermaid)
 │   ├── layout/       # SideNav, MobileHeader, Footer
-│   ├── portfolio/    # /projects 포트폴리오
 │   ├── post/         # PostCard, PostList, CommentSection
+│   ├── project/      # /projects 포트폴리오
 │   └── ui/           # 범용 UI (ToastContainer, Modal)
 ├── hooks/            # useIntersectionObserver, useDraft, usePostSubmit
 ├── lib/              # auth, supabase, rss, article, llm, export

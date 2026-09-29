@@ -4,7 +4,7 @@
  *              DB를 거치지 않고 lib/constants/portfolio.ts만 참조해 정적으로 렌더링한다.
  */
 
-import ProjectCard from '@/components/portfolio/ProjectCard';
+import ProjectCard from '@/components/project/ProjectCard';
 import Reveal from '@/components/ui/Reveal';
 import { EDUCATIONS, PROFILE, PROJECTS, SKILL_GROUPS } from '@/lib/constants/portfolio';
 

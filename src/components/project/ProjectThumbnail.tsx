@@ -21,7 +21,7 @@ export default function ProjectThumbnail({ media }: ProjectThumbnailProps) {
   const done = () => setReady(true);
 
   return (
-    <div className="relative aspect-3/2 overflow-hidden bg-gray-100">
+    <div className="relative aspect-3/2 overflow-hidden bg-gray-800">
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Spinner size="sm" label={`${media.alt} 불러오는 중`} />
@@ -34,7 +34,7 @@ export default function ProjectThumbnail({ media }: ProjectThumbnailProps) {
         sizes="(min-width: 640px) 50vw, 100vw"
         onLoad={done}
         onError={done}
-        className="object-cover object-top"
+        className="object-cover object-top transition-transform duration-500 ease-out motion-safe:group-hover:scale-105"
       />
     </div>
   );

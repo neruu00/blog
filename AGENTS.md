@@ -147,7 +147,7 @@ page.tsx (서버)
 | `components/common/` | 도메인 무관 공통 (Pagination, ConfirmDialog) |
 | `components/post/` | 게시글 도메인 |
 | `components/news/` | 뉴스 도메인 |
-| `components/portfolio/` | 포트폴리오(`/projects`) 도메인 |
+| `components/project/` | 프로젝트(`/projects`) 도메인 |
 | `components/editor/` | Tiptap 에디터 |
 | `components/layout/` | SideNav, Footer 등 |
 

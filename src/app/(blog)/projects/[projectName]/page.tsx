@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 
 import AdjacentNav from '@/components/common/AdjacentNav';
 import BackLink from '@/components/common/BackLink';
-import ProjectDetail from '@/components/portfolio/ProjectDetail';
+import ProjectDetail from '@/components/project/ProjectDetail';
 import { getCoverImage, getProjectBySlug, PROJECTS } from '@/lib/constants/portfolio';
 import { SITE_URL } from '@/lib/constants/site';
 
