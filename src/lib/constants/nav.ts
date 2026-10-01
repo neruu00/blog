@@ -9,5 +9,5 @@ export const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/posts', label: 'Posts', icon: FileText },
   { href: '/news', label: 'News', icon: Newspaper },
-  { href: '/projects', label: 'Projects', icon: FolderKanban },
+  { href: '/portfolio', label: 'Portfolio', icon: FolderKanban },
 ] as const;

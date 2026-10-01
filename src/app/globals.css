@@ -26,10 +26,24 @@
   --color-mac-yellow: #ffbd2e;
   --color-mac-green: #27c93f;
 
+  /* /portfolio의 Windows 95 화면. 입체 테두리는 face 위에 light·shadow·dark를 겹쳐 그린다.
+     바탕화면·제목줄·선택 표시는 브랜드 주황을 쓴다. 제목줄은 흰 글자 대비를 위해 700에서 시작한다 */
+  --color-win-desktop: var(--color-orange-500);
+  --color-win-face: #c0c0c0;
+  --color-win-light: #dfdfdf;
+  --color-win-shadow: #808080;
+  --color-win-dark: #0a0a0a;
+  --color-win-title: var(--color-orange-700);
+  --color-win-title-end: var(--color-orange-500);
+  --color-win-folder: #f8d775;
+  --color-win-folder-edge: #c8a238;
+
   --font-sans:
     'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto,
     sans-serif;
   --font-mono: var(--font-geist-mono);
+  /* Galmuri11은 (portfolio) 레이아웃에서만 불러온다. 다른 화면에서는 굴림·돋움으로 대체된다 */
+  --font-win: 'Galmuri11', Gulim, '굴림', Dotum, '돋움', sans-serif;
 }
 
 /* 버튼 커서는 여기서만 정한다. 컴포넌트에 cursor-pointer를 붙이지 않는다. */
@@ -52,6 +66,37 @@ button:focus-visible {
 
 ::selection {
   background-color: theme('colors.orange.100');
+}
+
+/* Windows 95의 입체 테두리. raised는 튀어나온 버튼·창, sunken은 들어간 입력칸·본문, pressed는 눌린 버튼이다 */
+@utility win-raised {
+  background-color: var(--color-win-face);
+  box-shadow:
+    inset -1px -1px var(--color-win-dark),
+    inset 1px 1px var(--color-white),
+    inset -2px -2px var(--color-win-shadow),
+    inset 2px 2px var(--color-win-light);
+}
+
+@utility win-sunken {
+  box-shadow:
+    inset -1px -1px var(--color-white),
+    inset 1px 1px var(--color-win-shadow),
+    inset -2px -2px var(--color-win-light),
+    inset 2px 2px var(--color-win-dark);
+}
+
+@utility win-pressed {
+  background-color: var(--color-win-light);
+  box-shadow:
+    inset -1px -1px var(--color-white),
+    inset 1px 1px var(--color-win-dark),
+    inset -2px -2px var(--color-win-light),
+    inset 2px 2px var(--color-win-shadow);
+}
+
+@utility win-titlebar {
+  background-image: linear-gradient(90deg, var(--color-win-title), var(--color-win-title-end));
 }
 
 /* 스크롤 가능하다는 표시가 사라지므로 위치 인디케이터가 따로 있는 캐러셀에만 쓴다 */
@@ -192,6 +237,22 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+/* /portfolio 부팅 화면의 진행 막대. 칸 수(Win95Boot의 BLOCKS)와 steps()가 같아야 칸 단위로 차오른다.
+   다 찬 막대가 잠깐 보이도록 85%에서 채우고 나머지 시간은 그대로 둔다 */
+@keyframes win-boot {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  85%,
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-win-boot {
+  animation: win-boot 1.8s steps(20, end) forwards;
 }
 
 /* 본문 헤딩. ShiftedHeading이 #을 h2로 만들기 때문에 h2가 가장 크게 보이도록 크기를 다시 정한다. */

@@ -9,9 +9,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  /** 이력서 등 외부에 걸린 /about 링크를 포트폴리오(/projects)로 보낸다 */
+  /** 이력서 등 외부에 걸린 예전 주소(/about, /projects)를 포트폴리오(/portfolio)의 같은 창으로 보낸다 */
   async redirects() {
-    return [{ source: '/about', destination: '/projects', permanent: true }];
+    return [
+      { source: '/about', destination: '/portfolio/about', permanent: true },
+      { source: '/projects', destination: '/portfolio/project', permanent: true },
+      {
+        source: '/projects/:projectName',
+        destination: '/portfolio/project/:projectName',
+        permanent: true,
+      },
+    ];
   },
 };
 

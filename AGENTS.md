@@ -148,7 +148,7 @@ page.tsx (서버)
 | `components/common/` | 도메인 무관 공통 (Pagination, ConfirmDialog) |
 | `components/post/` | 게시글 도메인 |
 | `components/news/` | 뉴스 도메인 |
-| `components/project/` | 프로젝트(`/projects`) 도메인 |
+| `components/project/` | 포트폴리오(`/portfolio`) 도메인. Windows 95 테마 컴포넌트(`Win95*`) 포함 |
 | `components/editor/` | Tiptap 에디터 |
 | `components/layout/` | SideNav, Footer 등 |
 
@@ -238,6 +238,18 @@ type ActionResult<T = void> =
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
 - 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)`·`summary` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
 - 기본 트랜지션은 `transition-colors`. 복잡한 애니메이션만 `globals.css`에 `@keyframes`로
+
+### 예외: `/portfolio`의 Windows 95 테마
+
+`(portfolio)` 라우트 그룹에만 Windows 95 탐색기 스타일을 적용한다. 이 화면에서는 위 규칙 중 일부를 다르게 적용한다. 블로그의 다른 화면에는 이 스타일을 적용하지 않는다.
+
+- **입체 테두리와 그림자를 쓴다.** 플랫 규칙 대신 `globals.css`의 `win-raised`·`win-sunken`·`win-pressed` 유틸리티를 쓴다. 색상은 `win-*` 토큰만 쓴다
+- **브랜드 주황색을 유지한다.** 바탕화면·제목줄·선택 표시에는 `win-desktop`·`win-title`(orange 계열)을 쓴다
+- **버튼은 `Win95Button`을 쓴다.** 이 화면에서는 `ui/Button` 대신 쓰고, 다른 화면에서는 쓰지 않는다
+- **폴더·문서 아이콘은 `Win95Icons`의 SVG를 쓴다.** 나머지 아이콘은 기존대로 `lucide-react`를 쓴다
+- **창 테두리·목록은 Galmuri11, 상세 본문은 Pretendard를 쓴다.** 픽셀 폰트는 긴 글에서 가독성이 떨어진다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러온다
+- 창의 닫기 버튼을 누르면 창을 연 위치로 돌아간다(about·project 폴더 → `/portfolio`, 프로젝트 문서 → `/portfolio/project`). 작업 표시줄 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
+- 아이콘은 한 번 클릭하면 열린다. 더블클릭은 웹에서 사용자가 알아차리기 어렵고 터치 환경에서는 쓸 수 없다
 
 ---
 

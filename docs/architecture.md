@@ -45,12 +45,13 @@
 
 | 그룹 | 경로 | 레이아웃 | 인증 |
 |---|---|---|---|
-| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]`, `/projects`, `/projects/[projectName]` | SideNav + Footer | 불필요 |
+| `(blog)` | `/`, `/posts`, `/posts/[id]`, `/news`, `/news/[id]` | SideNav + Footer | 불필요 |
+| `(portfolio)` | `/portfolio`, `/portfolio/about`, `/portfolio/project`, `/portfolio/project/[projectName]` | Windows 95 바탕화면 + 작업 표시줄 | 불필요 |
 | `(protected)` | `/write`, `/edit/[id]` | 최소 레이아웃 | admin 필수 (`middleware.ts` + 서버 액션 이중 검증) |
 | `api` | `/api/auth/*`, `/api/cron/*` | 없음 | 크론은 `CRON_SECRET` Bearer 검증 |
 | 메타 | `/sitemap.xml`, `/robots.txt`, `/feed.xml` | 없음 | 불필요 (1h ISR) |
 
-`/projects`는 포트폴리오 페이지다. 소개·기술·교육 및 프로젝트 카드 목록을 보여준다. `/projects/[projectName]`은 프로젝트 상세 페이지이며, `projectName`에는 `Project.slug`(소문자 영문명)가 들어간다. 두 페이지 모두 DB를 거치지 않고 `lib/constants/portfolio.ts`만 참조한다. 상세 페이지는 `generateStaticParams`를 사용해 빌드 시점에 모두 생성하며, `dynamicParams = false`이므로 목록에 없는 이름은 404를 반환한다. `/about`은 `next.config.ts`에서 `/projects`로 영구 리다이렉트된다.
+`/portfolio`는 포트폴리오 페이지다. 블로그와 달리 SideNav 없이 Windows 95 바탕화면을 사용하고, 진입 시 한 번 칸 단위로 진행 막대가 차오르는 부팅 화면(`Win95Boot`)을 보여준다. 바탕화면에는 아이콘 두 개만 있고, 경로마다 창이 하나씩 열린다. `about` 앱은 `/portfolio/about`에서 소개·기술·교육 창을, `project` 폴더는 `/portfolio/project`에서 프로젝트 앱 목록 창을 연다. 프로젝트 앱에 마우스를 올리면 대표 캡처·기간·주장을 담은 미리 보기 대화상자가 커서를 따라다니고, 클릭하면 `/portfolio/project/[projectName]` 문서 창이 열린다. `projectName`에는 `Project.slug`(소문자 영문명)가 들어간다. 작업 표시줄 맨 왼쪽의 "블로그" 버튼을 누르면 블로그로 돌아간다. 모든 페이지는 DB를 거치지 않고 `lib/constants/portfolio.ts`만 참조한다. 문서 창은 `generateStaticParams`로 빌드 시점에 모두 생성하며, `dynamicParams = false`이므로 목록에 없는 이름은 404를 반환한다. `next.config.ts`에서 `/about`은 `/portfolio/about`으로, `/projects`와 `/projects/[projectName]`은 `/portfolio/project` 아래의 대응 경로로 영구 리다이렉트한다.
 
 각 프로젝트는 서비스 한 줄(`tagline`)과 주장 한 문장(`claim`), 대표 이미지(`cover`), 짧은 소개(`intro`), 구조 다이어그램(`architecture`)을 갖고, 과제는 문제·재정의·선택·검증·한계 순으로 나누고 수치(`metric`)와 시각 자료(`visuals`)를 붙인다. 수치에는 출처 등급(실측·인용·계산·구조·못 잼)을 함께 적고, 다이어그램은 mermaid 코드로 두어 `MermaidDiagram`이 그린다. 아직 캡처가 없는 이미지는 `media` 없이 두면 화면에 이미지 자리로 나온다. 상세 페이지 오른쪽(xl 이상)에는 게시글 상세와 같은 `TableOfContents`로 목차를 띄운다. 목차 항목은 `buildProjectToc`가 소개·구조·해결한 과제(과제마다 하위 항목)·회고 순으로 만들고, `ProjectDetail`이 같은 id를 헤딩에 붙인다.
 

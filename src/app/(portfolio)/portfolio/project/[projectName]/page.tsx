@@ -6,9 +6,10 @@
 import { notFound } from 'next/navigation';
 
 import AdjacentNav from '@/components/common/AdjacentNav';
-import BackLink from '@/components/common/BackLink';
 import TableOfContents from '@/components/common/TableOfContents';
 import ProjectDetail, { buildProjectToc } from '@/components/project/ProjectDetail';
+import { ProjectAppGlyph } from '@/components/project/Win95Icons';
+import Win95Window from '@/components/project/Win95Window';
 import { getProjectBySlug, PROJECTS } from '@/lib/constants/portfolio';
 import { SITE_URL } from '@/lib/constants/site';
 
@@ -55,16 +56,23 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const toc = buildProjectToc(project);
 
   return (
-    <>
-      <BackLink href="/projects">목록으로</BackLink>
-
-      <div className="relative flex xl:gap-8">
-        <article className="mx-auto max-w-3xl flex-1">
+    <Win95Window
+      title={project.name}
+      icon={<ProjectAppGlyph size={16} letter={project.nameEn.charAt(0)} />}
+      address={`C:\\neru.win\\portfolio\\project\\${project.slug}`}
+      closeHref="/portfolio/project"
+      closeLabel="project 폴더로"
+      upHref="/portfolio/project"
+      status={`${project.name} · ${project.period}`}
+    >
+      {/* 긴 글을 읽는 영역이라 픽셀 폰트 대신 본문 폰트를 쓴다 */}
+      <div className="relative flex px-5 py-10 font-sans text-base sm:px-10 xl:gap-8">
+        <article className="mx-auto max-w-3xl min-w-0 flex-1">
           <ProjectDetail project={project} />
 
           <AdjacentNav
-            prev={prev ? { href: `/projects/${prev.slug}`, title: prev.name } : null}
-            next={next ? { href: `/projects/${next.slug}`, title: next.name } : null}
+            prev={prev ? { href: `/portfolio/project/${prev.slug}`, title: prev.name } : null}
+            next={next ? { href: `/portfolio/project/${next.slug}`, title: next.name } : null}
             prevLabel="이전 프로젝트"
             nextLabel="다음 프로젝트"
           />
@@ -74,6 +82,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           <TableOfContents items={toc} />
         </div>
       </div>
-    </>
+    </Win95Window>
   );
 }

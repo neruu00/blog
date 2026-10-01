@@ -1,6 +1,6 @@
 /**
  * @file portfolio.ts
- * @description /projects 포트폴리오 페이지에 표시하는 데이터. 배열 순서가 곧 화면 순서다.
+ * @description /portfolio 포트폴리오 페이지에 표시하는 데이터. 배열 순서가 곧 화면 순서다.
  */
 
 /**
@@ -74,7 +74,7 @@ export interface Challenge {
 }
 
 export interface Project {
-  /** URL 경로(/projects/[projectName])에 쓰는 소문자 영문 식별자. 바꾸면 기존 링크가 깨진다 */
+  /** URL 경로(/portfolio/project/[projectName])에 쓰는 소문자 영문 식별자. 바꾸면 기존 링크가 깨진다 */
   slug: string;
   name: string;
   nameEn: string;

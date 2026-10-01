@@ -21,9 +21,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, changeFrequency: 'daily', priority: 1 },
     { url: `${SITE_URL}/posts`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/news`, changeFrequency: 'daily', priority: 0.7 },
-    { url: `${SITE_URL}/projects`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/portfolio`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/portfolio/about`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/portfolio/project`, changeFrequency: 'monthly', priority: 0.8 },
     ...PROJECTS.map((project) => ({
-      url: `${SITE_URL}/projects/${project.slug}`,
+      url: `${SITE_URL}/portfolio/project/${project.slug}`,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),

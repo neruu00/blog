@@ -1,6 +1,6 @@
 /**
  * @file opengraph-image.tsx
- * @description /projects 공유 미리보기 이미지(1200×630). 빌드 시점에 한 번 생성된다.
+ * @description /portfolio 공유 미리보기 이미지(1200×630). 빌드 시점에 한 번 생성된다.
  *              한글이 깨지지 않도록 Pretendard OTF를 받아 쓰고, 받지 못하면 경고만 남기고 기본 폰트로 그린다.
  */
 
