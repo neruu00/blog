@@ -16,18 +16,25 @@ type MermaidApi = (typeof import('mermaid'))['default'];
 /**
  * mermaid는 실제로 그릴 때만 동적으로 불러오고, initialize도 그때 한 번만 실행한다.
  * 정적 import하면 d3·dompurify까지 라우트 번들에 들어가 다이어그램이 없는 글도 그 비용을 치른다.
+ * 불러오기에 실패하면(배포 직후 이전 청크를 찾는 경우 등) 실패한 Promise를 버려서 다음 다이어그램에서 다시 시도할 수 있게 한다.
+ * 그대로 두면 새로고침할 때까지 페이지의 모든 다이어그램에서 같은 오류가 발생한다.
  */
 let mermaidPromise: Promise<MermaidApi> | null = null;
 
 function loadMermaid() {
-  mermaidPromise ??= import('mermaid').then(({ default: mermaid }) => {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'default',
-      securityLevel: 'loose', // 노드 라벨의 HTML 텍스트가 렌더링되도록 허용한다
+  mermaidPromise ??= import('mermaid')
+    .then(({ default: mermaid }) => {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        securityLevel: 'loose', // 노드 라벨의 HTML 텍스트가 렌더링되도록 허용한다
+      });
+      return mermaid;
+    })
+    .catch((error: unknown) => {
+      mermaidPromise = null;
+      throw error;
     });
-    return mermaid;
-  });
   return mermaidPromise;
 }
 

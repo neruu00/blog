@@ -40,6 +40,10 @@
 | `surface` | `#ffffff` | 기본 배경 |
 | `surface-alt` | `#fafafa` | 대안 배경 (gray-50과 미세한 차이) |
 | `code-bg` | `#f8f9fa` | 코드 블록 배경 |
+| `win-desktop` | `orange-500` | `/portfolio` 바탕화면 |
+| `win-title` → `win-title-end` | `orange-700` → `orange-500` | `/portfolio` 창 제목줄 그라데이션, 선택 표시 |
+| `win-face` · `win-light` · `win-shadow` · `win-dark` | `#c0c0c0` · `#dfdfdf` · `#808080` · `#0a0a0a` | `/portfolio` 창·버튼 면과 입체 테두리 (`win-raised`·`win-sunken`·`win-pressed` 유틸리티) |
+| `win-folder` · `win-folder-edge` | `#f8d775` · `#c8a238` | `/portfolio` 폴더 아이콘 |
 
 ## 타이포그래피
 
@@ -170,7 +174,7 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 ### 사이드 네비게이션
 
 - 로고 / 프로필 아바타
-- Home / Posts / News (`lib/constants/nav.ts`)
+- Home / Posts / News / Portfolio (`lib/constants/nav.ts`)
 - 하단: 로그인/프로필 버튼
 - 글쓰기 진입은 사이드 네비게이션이 아니라 `FloatingActionButton`(admin 전용)이 담당
 

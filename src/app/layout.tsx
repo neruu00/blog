@@ -11,6 +11,7 @@ import Script from 'next/script';
 
 import Modal from '@/components/ui/Modal';
 import ToastContainer from '@/components/ui/ToastContainer';
+import { SITE_URL } from '@/lib/constants/site';
 import AuthProvider from '@/providers/AuthProvider';
 
 import type { Metadata } from 'next';
@@ -24,6 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     template: '%s | neruu00.log',
     default: 'neruu00.log - Developer Blog',

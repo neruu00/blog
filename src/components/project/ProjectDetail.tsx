@@ -1,32 +1,75 @@
 /**
  * @file ProjectDetail.tsx
- * @description 프로젝트 상세 페이지 본문. 페이지의 h1부터 렌더링한다.
- *              블록 순서는 이름·한 줄 소개 → 메타 → 만든 이유 → 구현 기능 → 해결한 과제 → 회고 → 스택이다.
- *              service·features·retrospective는 선택 항목이라 없으면 해당 블록을 건너뛴다.
- *              구현 기능 중 캡처가 있는 항목은 캐러셀로, 없는 항목은 그 아래 목록으로 보여준다.
+ * @description /portfolio 프로젝트 문서 창의 본문. Windows 95 문서처럼 섹션 제목은 제목줄 띠로,
+ *              기본 정보와 과제는 그룹 상자로 묶는다. 문서의 h1부터 렌더링한다.
+ *              블록 순서는 헤더 → 주장 → 소개 → 구조 → 해결한 과제 → 회고이며, 포트폴리오 슬라이드 순서와 같다.
+ *              retrospective는 선택 항목이라 없으면 회고 블록을 건너뛴다.
  */
 
-import { ArrowUpRight, Github } from 'lucide-react';
+import { ArrowUpRight, Github, Globe } from 'lucide-react';
 
-import PageHeader from '@/components/common/PageHeader';
-import FeatureCarousel from '@/components/project/FeatureCarousel';
-import Reveal from '@/components/ui/Reveal';
-import type { Feature, Project } from '@/lib/constants/portfolio';
+import DiagramFigure from '@/components/project/DiagramFigure';
+import ImageFigure from '@/components/project/ImageFigure';
+import MetricTile from '@/components/project/MetricTile';
+import ProjectThumbnail from '@/components/project/ProjectThumbnail';
+import Win95Button from '@/components/project/Win95Button';
+import type { Challenge, Project } from '@/lib/constants/portfolio';
+import { cn } from '@/lib/utils';
 
-interface ProjectDetailProps {
-  project: Project;
+const SECTION_TITLE = {
+  intro: '소개',
+  architecture: '구조',
+  challenges: '해결한 과제',
+  retrospective: '회고',
+} as const;
+
+/** 헤딩 id. #challenge-1 같은 링크로 해당 과제에 바로 갈 수 있다 */
+function challengeId(index: number) {
+  return `challenge-${index + 1}`;
 }
 
-function BlockLabel({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-4 text-xs font-semibold text-gray-400">{children}</h2>;
+interface SectionHeadingProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+/** 주황 제목줄 띠 모양의 섹션 제목 */
+function SectionHeading({ id, children }: SectionHeadingProps) {
+  return (
+    <h2 id={id} className="win-titlebar mt-8 mb-4 scroll-mt-4 px-2 py-1 font-bold text-white">
+      {children}
+    </h2>
+  );
+}
+
+interface GroupBoxProps {
+  /** 테두리 왼쪽 위에 붙는 이름. 헤딩을 넣을 수 있다 */
+  legend: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}
+
+/** Windows 95 그룹 상자. 회색 선과 흰 선을 겹친 홈 파인 테두리에 이름을 붙인다 */
+function GroupBox({ legend, children, className }: GroupBoxProps) {
+  return (
+    <fieldset
+      className={cn(
+        'border-win-shadow min-w-0 border px-3 pt-1 pb-3 shadow-[inset_1px_1px_var(--color-white),1px_1px_var(--color-white)]',
+        className,
+      )}
+    >
+      <legend className="px-1">{legend}</legend>
+      {children}
+    </fieldset>
+  );
 }
 
 /** 데이터에 \n\n으로 들어온 문단 구분을 살린다 */
-function Paragraphs({ text, className = '' }: { text: string; className?: string }) {
+function Paragraphs({ text }: { text: string }) {
   return (
     <>
       {text.split('\n\n').map((paragraph, i) => (
-        <p key={i} className={`leading-relaxed ${i > 0 ? 'mt-3' : ''} ${className}`}>
+        <p key={i} className={i > 0 ? 'mt-3' : ''}>
           {paragraph}
         </p>
       ))}
@@ -34,172 +77,186 @@ function Paragraphs({ text, className = '' }: { text: string; className?: string
   );
 }
 
-/**
- * 캡처가 없는 기능 목록. 캡처가 있는 기능은 캐러셀 캡션으로 이미 보여주므로 여기서 다시 적지 않는다.
- */
-function FeatureList({ features }: { features: Feature[] }) {
-  const items = features.filter((feature) => !feature.media);
-  if (items.length === 0) return null;
+type RowTone = 'body' | 'emphasis' | 'meta';
 
+const ROW_TONE: Record<RowTone, string> = {
+  body: '',
+  emphasis: 'font-bold',
+  meta: 'text-gray-500',
+};
+
+interface PropertyRowProps {
+  label: string;
+  children: React.ReactNode;
+  tone?: RowTone;
+}
+
+/** 속성 창처럼 "이름:" 라벨과 값을 나란히 놓는 행. sm 미만에서는 세로로 쌓는다 */
+function PropertyRow({ label, children, tone = 'body' }: PropertyRowProps) {
   return (
-    <ul className="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-      {items.map((feature) => (
-        <li key={feature.title}>
-          <h3 className="text-sm font-semibold text-gray-900">{feature.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-gray-500">{feature.description}</p>
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+      <dt className="w-14 shrink-0 text-gray-500">{label}:</dt>
+      <dd className={cn('min-w-0', ROW_TONE[tone])}>{children}</dd>
+    </div>
   );
 }
 
-const LINK_CLASS =
-  'inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 transition-all hover:-translate-y-0.5 hover:border-orange-300 hover:text-orange-600';
+/** 이 과제를 다룬 블로그 글. 포트폴리오 바탕화면을 떠나지 않도록 새 탭에서 연다 */
+function PostLink({ href }: { href: string }) {
+  return (
+    <Win95Button href={href} target="_blank" rel="noreferrer">
+      자세히 보기
+      <ArrowUpRight className="h-3.5 w-3.5" />
+    </Win95Button>
+  );
+}
+
+function ChallengeSection({ challenge, index }: { challenge: Challenge; index: number }) {
+  const { title, problem, definition, solution, verification, limitation, metric, visuals } =
+    challenge;
+
+  return (
+    <GroupBox
+      legend={
+        <h3 id={challengeId(index)} className="flex scroll-mt-4 items-baseline gap-1.5 font-bold">
+          <span className="text-win-title">{String(index + 1).padStart(2, '0')}</span>
+          {title}
+        </h3>
+      }
+    >
+      <dl className="mt-2 space-y-2.5">
+        <PropertyRow label="문제">{problem}</PropertyRow>
+        {definition && (
+          <PropertyRow label="재정의" tone="emphasis">
+            {definition}
+          </PropertyRow>
+        )}
+        <PropertyRow label="선택">{solution}</PropertyRow>
+        {visuals && visuals.length > 0 && (
+          <div className="py-1">
+            {/* dl의 자식은 dt·dd 묶음이어야 해서 시각 자료도 숨긴 라벨을 단 행으로 둔다 */}
+            <dt className="sr-only">시각 자료</dt>
+            <dd className="space-y-4">
+              {visuals.map((visual, i) =>
+                visual.kind === 'diagram' ? (
+                  <DiagramFigure key={i} visual={visual} />
+                ) : (
+                  <ImageFigure key={visual.id} visual={visual} />
+                ),
+              )}
+            </dd>
+          </div>
+        )}
+        {verification && (
+          <PropertyRow label="검증" tone="meta">
+            {verification}
+          </PropertyRow>
+        )}
+        {limitation && (
+          <PropertyRow label="한계" tone="meta">
+            {limitation}
+          </PropertyRow>
+        )}
+        {(metric || challenge.postHref) && (
+          <PropertyRow label={metric ? '지표' : '글'}>
+            <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
+              {metric && <MetricTile metric={metric} />}
+              {challenge.postHref && <PostLink href={challenge.postHref} />}
+            </div>
+          </PropertyRow>
+        )}
+      </dl>
+    </GroupBox>
+  );
+}
+
+interface ProjectDetailProps {
+  project: Project;
+}
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {
   const {
     name,
     nameEn,
     tagline,
+    claim,
     period,
     team,
     role,
     links,
-    service,
-    features,
-    challengesIntro,
+    cover,
+    intro,
+    architecture,
     challenges,
     retrospective,
     stack,
   } = project;
 
   return (
-    <article>
-      <Reveal>
-        <PageHeader
-          title={name}
-          titleAside={<span className="text-sm font-medium text-gray-400">{nameEn}</span>}
-          description={tagline}
-        >
-          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-400">
-            <span>{period}</span>
-            <span aria-hidden>·</span>
-            <span>{team}</span>
-            <span aria-hidden>·</span>
-            <span className="text-gray-500">{role}</span>
-          </div>
+    <div className="leading-relaxed">
+      <header>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h1 className="text-win-title text-2xl font-bold">{name}</h1>
+          <span className="text-gray-500">{nameEn}</span>
+          <span className="flex gap-1.5">
+            {links.github && (
+              <Win95Button href={links.github} target="_blank" rel="noreferrer">
+                <Github className="h-3.5 w-3.5" />
+                GitHub
+              </Win95Button>
+            )}
+            {links.demo && (
+              <Win95Button href={links.demo} target="_blank" rel="noreferrer">
+                <Globe className="h-3.5 w-3.5" />
+                서비스
+              </Win95Button>
+            )}
+          </span>
+        </div>
+        <p className="mt-2">{tagline}</p>
 
-          {(links.github || links.demo) && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {links.demo && (
-                <a href={links.demo} target="_blank" rel="noreferrer" className={LINK_CLASS}>
-                  서비스 보기
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              )}
-              {links.github && (
-                <a href={links.github} target="_blank" rel="noreferrer" className={LINK_CLASS}>
-                  <Github className="h-3.5 w-3.5" />
-                  GitHub
-                </a>
-              )}
-            </div>
-          )}
-        </PageHeader>
-      </Reveal>
+        <GroupBox legend={<span className="font-bold">정보</span>} className="mt-4">
+          <dl className="mt-1 space-y-1">
+            <PropertyRow label="기간">{period}</PropertyRow>
+            <PropertyRow label="인원">{team}</PropertyRow>
+            <PropertyRow label="역할">{role}</PropertyRow>
+            <PropertyRow label="기술">{stack.join(' · ')}</PropertyRow>
+          </dl>
+        </GroupBox>
+      </header>
 
-      {service && (
-        <Reveal>
-          <div className="mb-14">
-            <BlockLabel>왜 만들었나</BlockLabel>
-            <Paragraphs text={service} className="text-gray-500" />
-          </div>
-        </Reveal>
-      )}
+      <p className="win-raised mt-5 p-3 font-bold">{claim}</p>
 
-      {features && features.length > 0 && (
-        <Reveal>
-          <div className="mb-14">
-            <BlockLabel>구현 기능</BlockLabel>
-            <FeatureCarousel features={features} projectName={name} />
-            <FeatureList features={features} />
-          </div>
-        </Reveal>
-      )}
+      <section>
+        <SectionHeading id="intro">{SECTION_TITLE.intro}</SectionHeading>
+        <div className="win-sunken bg-win-face p-[2px]">
+          <ProjectThumbnail media={cover} sizes="(min-width: 768px) 768px, 100vw" />
+        </div>
+        <p className="mt-4">{intro}</p>
+      </section>
 
-      <div className="mb-14">
-        <Reveal>
-          <BlockLabel>해결한 과제</BlockLabel>
-          {challengesIntro && (
-            <p className="mb-6 leading-relaxed text-gray-500">{challengesIntro}</p>
-          )}
-        </Reveal>
+      <section>
+        <SectionHeading id="architecture">{SECTION_TITLE.architecture}</SectionHeading>
+        <DiagramFigure visual={architecture} />
+      </section>
 
-        <ol className="space-y-4">
+      <section>
+        <SectionHeading id="challenges">{SECTION_TITLE.challenges}</SectionHeading>
+        <ol className="space-y-5">
           {challenges.map((challenge, i) => (
             <li key={challenge.title}>
-              <Reveal delay={i * 60}>
-                <div className="rounded-xl bg-gray-50 p-6">
-                  <div className="flex items-baseline gap-2.5">
-                    <span className="text-xs font-semibold text-orange-500 tabular-nums">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <h3 className="text-base font-semibold text-gray-900">{challenge.title}</h3>
-                  </div>
-
-                  <p className="mt-3 text-sm leading-relaxed text-gray-500">{challenge.problem}</p>
-
-                  {challenge.definition && (
-                    <p className="mt-3 text-sm leading-relaxed font-medium text-gray-900">
-                      {challenge.definition}
-                    </p>
-                  )}
-
-                  <p className="mt-3 text-sm leading-relaxed text-gray-500">{challenge.solution}</p>
-
-                  {(challenge.metric || challenge.postHref) && (
-                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                      {challenge.metric && (
-                        <span className="rounded bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-700">
-                          {challenge.metric}
-                        </span>
-                      )}
-                      {challenge.postHref && (
-                        <a
-                          href={challenge.postHref}
-                          className="inline-flex items-center gap-0.5 text-xs font-medium text-orange-700 hover:underline"
-                        >
-                          자세히 보기
-                          <ArrowUpRight className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </Reveal>
+              <ChallengeSection challenge={challenge} index={i} />
             </li>
           ))}
         </ol>
-      </div>
+      </section>
 
       {retrospective && (
-        <Reveal>
-          <div className="rounded-xl bg-orange-50 p-6">
-            <BlockLabel>회고</BlockLabel>
-            <Paragraphs text={retrospective} className="text-sm text-gray-500" />
-          </div>
-        </Reveal>
+        <section>
+          <SectionHeading id="retrospective">{SECTION_TITLE.retrospective}</SectionHeading>
+          <Paragraphs text={retrospective} />
+        </section>
       )}
-
-      <Reveal>
-        <ul className="mt-8 flex flex-wrap gap-x-3 gap-y-1.5">
-          {stack.map((tech) => (
-            <li key={tech} className="text-xs text-gray-400">
-              {tech}
-            </li>
-          ))}
-        </ul>
-      </Reveal>
-    </article>
+    </div>
   );
 }

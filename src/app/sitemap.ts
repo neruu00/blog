@@ -1,10 +1,9 @@
 /**
  * @file sitemap.ts
- * @description 검색엔진용 사이트맵. 정적 경로 + 프로젝트 + 게시글 + 기술 뉴스를 포함한다.
+ * @description 검색엔진용 사이트맵. 정적 경로 + 게시글 + 기술 뉴스를 포함한다. 포트폴리오 창은 가상 경로라 /portfolio 하나만 넣는다.
  *              관리자 전용 경로(/write, /edit)는 제외한다.
  */
 
-import { PROJECTS } from '@/lib/constants/portfolio';
 import { SITE_URL } from '@/lib/constants/site';
 import { supabase } from '@/lib/supabase';
 
@@ -21,12 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, changeFrequency: 'daily', priority: 1 },
     { url: `${SITE_URL}/posts`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/news`, changeFrequency: 'daily', priority: 0.7 },
-    { url: `${SITE_URL}/projects`, changeFrequency: 'monthly', priority: 0.8 },
-    ...PROJECTS.map((project) => ({
-      url: `${SITE_URL}/projects/${project.slug}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    })),
+    { url: `${SITE_URL}/portfolio`, changeFrequency: 'monthly', priority: 0.8 },
   ];
 
   const [{ data: posts, error: postsError }, { data: news, error: newsError }] = await Promise.all([

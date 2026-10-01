@@ -119,6 +119,7 @@ export async function createPost(formData: FormData) {
 | `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
 | `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
 | `AdjacentNav` | `common/` | 상세 페이지 하단의 이전/다음 항목 링크 (게시글·프로젝트 상세에서 공통으로 사용) |
+| `TableOfContents` | `common/` | 상세 페이지 오른쪽의 목차 (xl 이상). 헤딩 id 배열을 받아 현재 위치를 강조하며, 게시글·프로젝트 상세가 함께 쓴다 |
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
 | `Button` | `ui/` | **모든 버튼의 단일 출처** — variant: primary/outline/ghost/destructive, size: sm/md/icon. `href`를 주면 `next/link`로 렌더. 토글은 `aria-pressed` |
@@ -147,7 +148,7 @@ page.tsx (서버)
 | `components/common/` | 도메인 무관 공통 (Pagination, ConfirmDialog) |
 | `components/post/` | 게시글 도메인 |
 | `components/news/` | 뉴스 도메인 |
-| `components/project/` | 프로젝트(`/projects`) 도메인 |
+| `components/project/` | 포트폴리오(`/portfolio`) 도메인. Windows 95 테마 컴포넌트(`Win95*`) 포함 |
 | `components/editor/` | Tiptap 에디터 |
 | `components/layout/` | SideNav, Footer 등 |
 
@@ -161,7 +162,7 @@ page.tsx (서버)
 | 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경. 아이콘 버튼은 스피너로 (`EditorActions` 참고) |
 | 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + `Skeleton`. **정적 import하지 말고 그릴 때 `import()`로 받는다** — 안 쓰는 글의 번들까지 무거워진다 (`MermaidDiagram` 참고) |
-| 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`FeatureCarousel` 참고) |
+| 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`ProjectThumbnail` 참고) |
 | 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 |
 
 ---
@@ -237,6 +238,22 @@ type ActionResult<T = void> =
 - 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
 - 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)`·`summary` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
 - 기본 트랜지션은 `transition-colors`. 복잡한 애니메이션만 `globals.css`에 `@keyframes`로
+
+### 예외: `/portfolio`의 Windows 95 테마
+
+`(portfolio)` 라우트 그룹에만 Windows 95 탐색기 스타일을 적용한다. 이 화면에서는 위 규칙 중 일부를 다르게 적용한다. 블로그의 다른 화면에는 이 스타일을 적용하지 않는다.
+
+- **입체 테두리와 그림자를 쓴다.** 플랫 규칙 대신 `globals.css`의 `win-raised`·`win-sunken`·`win-pressed` 유틸리티를 쓴다. 색상은 `win-*` 토큰만 쓴다
+- **브랜드 주황색을 유지한다.** 바탕화면·제목줄·선택 표시에는 `win-desktop`·`win-title`(orange 계열)을 쓴다
+- **버튼은 `Win95Button`을 쓴다.** 이 화면에서는 `ui/Button` 대신 쓰고, 다른 화면에서는 쓰지 않는다
+- **폴더·문서 아이콘은 `Win95Icons`의 SVG를 쓴다.** 나머지 아이콘은 기존대로 `lucide-react`를 쓴다
+- **글꼴은 Galmuri11 12px로 통일한다.** 창 테두리부터 프로젝트 문서 본문까지 모두 적용한다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러오고, mermaid 도표에도 `DiagramFigure`의 테마 지시문으로 같은 글꼴을 적용한다
+- **프로젝트 문서는 Windows 95 문서처럼 꾸민다.** 섹션 제목은 주황색 제목 표시줄로, 기본 정보와 과제는 그룹 상자(`fieldset`)로, 성과 수치는 검은 배경의 LCD 패널로 표시하고, 이미지·도표는 안으로 파인 테두리의 프레임에 넣는다. 페이드 효과(`Reveal`)는 쓰지 않는다
+- 포트폴리오의 실제 경로는 `/portfolio` 하나다. 창은 가상 경로(`about`, `project`, `project/<slug>`)로 열고 `useWin95Windows`의 `open`·`close`·`focus`로 제어한다. 창마다 라우트를 새로 만들지 않는다. 외부에서 특정 창을 열어야 하면 `/portfolio?open=<가상 경로>` 링크를 쓴다
+- 창의 닫기 버튼은 해당 창만 닫는다. 최소화 버튼은 창을 언마운트하지 않고 숨기므로 다시 열어도 스크롤 위치가 유지된다. 작업 표시줄에서 맨 앞에 있는 창의 버튼을 누르면 최소화되고, 다른 창의 버튼을 누르면 해당 창이 맨 앞으로 온다. 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
+- 화면은 뷰포트 크기(`fixed inset-0`)로 고정하고 문서는 스크롤하지 않는다. 내용이 길면 창 본문만 스크롤하며, 스크롤바는 `win-scrollbar` 클래스를 쓴다
+- 창은 제목줄을 끌어 옮긴다. 위치는 `left`/`top`으로 준다 — `transform`을 쓰면 창 안의 `position: fixed` 요소(프로젝트 미리 보기)가 창 기준으로 잡혀 커서를 따라가지 못한다
+- 아이콘은 한 번 클릭하면 열린다. 더블클릭은 웹에서 사용자가 알아차리기 어렵고 터치 환경에서는 쓸 수 없다
 
 ---
 
