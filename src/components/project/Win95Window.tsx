@@ -1,12 +1,12 @@
 /**
  * @file Win95Window.tsx
- * @description /portfolio 바탕화면의 Windows 95 창 하나. 제목줄·(폴더면) 도구 모음과 주소창·본문·상태 표시줄로 구성된다.
+ * @description /portfolio 바탕화면의 Windows 95 창 하나. 제목줄·(폴더·문서면) 주소창·본문·상태 표시줄로 구성된다.
  *              위치·크기·쌓임 순서는 Win95WindowManager가 갖고, 이 컴포넌트는 그리기와 제목줄 끌기만 맡는다.
  */
 
 'use client';
 
-import { ArrowUp, X } from 'lucide-react';
+import { Minus, X } from 'lucide-react';
 import { useRef } from 'react';
 
 import Win95Button from '@/components/project/Win95Button';
@@ -33,8 +33,9 @@ interface Win95WindowProps {
   onFocus: () => void;
   onMove: (x: number, y: number) => void;
   onClose: () => void;
-  /** 도구 모음의 "위로" 버튼 동작. 없으면 버튼을 그리지 않는다 */
-  onUp?: () => void;
+  onMinimize: () => void;
+  /** 최소화된 창은 언마운트하지 않고 숨겨서 스크롤 위치와 내용 상태를 그대로 둔다 */
+  minimized: boolean;
   /** 상태 표시줄 내용. 없으면 상태 표시줄을 그리지 않는다 */
   status?: React.ReactNode;
   children: React.ReactNode;
@@ -65,7 +66,8 @@ export default function Win95Window({
   onFocus,
   onMove,
   onClose,
-  onUp,
+  onMinimize,
+  minimized,
   status,
   children,
 }: Win95WindowProps) {
@@ -116,7 +118,9 @@ export default function Win95Window({
         height: frame.height,
         zIndex: frame.z,
       }}
-      className="win-raised font-win absolute flex flex-col gap-0.5 p-[3px] text-xs text-black"
+      className={`win-raised font-win absolute flex-col gap-0.5 p-[3px] text-xs text-black ${
+        minimized ? 'hidden' : 'flex'
+      }`}
     >
       <div
         onPointerDown={startDrag}
@@ -129,6 +133,9 @@ export default function Win95Window({
       >
         {icon}
         <span className="min-w-0 flex-1 truncate">{title}</span>
+        <Win95Button size="icon" onClick={onMinimize} aria-label={`${title} 최소화`} title="최소화">
+          <Minus className="h-3 w-3 translate-y-[3px]" strokeWidth={3} />
+        </Win95Button>
         <Win95Button
           size="icon"
           onClick={onClose}
@@ -140,29 +147,13 @@ export default function Win95Window({
         </Win95Button>
       </div>
 
-      {(address || onUp) && (
+      {address && (
         <div className="border-win-shadow flex shrink-0 items-center gap-1.5 border-t px-1 py-1 shadow-[inset_0_1px_var(--color-white)]">
-          {onUp && (
-            <>
-              <Win95Button onClick={onUp}>
-                <ArrowUp className="h-3.5 w-3.5" />
-                위로
-              </Win95Button>
-              <span
-                aria-hidden
-                className="border-l-win-shadow mx-1 h-6 border-r border-l border-r-white"
-              />
-            </>
-          )}
-          {address && (
-            <>
-              <span className="shrink-0">주소</span>
-              <div className="win-sunken flex h-[22px] min-w-0 flex-1 items-center gap-1.5 bg-white px-1.5">
-                <FolderIcon size={16} />
-                <span className="truncate">{address}</span>
-              </div>
-            </>
-          )}
+          <span className="shrink-0">주소</span>
+          <div className="win-sunken flex h-[22px] min-w-0 flex-1 items-center gap-1.5 bg-white px-1.5">
+            <FolderIcon size={16} />
+            <span className="truncate">{address}</span>
+          </div>
         </div>
       )}
 

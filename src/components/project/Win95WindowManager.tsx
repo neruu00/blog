@@ -21,9 +21,8 @@ export interface Win95WindowDef {
   title: string;
   /** 제목줄·작업 표시줄의 16px 아이콘 */
   icon: React.ReactNode;
-  address?: string;
-  /** "위로" 버튼이 여는 창의 id. 없으면 버튼을 그리지 않는다 */
-  upId?: string;
+  /** 주소창을 그린다. 주소는 가상 경로에서 만든다(project/secome → C:\project\secome) */
+  showAddress?: boolean;
   status?: React.ReactNode;
   /** 처음 열 때의 크기(px). 바탕화면보다 크면 바탕화면에 맞춰 줄인다 */
   width: number;
@@ -48,6 +47,7 @@ interface Win95WindowManagerProps {
 
 interface OpenWindow extends Win95WindowFrame {
   id: string;
+  minimized: boolean;
 }
 
 /** 창과 바탕화면 가장자리 사이 최소 간격(px) */
@@ -58,6 +58,9 @@ const CASCADE = 28;
 const COMPACT_WIDTH = 640;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+/** 가상 경로를 주소창에 보일 Windows 경로로 바꾼다. 예: project/secome → C:\project\secome */
+const toAddress = (id: string) => `C:\\${id.replaceAll('/', '\\')}`;
 
 /** 새 창의 자리. 가운데를 기준으로 열린 창 수만큼 비켜 놓고, 바탕화면을 넘지 않게 크기를 줄인다 */
 function placeWindow(def: Win95WindowDef, area: DOMRect, openCount: number) {
@@ -86,12 +89,13 @@ export default function Win95WindowManager({
   const [opened, setOpened] = useState<OpenWindow[]>([]);
   const defs = useMemo(() => new Map(windows.map((def) => [def.id, def])), [windows]);
 
+  /** 맨 앞으로 가져온다. 최소화돼 있었다면 다시 띄운다 */
   const focus = useCallback((id: string) => {
     setOpened((list) => {
       const target = list.find((w) => w.id === id);
-      if (!target || target.z === topZ.current) return list;
+      if (!target || (!target.minimized && target.z === topZ.current)) return list;
       topZ.current += 1;
-      return list.map((w) => (w.id === id ? { ...w, z: topZ.current } : w));
+      return list.map((w) => (w.id === id ? { ...w, z: topZ.current, minimized: false } : w));
     });
   }, []);
 
@@ -103,9 +107,12 @@ export default function Win95WindowManager({
       setOpened((list) => {
         topZ.current += 1;
         if (list.some((w) => w.id === id)) {
-          return list.map((w) => (w.id === id ? { ...w, z: topZ.current } : w));
+          return list.map((w) => (w.id === id ? { ...w, z: topZ.current, minimized: false } : w));
         }
-        return [...list, { id, z: topZ.current, ...placeWindow(def, area, list.length) }];
+        return [
+          ...list,
+          { id, z: topZ.current, minimized: false, ...placeWindow(def, area, list.length) },
+        ];
       });
     },
     [defs],
@@ -113,6 +120,10 @@ export default function Win95WindowManager({
 
   const close = useCallback((id: string) => {
     setOpened((list) => list.filter((w) => w.id !== id));
+  }, []);
+
+  const minimize = useCallback((id: string) => {
+    setOpened((list) => list.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
   }, []);
 
   const move = useCallback((id: string, x: number, y: number) => {
@@ -128,10 +139,14 @@ export default function Win95WindowManager({
   }, [open]);
 
   const actions = useMemo(() => ({ open, close, focus }), [open, close, focus]);
+  // 최소화된 창은 맨 앞 창이 될 수 없다
   const activeId = opened.reduce<OpenWindow | null>(
-    (top, w) => (!top || w.z > top.z ? w : top),
+    (top, w) => (!w.minimized && (!top || w.z > top.z) ? w : top),
     null,
   )?.id;
+
+  /** Windows 95처럼 맨 앞 창의 작업 표시줄 버튼을 누르면 최소화하고, 그 밖의 창은 맨 앞으로 가져온다 */
+  const toggleTask = (id: string) => (id === activeId ? minimize(id) : focus(id));
 
   return (
     <Win95WindowsContext value={actions}>
@@ -154,20 +169,20 @@ export default function Win95WindowManager({
         {opened.map((w) => {
           const def = defs.get(w.id);
           if (!def) return null;
-          const { upId } = def;
           return (
             <Win95Window
               key={w.id}
               title={def.title}
               icon={def.icon}
-              address={def.address}
+              address={def.showAddress ? toAddress(def.id) : undefined}
               status={def.status}
               frame={w}
               active={w.id === activeId}
               onFocus={() => focus(w.id)}
               onMove={(x, y) => move(w.id, x, y)}
               onClose={() => close(w.id)}
-              onUp={upId ? () => open(upId) : undefined}
+              onMinimize={() => minimize(w.id)}
+              minimized={w.minimized}
             >
               {def.content}
             </Win95Window>
@@ -182,7 +197,7 @@ export default function Win95WindowManager({
           icon: defs.get(w.id)?.icon,
           active: w.id === activeId,
         }))}
-        onTaskClick={focus}
+        onTaskClick={toggleTask}
         github={github}
         email={email}
       />
