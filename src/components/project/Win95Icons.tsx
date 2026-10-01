@@ -94,3 +94,23 @@ export function ProjectAppGlyph({ size = 32, letter }: ProjectAppIconProps) {
     </svg>
   );
 }
+
+/** DOOM 앱. 검은 화면 창 안에 픽셀 해골을 그린다 */
+export function DoomAppIcon({ size = 32 }: Win95IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      shapeRendering="crispEdges"
+      aria-hidden
+      className="shrink-0"
+    >
+      <rect x="2.5" y="4.5" width="27" height="23" className="fill-win-face stroke-black" />
+      <rect x="3" y="5" width="26" height="4" className="fill-win-title" />
+      <rect x="5.5" y="11.5" width="21" height="14" className="stroke-win-shadow fill-black" />
+      <path d="M12 13h8v1h1v5h-1v2h-1v2h-6v-2h-1v-2h-1v-5h1z" className="fill-win-light" />
+      <path d="M13 16h2v2h-2zM17 16h2v2h-2zM15 19h2v1h-2z" className="fill-red-600" />
+    </svg>
+  );
+}

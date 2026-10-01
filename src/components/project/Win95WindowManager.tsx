@@ -24,6 +24,8 @@ export interface Win95WindowDef {
   /** 주소창을 그린다. 주소는 가상 경로에서 만든다(project/secome → C:\project\secome) */
   showAddress?: boolean;
   status?: React.ReactNode;
+  /** 내용이 본문을 꽉 채우고 스크롤하지 않는 창(게임 등) */
+  fill?: boolean;
   /** 처음 열 때의 크기(px). 바탕화면보다 크면 바탕화면에 맞춰 줄인다 */
   width: number;
   height: number;
@@ -183,6 +185,7 @@ export default function Win95WindowManager({
               onClose={() => close(w.id)}
               onMinimize={() => minimize(w.id)}
               minimized={w.minimized}
+              fill={def.fill}
             >
               {def.content}
             </Win95Window>

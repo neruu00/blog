@@ -1,0 +1,107 @@
+<!doctype html>
+<!--
+  /portfolio 바탕화면의 DOOM 창이 iframe으로 띄우는 게임 화면.
+  wasm-doom(MIT)은 게임을 멈추는 API가 없고 키 입력을 문서 전체에서 가로채므로, iframe에 가둬서
+  창을 닫으면 게임 루프와 키보드 리스너가 함께 사라지게 한다.
+  doom.wasm(약 7MB)에는 셰어웨어 DOOM1.WAD가 들어 있으며, 클릭해서 시작할 때 처음 내려받는다.
+-->
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DOOM</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #000;
+        color: #fff;
+        font-family: Galmuri11, Gulim, Dotum, sans-serif;
+        font-size: 12px;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        image-rendering: pixelated;
+      }
+      button {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        border: 0;
+        background: #000;
+        color: #fff;
+        font: inherit;
+        line-height: 1.6;
+        text-align: center;
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: progress;
+      }
+      strong {
+        font-size: 18px;
+        color: #f97316;
+      }
+      small {
+        color: #a3a3a3;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="640" height="400" aria-label="DOOM 게임 화면"></canvas>
+    <button type="button">
+      <strong>DOOM</strong>
+      <span id="message">클릭하면 시작합니다</span>
+      <small>
+        방향키 이동 · Ctrl 발사 · Space 문 열기 · Enter 선택 · Esc 메뉴<br />
+        셰어웨어 판(1에피소드)이며 소리는 나지 않습니다
+      </small>
+    </button>
+
+    <script type="module">
+      const WASM_DOOM = 'https://cdn.jsdelivr.net/npm/wasm-doom@1.2.0';
+
+      const canvas = document.querySelector('canvas');
+      const start = document.querySelector('button');
+      const message = document.getElementById('message');
+
+      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        message.textContent = '키보드가 있는 PC에서 실행해 주세요';
+      }
+
+      start.addEventListener('click', async () => {
+        start.disabled = true;
+        message.textContent = '불러오는 중... (약 7MB)';
+        try {
+          const { DOOM } = await import(`${WASM_DOOM}/dist/index.js`);
+          const ctx = canvas.getContext('2d');
+          const game = new DOOM({
+            screenWidth: canvas.width,
+            screenHeight: canvas.height,
+            wasmURL: `${WASM_DOOM}/wasm/doom.wasm`,
+            onFrameRender: ({ screen }) =>
+              ctx.putImageData(new ImageData(screen, canvas.width, canvas.height), 0, 0),
+          });
+          await game.start();
+          start.remove();
+          window.focus();
+        } catch (error) {
+          console.error('DOOM을 불러오지 못했습니다.', error);
+          message.textContent = '불러오지 못했습니다. 다시 클릭해 주세요';
+          start.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

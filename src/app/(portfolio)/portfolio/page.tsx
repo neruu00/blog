@@ -5,10 +5,16 @@
  *              DB를 거치지 않고 lib/constants/portfolio.ts만 참조해 정적으로 렌더링한다.
  */
 
+import DoomFrame from '@/components/project/DoomFrame';
 import PortfolioAbout from '@/components/project/PortfolioAbout';
 import ProjectAppGrid from '@/components/project/ProjectAppGrid';
 import ProjectDetail from '@/components/project/ProjectDetail';
-import { FolderIcon, ProfileAppIcon, ProjectAppGlyph } from '@/components/project/Win95Icons';
+import {
+  DoomAppIcon,
+  FolderIcon,
+  ProfileAppIcon,
+  ProjectAppGlyph,
+} from '@/components/project/Win95Icons';
 import Win95WindowManager from '@/components/project/Win95WindowManager';
 import type { Win95DesktopIconDef, Win95WindowDef } from '@/components/project/Win95WindowManager';
 import { PROFILE, PROJECTS } from '@/lib/constants/portfolio';
@@ -36,6 +42,7 @@ const apps = PROJECTS.map(({ slug, name, nameEn, period, claim, cover }) => ({
 const desktopIcons: Win95DesktopIconDef[] = [
   { id: 'about', label: 'about', icon: <ProfileAppIcon size={48} /> },
   { id: 'project', label: 'project', icon: <FolderIcon size={48} /> },
+  { id: 'doom', label: 'DOOM', icon: <DoomAppIcon size={48} /> },
 ];
 
 const windows: Win95WindowDef[] = [
@@ -56,6 +63,17 @@ const windows: Win95WindowDef[] = [
     width: 640,
     height: 320,
     content: <ProjectAppGrid apps={apps} />,
+  },
+  {
+    id: 'doom',
+    title: 'DOOM',
+    icon: <DoomAppIcon size={16} />,
+    status: '셰어웨어 판 · id Software',
+    fill: true,
+    // 게임 화면(8:5)이 창 본문에 꼭 맞는 크기. 창이 줄어들어도 남는 부분은 검은 여백이 된다
+    width: 660,
+    height: 464,
+    content: <DoomFrame windowId="doom" />,
   },
   ...PROJECTS.map((project) => ({
     id: `project/${project.slug}`,

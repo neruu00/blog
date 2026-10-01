@@ -36,6 +36,8 @@ interface Win95WindowProps {
   onMinimize: () => void;
   /** 최소화된 창은 언마운트하지 않고 숨겨서 스크롤 위치와 내용 상태를 그대로 둔다 */
   minimized: boolean;
+  /** 내용이 본문을 꽉 채우는 창(게임 등). 스크롤하지 않고 바탕을 검게 칠한다 */
+  fill?: boolean;
   /** 상태 표시줄 내용. 없으면 상태 표시줄을 그리지 않는다 */
   status?: React.ReactNode;
   children: React.ReactNode;
@@ -68,6 +70,7 @@ export default function Win95Window({
   onClose,
   onMinimize,
   minimized,
+  fill = false,
   status,
   children,
 }: Win95WindowProps) {
@@ -158,7 +161,11 @@ export default function Win95Window({
       )}
 
       {/* 창 높이가 정해져 있으므로 넘치는 내용은 본문 안에서 스크롤한다 */}
-      <div className="win-sunken win-scrollbar min-h-0 flex-1 overflow-y-auto bg-white p-[2px]">
+      <div
+        className={`win-sunken min-h-0 flex-1 p-[2px] ${
+          fill ? 'overflow-hidden bg-black' : 'win-scrollbar overflow-y-auto bg-white'
+        }`}
+      >
         {children}
       </div>
 
