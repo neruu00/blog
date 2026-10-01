@@ -49,6 +49,19 @@ CREATE TABLE IF NOT EXISTS tech_news (
   created_at   TIMESTAMPTZ DEFAULT now()
 );
 
+-- series: 글 작성 화면에서 글을 저장할 때 만들고, 속한 글이 없어지면 actions/post.ts가 지운다.
+-- 시리즈 안 순서는 series_order → created_at 순으로 정한다.
+CREATE TABLE IF NOT EXISTS series (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title      TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS series_id    UUID REFERENCES series(id) ON DELETE SET NULL;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS series_order INTEGER;
+
+CREATE INDEX IF NOT EXISTS idx_posts_series_id ON posts(series_id);
+
 CREATE INDEX IF NOT EXISTS idx_comments_post_id       ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
 

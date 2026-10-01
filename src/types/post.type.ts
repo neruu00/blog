@@ -19,4 +19,6 @@ export interface Post {
   tags: string[];
   category: PostCategory;
   viewCount: number;
+  /** 속한 시리즈 이름. 시리즈가 없거나 조회할 때 `series(title)`을 함께 받지 않았으면 null */
+  seriesTitle: string | null;
 }

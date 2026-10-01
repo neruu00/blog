@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 
 import { updatePost } from '@/actions/post';
 import PostEditor from '@/components/post/PostEditor';
+import type { SeriesOption } from '@/types/series.type';
 
 interface EditPostClientProps {
   post: {
@@ -17,20 +18,29 @@ interface EditPostClientProps {
     title: string;
     content: JSONContent;
     tags: string[];
+    seriesId: string | null;
   };
+  seriesOptions: SeriesOption[];
 }
 
-export default function EditPostClient({ post }: EditPostClientProps) {
+export default function EditPostClient({ post, seriesOptions }: EditPostClientProps) {
   const initialData = useMemo(
     () => ({
       title: post.title,
       content: post.content,
       tags: post.tags || [],
+      seriesId: post.seriesId,
     }),
-    [post.title, post.content, post.tags],
+    [post.title, post.content, post.tags, post.seriesId],
   );
 
   return (
-    <PostEditor mode="edit" postId={post.id} initialData={initialData} onSubmit={updatePost} />
+    <PostEditor
+      mode="edit"
+      postId={post.id}
+      initialData={initialData}
+      seriesOptions={seriesOptions}
+      onSubmit={updatePost}
+    />
   );
 }

@@ -29,8 +29,20 @@
 | `author` | TEXT | `'admin'` | 작성자 |
 | `category` | TEXT | `'tech'` | 카테고리 |
 | `view_count` | INTEGER | `0` | 조회수 |
+| `series_id` | UUID | `NULL` | FK → series(id) ON DELETE SET NULL. 소속 시리즈 |
+| `series_order` | INTEGER | `NULL` | 시리즈 내 순서. 같으면 `created_at` 순 |
 | `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
 | `updated_at` | TIMESTAMPTZ | `now()` | 수정일 |
+
+### series
+
+| 컬럼 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `id` | UUID | `gen_random_uuid()` | PK |
+| `title` | TEXT | — | 시리즈 이름 (UNIQUE) |
+| `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
+
+시리즈를 별도로 관리하는 화면은 없다. 글 작성 화면의 시리즈 다이얼로그에서 새 시리즈를 고르고 글을 저장하면 `actions/post.ts`가 같은 이름의 시리즈를 찾거나 새로 만들고(`upsert` on `title`), 속한 글이 하나도 없으면 삭제한다. 이름 변경과 삭제는 `actions/series.ts`가 처리한다. 삭제할 때는 속한 글의 `series_id`·`series_order`를 먼저 비운다. FK의 `ON DELETE SET NULL`은 `series_order`를 남기기 때문이다.
 
 ### comments
 

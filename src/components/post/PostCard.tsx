@@ -1,6 +1,6 @@
 /**
  * @file PostCard.tsx
- * @description 태그, 제목, 요약, 날짜, 조회수를 보여주는 게시글 목록 카드.
+ * @description 태그, 제목, 요약, 날짜, 조회수를 보여주는 게시글 목록 카드. 시리즈 글은 제목 앞에 [시리즈 이름]을 붙인다.
  */
 
 import { Eye } from 'lucide-react';
@@ -33,6 +33,7 @@ export default function PostCard({ post, titleAs: TitleTag = 'h3' }: PostCardPro
         )}
 
         <TitleTag className="mb-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-orange-500">
+          {post.seriesTitle && `[${post.seriesTitle}] `}
           {post.title}
         </TitleTag>
 
