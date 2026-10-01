@@ -13,9 +13,9 @@ export default function PortfolioLayout({ children }: { children: React.ReactNod
   return (
     <div className="bg-win-desktop fixed inset-0 overflow-hidden">
       <link rel="stylesheet" href={GALMURI_CSS} precedence="default" />
-      {/* JS가 꺼져 있으면 부팅 화면이 걷히지 않고 Reveal이 opacity-0에 머무르므로 둘 다 되돌린다 */}
+      {/* JS가 꺼져 있으면 부팅 화면이 걷히지 않으므로 숨긴다 */}
       <noscript>
-        <style>{`[data-reveal]{opacity:1 !important;transform:none !important}[data-win-boot]{display:none !important}`}</style>
+        <style>{`[data-win-boot]{display:none !important}`}</style>
       </noscript>
 
       <Win95Boot />

@@ -247,7 +247,8 @@ type ActionResult<T = void> =
 - **브랜드 주황색을 유지한다.** 바탕화면·제목줄·선택 표시에는 `win-desktop`·`win-title`(orange 계열)을 쓴다
 - **버튼은 `Win95Button`을 쓴다.** 이 화면에서는 `ui/Button` 대신 쓰고, 다른 화면에서는 쓰지 않는다
 - **폴더·문서 아이콘은 `Win95Icons`의 SVG를 쓴다.** 나머지 아이콘은 기존대로 `lucide-react`를 쓴다
-- **창 테두리·목록은 Galmuri11, 상세 본문은 Pretendard를 쓴다.** 픽셀 폰트는 긴 글에서 가독성이 떨어진다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러온다
+- **글꼴은 Galmuri11 12px로 통일한다.** 창 테두리부터 프로젝트 문서 본문까지 모두 적용한다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러오고, mermaid 도표에도 `DiagramFigure`의 테마 지시문으로 같은 글꼴을 적용한다
+- **프로젝트 문서는 Windows 95 문서처럼 꾸민다.** 섹션 제목은 주황색 제목 표시줄로, 기본 정보와 과제는 그룹 상자(`fieldset`)로, 성과 수치는 검은 배경의 LCD 패널로 표시하고, 이미지·도표는 안으로 파인 테두리의 프레임에 넣는다. 페이드 효과(`Reveal`)는 쓰지 않는다
 - 포트폴리오의 실제 경로는 `/portfolio` 하나다. 창은 가상 경로(`about`, `project`, `project/<slug>`)로 열고 `useWin95Windows`의 `open`·`close`·`focus`로 제어한다. 창마다 라우트를 새로 만들지 않는다. 외부에서 특정 창을 열어야 하면 `/portfolio?open=<가상 경로>` 링크를 쓴다
 - 창의 닫기 버튼은 해당 창만 닫는다. 최소화 버튼은 창을 언마운트하지 않고 숨기므로 다시 열어도 스크롤 위치가 유지된다. 작업 표시줄에서 맨 앞에 있는 창의 버튼을 누르면 최소화되고, 다른 창의 버튼을 누르면 해당 창이 맨 앞으로 온다. 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
 - 화면은 뷰포트 크기(`fixed inset-0`)로 고정하고 문서는 스크롤하지 않는다. 내용이 길면 창 본문만 스크롤하며, 스크롤바는 `win-scrollbar` 클래스를 쓴다

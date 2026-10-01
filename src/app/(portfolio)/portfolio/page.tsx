@@ -83,9 +83,8 @@ const windows: Win95WindowDef[] = [
     status: `${project.name} · ${project.period}`,
     width: 960,
     height: 760,
-    // 긴 글을 읽는 영역이라 픽셀 폰트 대신 본문 폰트를 쓴다
     content: (
-      <div className="px-5 py-10 font-sans text-base sm:px-10">
+      <div className="px-4 py-6 sm:px-8">
         <article className="mx-auto max-w-3xl">
           <ProjectDetail project={project} />
         </article>
