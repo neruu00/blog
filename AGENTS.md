@@ -119,6 +119,7 @@ export async function createPost(formData: FormData) {
 | `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
 | `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
 | `AdjacentNav` | `common/` | 상세 페이지 하단의 이전/다음 항목 링크 (게시글·프로젝트 상세에서 공통으로 사용) |
+| `TableOfContents` | `common/` | 상세 페이지 오른쪽의 목차 (xl 이상). 헤딩 id 배열을 받아 현재 위치를 강조하며, 게시글·프로젝트 상세가 함께 쓴다 |
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
 | `Button` | `ui/` | **모든 버튼의 단일 출처** — variant: primary/outline/ghost/destructive, size: sm/md/icon. `href`를 주면 `next/link`로 렌더. 토글은 `aria-pressed` |
@@ -161,7 +162,7 @@ page.tsx (서버)
 | 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경. 아이콘 버튼은 스피너로 (`EditorActions` 참고) |
 | 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + `Skeleton`. **정적 import하지 말고 그릴 때 `import()`로 받는다** — 안 쓰는 글의 번들까지 무거워진다 (`MermaidDiagram` 참고) |
-| 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`FeatureCarousel` 참고) |
+| 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`ProjectThumbnail` 참고) |
 | 무거운 클라이언트 번들 | `next/dynamic`의 `loading` 옵션 |
 
 ---

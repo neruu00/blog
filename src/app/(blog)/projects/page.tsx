@@ -4,6 +4,7 @@
  *              DB를 거치지 않고 lib/constants/portfolio.ts만 참조해 정적으로 렌더링한다.
  */
 
+import PageHeader from '@/components/common/PageHeader';
 import ProjectCard from '@/components/project/ProjectCard';
 import Reveal from '@/components/ui/Reveal';
 import { EDUCATIONS, PROFILE, PROJECTS, SKILL_GROUPS } from '@/lib/constants/portfolio';
@@ -13,15 +14,19 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Projects',
   description: PROFILE.summary,
+  openGraph: {
+    title: `${PROFILE.name} · ${PROFILE.title}`,
+    description: PROFILE.summary,
+  },
 };
 
 export default function ProjectsPage() {
   return (
     <div className="mx-auto max-w-5xl">
-      <header className="mb-16">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">{PROFILE.name}</h1>
-        <p className="mt-1 text-sm font-medium text-orange-500">{PROFILE.title}</p>
-      </header>
+      <PageHeader
+        title={PROFILE.name}
+        titleAside={<span className="text-sm font-medium text-orange-500">{PROFILE.title}</span>}
+      />
 
       <Reveal>
         <section className="mb-20">

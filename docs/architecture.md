@@ -52,6 +52,8 @@
 
 `/projects`는 포트폴리오 페이지다. 소개·기술·교육 및 프로젝트 카드 목록을 보여준다. `/projects/[projectName]`은 프로젝트 상세 페이지이며, `projectName`에는 `Project.slug`(소문자 영문명)가 들어간다. 두 페이지 모두 DB를 거치지 않고 `lib/constants/portfolio.ts`만 참조한다. 상세 페이지는 `generateStaticParams`를 사용해 빌드 시점에 모두 생성하며, `dynamicParams = false`이므로 목록에 없는 이름은 404를 반환한다. `/about`은 `next.config.ts`에서 `/projects`로 영구 리다이렉트된다.
 
+각 프로젝트는 서비스 한 줄(`tagline`)과 주장 한 문장(`claim`), 대표 이미지(`cover`), 짧은 소개(`intro`), 구조 다이어그램(`architecture`)을 갖고, 과제는 문제·재정의·선택·검증·한계 순으로 나누고 수치(`metric`)와 시각 자료(`visuals`)를 붙인다. 수치에는 출처 등급(실측·인용·계산·구조·못 잼)을 함께 적고, 다이어그램은 mermaid 코드로 두어 `MermaidDiagram`이 그린다. 아직 캡처가 없는 이미지는 `media` 없이 두면 화면에 이미지 자리로 나온다. 상세 페이지 오른쪽(xl 이상)에는 게시글 상세와 같은 `TableOfContents`로 목차를 띄운다. 목차 항목은 `buildProjectToc`가 소개·구조·해결한 과제(과제마다 하위 항목)·회고 순으로 만들고, `ProjectDetail`이 같은 id를 헤딩에 붙인다.
+
 ## 데이터 흐름
 
 ```

@@ -7,8 +7,9 @@ import { notFound } from 'next/navigation';
 
 import AdjacentNav from '@/components/common/AdjacentNav';
 import BackLink from '@/components/common/BackLink';
-import ProjectDetail from '@/components/project/ProjectDetail';
-import { getCoverImage, getProjectBySlug, PROJECTS } from '@/lib/constants/portfolio';
+import TableOfContents from '@/components/common/TableOfContents';
+import ProjectDetail, { buildProjectToc } from '@/components/project/ProjectDetail';
+import { getProjectBySlug, PROJECTS } from '@/lib/constants/portfolio';
 import { SITE_URL } from '@/lib/constants/site';
 
 import type { Metadata } from 'next';
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
   const project = getProjectBySlug(projectName);
   if (!project) return {};
 
-  const image = getCoverImage(project);
+  const { cover } = project;
 
   return {
     title: project.name,
@@ -37,9 +38,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
     openGraph: {
       title: project.name,
       description: project.tagline,
-      images: image
-        ? [{ url: `${SITE_URL}${image.src}`, width: image.width, height: image.height }]
-        : undefined,
+      images: [{ url: `${SITE_URL}${cover.src}`, width: cover.width, height: cover.height }],
     },
   };
 }
@@ -53,18 +52,28 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const prev = PROJECTS[index - 1];
   const next = PROJECTS[index + 1];
 
+  const toc = buildProjectToc(project);
+
   return (
-    <div className="mx-auto max-w-4xl">
+    <>
       <BackLink href="/projects">목록으로</BackLink>
 
-      <ProjectDetail project={project} />
+      <div className="relative flex xl:gap-8">
+        <article className="mx-auto max-w-3xl flex-1">
+          <ProjectDetail project={project} />
 
-      <AdjacentNav
-        prev={prev ? { href: `/projects/${prev.slug}`, title: prev.name } : null}
-        next={next ? { href: `/projects/${next.slug}`, title: next.name } : null}
-        prevLabel="이전 프로젝트"
-        nextLabel="다음 프로젝트"
-      />
-    </div>
+          <AdjacentNav
+            prev={prev ? { href: `/projects/${prev.slug}`, title: prev.name } : null}
+            next={next ? { href: `/projects/${next.slug}`, title: next.name } : null}
+            prevLabel="이전 프로젝트"
+            nextLabel="다음 프로젝트"
+          />
+        </article>
+
+        <div className="hidden xl:block">
+          <TableOfContents items={toc} />
+        </div>
+      </div>
+    </>
   );
 }
