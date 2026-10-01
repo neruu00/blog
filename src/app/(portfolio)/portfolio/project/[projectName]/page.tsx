@@ -56,7 +56,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const toc = buildProjectToc(project);
 
   return (
+    // 같은 페이지 컴포넌트가 재사용돼 창 본문의 스크롤 위치가 이전 문서에 남지 않도록 문서마다 새로 마운트한다
     <Win95Window
+      key={project.slug}
       title={project.name}
       icon={<ProjectAppGlyph size={16} letter={project.nameEn.charAt(0)} />}
       address={`C:\\neru.win\\portfolio\\project\\${project.slug}`}

@@ -249,6 +249,7 @@ type ActionResult<T = void> =
 - **폴더·문서 아이콘은 `Win95Icons`의 SVG를 쓴다.** 나머지 아이콘은 기존대로 `lucide-react`를 쓴다
 - **창 테두리·목록은 Galmuri11, 상세 본문은 Pretendard를 쓴다.** 픽셀 폰트는 긴 글에서 가독성이 떨어진다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러온다
 - 창의 닫기 버튼을 누르면 창을 연 위치로 돌아간다(about·project 폴더 → `/portfolio`, 프로젝트 문서 → `/portfolio/project`). 작업 표시줄 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
+- 화면은 뷰포트 크기(`fixed inset-0`)로 고정하고 문서는 스크롤하지 않는다. 내용이 길면 창 본문만 스크롤하며, 스크롤바는 `win-scrollbar` 클래스를 쓴다
 - 아이콘은 한 번 클릭하면 열린다. 더블클릭은 웹에서 사용자가 알아차리기 어렵고 터치 환경에서는 쓸 수 없다
 
 ---

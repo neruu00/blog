@@ -13,7 +13,7 @@ const GALMURI_CSS = 'https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.cs
 
 export default function PortfolioLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-win-desktop relative min-h-screen pb-14">
+    <div className="bg-win-desktop fixed inset-0 overflow-hidden">
       <link rel="stylesheet" href={GALMURI_CSS} precedence="default" />
       {/* JS가 꺼져 있으면 부팅 화면이 걷히지 않고 Reveal이 opacity-0에 머무르므로 둘 다 되돌린다 */}
       <noscript>
@@ -23,8 +23,9 @@ export default function PortfolioLayout({ children }: { children: React.ReactNod
       <Win95Boot />
       <Win95Desktop />
 
-      {/* 바탕화면 아이콘을 덮는 빈 영역이 클릭을 가로채지 않도록 창에만 포인터 이벤트를 준다 */}
-      <main className="pointer-events-none relative mx-auto max-w-6xl px-2 pt-2 *:pointer-events-auto sm:px-6 sm:pt-8 lg:pl-36">
+      {/* 화면 크기는 뷰포트로 고정하고, 내용이 길면 창 본문만 스크롤한다. 작업 표시줄(h-10) 위까지만 쓴다.
+          바탕화면 아이콘을 덮는 빈 영역이 클릭을 가로채지 않도록 창에만 포인터 이벤트를 준다 */}
+      <main className="pointer-events-none absolute inset-x-0 top-0 bottom-10 mx-auto max-w-6xl p-2 *:pointer-events-auto sm:px-6 sm:py-8 lg:pl-36">
         {children}
       </main>
 

@@ -37,7 +37,7 @@ export default function Win95Window({
   return (
     <section
       aria-label={title}
-      className="win-raised font-win flex flex-col gap-0.5 p-[3px] text-xs text-black"
+      className="win-raised font-win flex max-h-full flex-col gap-0.5 p-[3px] text-xs text-black"
     >
       <div className="win-titlebar flex h-[22px] items-center gap-1.5 pr-[3px] pl-1 font-bold text-white">
         {icon}
@@ -79,7 +79,10 @@ export default function Win95Window({
         </div>
       )}
 
-      <div className="win-sunken min-h-0 flex-1 bg-white p-[2px]">{children}</div>
+      {/* 창 높이는 바탕화면 안으로 제한되므로 넘치는 내용은 본문 안에서 스크롤한다 */}
+      <div className="win-sunken win-scrollbar min-h-0 flex-1 overflow-y-auto bg-white p-[2px]">
+        {children}
+      </div>
 
       {status && <div className="win-sunken flex h-5 items-center px-1.5">{status}</div>}
     </section>

@@ -63,7 +63,7 @@ function SectionHeading({ id, children, first = false }: SectionHeadingProps) {
   return (
     <h2
       id={id}
-      className={cn('mb-5 scroll-mt-24 text-xl font-bold text-gray-900', first ? 'mt-0' : 'mt-10')}
+      className={cn('mb-5 scroll-mt-4 text-xl font-bold text-gray-900', first ? 'mt-0' : 'mt-10')}
     >
       {children}
     </h2>
@@ -131,7 +131,7 @@ function ChallengeSection({ challenge, index }: { challenge: Challenge; index: n
     <div>
       <h3
         id={challengeId(index)}
-        className="flex scroll-mt-24 items-baseline gap-2.5 text-lg font-semibold text-gray-900"
+        className="flex scroll-mt-4 items-baseline gap-2.5 text-lg font-semibold text-gray-900"
       >
         <span className="text-xs font-semibold text-orange-500 tabular-nums">
           {String(index + 1).padStart(2, '0')}
