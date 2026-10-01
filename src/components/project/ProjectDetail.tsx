@@ -17,9 +17,8 @@ import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import type { Challenge, Project } from '@/lib/constants/portfolio';
 import { cn } from '@/lib/utils';
-import type { TocItem } from '@/lib/utils/tiptap';
 
-/** 섹션 제목. 헤딩과 목차가 같은 값을 써야 목차 문구가 본문과 어긋나지 않는다 */
+/** 섹션 제목 */
 const SECTION_TITLE = {
   intro: '소개',
   architecture: '구조',
@@ -29,26 +28,6 @@ const SECTION_TITLE = {
 
 function challengeId(index: number) {
   return `challenge-${index + 1}`;
-}
-
-/**
- * 상세 페이지 목차. 반환하는 id는 ProjectDetail의 헤딩 id와 같아야 TableOfContents가 현재 위치를 찾는다.
- * 섹션은 level 2, 과제는 level 3이다.
- */
-export function buildProjectToc(project: Project): TocItem[] {
-  return [
-    { id: 'intro', text: SECTION_TITLE.intro, level: 2 },
-    { id: 'architecture', text: SECTION_TITLE.architecture, level: 2 },
-    { id: 'challenges', text: SECTION_TITLE.challenges, level: 2 },
-    ...project.challenges.map((challenge, i) => ({
-      id: challengeId(i),
-      text: challenge.title,
-      level: 3,
-    })),
-    ...(project.retrospective
-      ? [{ id: 'retrospective', text: SECTION_TITLE.retrospective, level: 2 }]
-      : []),
-  ];
 }
 
 interface SectionHeadingProps {

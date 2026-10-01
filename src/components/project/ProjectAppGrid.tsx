@@ -3,15 +3,18 @@
  * @description project 폴더 창 안의 프로젝트 앱 아이콘 목록. 아이콘을 클릭하면 프로젝트 문서를 연다.
  *              마우스를 올리면 대표 캡처·기간·주장을 담은 미리 보기 대화상자가 커서를 따라다닌다.
  *              키보드로 포커스하면 아이콘 옆에 고정해서 띄우고, 호버가 없는 터치에서는 띄우지 않는다.
+ *              대화상자는 body에 포털로 그린다. 창 안에 두면 위에 겹친 다른 창에 가려진다.
  */
 
 'use client';
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import ProjectThumbnail from '@/components/project/ProjectThumbnail';
-import Win95IconLink from '@/components/project/Win95IconLink';
+import Win95IconButton from '@/components/project/Win95IconButton';
 import { ProjectAppGlyph } from '@/components/project/Win95Icons';
+import { useWin95Windows } from '@/hooks/useWin95Windows';
 import type { Project } from '@/lib/constants/portfolio';
 
 /** 클라이언트 번들에 portfolio.ts 전체가 실리지 않도록 미리 보기에 필요한 필드만 받는다 */
@@ -25,6 +28,7 @@ interface ProjectAppGridProps {
 const CURSOR_GAP = 16;
 
 export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
+  const { open } = useWin95Windows();
   const [active, setActive] = useState<ProjectApp | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const anchor = useRef({ x: 0, y: 0 });
@@ -50,8 +54,11 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
       <ul className="flex flex-wrap gap-2 p-4">
         {apps.map((app) => (
           <li key={app.slug}>
-            <Win95IconLink
-              href={`/portfolio/project/${app.slug}`}
+            <Win95IconButton
+              onClick={() => {
+                setActive(null);
+                open(`project/${app.slug}`);
+              }}
               icon={<ProjectAppGlyph size={48} letter={app.nameEn.charAt(0)} />}
               label={app.name}
               aria-describedby={`app-${app.slug}-claim`}
@@ -81,13 +88,13 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
       </ul>
 
       {/* 아이콘 설명은 aria-describedby로 읽히므로 대화상자는 보조기기에서 숨긴다 */}
-      <div
-        ref={dialogRef}
-        aria-hidden
-        className={`win-raised font-win pointer-events-none fixed top-0 left-0 z-50 w-72 p-[3px] text-xs text-black ${active ? 'visible' : 'invisible'}`}
-      >
-        {active && (
-          <>
+      {active &&
+        createPortal(
+          <div
+            ref={dialogRef}
+            aria-hidden
+            className="win-raised font-win pointer-events-none fixed top-0 left-0 z-50 w-72 p-[3px] text-xs text-black"
+          >
             <div className="win-titlebar flex h-5 items-center gap-1.5 px-1 font-bold text-white">
               <ProjectAppGlyph size={16} letter={active.nameEn.charAt(0)} />
               <span className="truncate">{active.name}</span>
@@ -101,9 +108,9 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
               </p>
               <p className="leading-relaxed">{active.claim}</p>
             </div>
-          </>
+          </div>,
+          document.body,
         )}
-      </div>
     </>
   );
 }

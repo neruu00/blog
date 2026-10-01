@@ -248,8 +248,10 @@ type ActionResult<T = void> =
 - **버튼은 `Win95Button`을 쓴다.** 이 화면에서는 `ui/Button` 대신 쓰고, 다른 화면에서는 쓰지 않는다
 - **폴더·문서 아이콘은 `Win95Icons`의 SVG를 쓴다.** 나머지 아이콘은 기존대로 `lucide-react`를 쓴다
 - **창 테두리·목록은 Galmuri11, 상세 본문은 Pretendard를 쓴다.** 픽셀 폰트는 긴 글에서 가독성이 떨어진다. Galmuri는 `(portfolio)/layout.tsx`에서만 불러온다
-- 창의 닫기 버튼을 누르면 창을 연 위치로 돌아간다(about·project 폴더 → `/portfolio`, 프로젝트 문서 → `/portfolio/project`). 작업 표시줄 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
+- 포트폴리오의 실제 경로는 `/portfolio` 하나다. 창은 가상 경로(`about`, `project`, `project/<slug>`)로 열고 `useWin95Windows`의 `open`·`close`·`focus`로 제어한다. 창마다 라우트를 새로 만들지 않는다. 외부에서 특정 창을 열어야 하면 `/portfolio?open=<가상 경로>` 링크를 쓴다
+- 창의 닫기 버튼은 해당 창만 닫는다. 작업 표시줄 맨 왼쪽의 "블로그" 버튼은 항상 `/`로 이동한다
 - 화면은 뷰포트 크기(`fixed inset-0`)로 고정하고 문서는 스크롤하지 않는다. 내용이 길면 창 본문만 스크롤하며, 스크롤바는 `win-scrollbar` 클래스를 쓴다
+- 창은 제목줄을 끌어 옮긴다. 위치는 `left`/`top`으로 준다 — `transform`을 쓰면 창 안의 `position: fixed` 요소(프로젝트 미리 보기)가 창 기준으로 잡혀 커서를 따라가지 못한다
 - 아이콘은 한 번 클릭하면 열린다. 더블클릭은 웹에서 사용자가 알아차리기 어렵고 터치 환경에서는 쓸 수 없다
 
 ---

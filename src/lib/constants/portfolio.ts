@@ -74,7 +74,7 @@ export interface Challenge {
 }
 
 export interface Project {
-  /** URL 경로(/portfolio/project/[projectName])에 쓰는 소문자 영문 식별자. 바꾸면 기존 링크가 깨진다 */
+  /** 포트폴리오 창의 가상 경로(project/<slug>)와 /portfolio?open=project/<slug> 링크에 쓰는 소문자 영문 식별자. 바꾸면 기존 링크가 깨진다 */
   slug: string;
   name: string;
   nameEn: string;

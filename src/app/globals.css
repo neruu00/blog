@@ -132,6 +132,11 @@ button:focus-visible {
   background-image: linear-gradient(90deg, var(--color-win-title), var(--color-win-title-end));
 }
 
+/* 맨 앞이 아닌 창의 제목줄. 흰 글자 대비를 위해 원래의 회색(#808080)보다 어두운 gray-500에서 시작한다 */
+@utility win-titlebar-inactive {
+  background-image: linear-gradient(90deg, var(--color-gray-500), var(--color-win-shadow));
+}
+
 /* 스크롤 가능하다는 표시가 사라지므로 위치 인디케이터가 따로 있는 캐러셀에만 쓴다 */
 @utility no-scrollbar {
   scrollbar-width: none;

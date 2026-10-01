@@ -18,9 +18,10 @@ const SIZE_CLASSES: Record<Win95ButtonSize, string> = {
   icon: 'h-4 w-[18px]',
 };
 
-function win95ButtonClass(size: Win95ButtonSize, className?: string) {
+function win95ButtonClass(size: Win95ButtonSize, pressed: boolean, className?: string) {
   return cn(
-    'win-raised active:win-pressed inline-flex shrink-0 items-center justify-center gap-1.5 font-win text-xs text-black',
+    pressed ? 'win-pressed' : 'win-raised active:win-pressed',
+    'inline-flex shrink-0 items-center justify-center gap-1.5 font-win text-xs text-black',
     SIZE_CLASSES[size],
     className,
   );
@@ -28,6 +29,8 @@ function win95ButtonClass(size: Win95ButtonSize, className?: string) {
 
 interface BaseProps {
   size?: Win95ButtonSize;
+  /** 눌린 채로 그린다. 작업 표시줄에서 맨 앞 창의 버튼에 쓴다 */
+  pressed?: boolean;
 }
 
 type Win95ButtonProps =
@@ -36,10 +39,10 @@ type Win95ButtonProps =
 
 export default function Win95Button(props: Win95ButtonProps) {
   if (props.href !== undefined) {
-    const { size = 'md', className, ...rest } = props;
-    return <Link {...rest} className={win95ButtonClass(size, className)} />;
+    const { size = 'md', pressed = false, className, ...rest } = props;
+    return <Link {...rest} className={win95ButtonClass(size, pressed, className)} />;
   }
 
-  const { size = 'md', className, type = 'button', ...rest } = props;
-  return <button {...rest} type={type} className={win95ButtonClass(size, className)} />;
+  const { size = 'md', pressed = false, className, type = 'button', ...rest } = props;
+  return <button {...rest} type={type} className={win95ButtonClass(size, pressed, className)} />;
 }
