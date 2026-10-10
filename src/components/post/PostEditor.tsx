@@ -53,7 +53,7 @@ export default function PostEditor({
   });
 
   return (
-    <main className="min-h-screen px-4 py-10 pb-24 font-sans">
+    <main className="px-gutter min-h-screen py-10 pb-24 font-sans">
       <form onSubmit={handleSubmit}>
         <PostTitleInput mode={mode} seriesOptions={seriesOptions} postId={postId} />
 

@@ -40,7 +40,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     ],
     editorProps: {
       attributes: {
-        class: 'prose prose-orange max-w-none w-full min-h-[500px] p-6 outline-none',
+        class: 'prose prose-orange max-w-none w-full min-h-[500px] p-4 md:p-6 outline-none',
       },
     },
     onUpdate: ({ editor }) => {
