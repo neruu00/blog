@@ -1,6 +1,6 @@
 'use client';
 
-import { Megaphone, PenSquare } from 'lucide-react';
+import { PenSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
@@ -12,34 +12,18 @@ export default function FloatingActionButton() {
 
   if (status === 'loading') return null;
 
-  // 관리자에게는 글쓰기 버튼, 그 외에는 GitHub 이슈 제보 버튼을 보여준다
-  if (session?.user?.isAdmin) {
-    return (
-      <div className="right-float bottom-float fixed z-30">
-        <Tooltip text="글쓰기" position="left">
-          <Link
-            href="/write"
-            className="group size-fab flex items-center justify-center rounded-full bg-orange-500 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 hover:shadow-xl"
-            aria-label="글쓰기"
-          >
-            <PenSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
-          </Link>
-        </Tooltip>
-      </div>
-    );
-  }
+  // 관리자에게만 글쓰기 버튼을 보여준다
+  if (!session?.user?.isAdmin) return null;
 
   return (
     <div className="right-float bottom-float fixed z-30">
-      <Tooltip text="이슈 제보하기" position="left">
+      <Tooltip text="글쓰기" position="left">
         <Link
-          href="https://github.com/neruu00/blog/issues"
-          target="_blank"
-          rel="noreferrer"
-          className="group size-fab flex items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
-          aria-label="이슈 제보하기"
+          href="/write"
+          className="group size-fab flex items-center justify-center rounded-full bg-orange-500 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 hover:shadow-xl"
+          aria-label="글쓰기"
         >
-          <Megaphone className="h-6 w-6 transition-transform group-hover:scale-110" />
+          <PenSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
         </Link>
       </Tooltip>
     </div>
