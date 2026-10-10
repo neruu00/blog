@@ -125,12 +125,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
       <div className="relative flex xl:gap-8">
         <ViewCounter postId={post.id} />
-        <article className="mx-auto max-w-3xl flex-1">
+        <article className="mx-auto max-w-3xl min-w-0 flex-1">
           <header className="mb-10">
-            <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
-              {post.title}
-            </h1>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <h1 className="page-title mb-4">{post.title}</h1>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 md:gap-x-4">
               <time dateTime={post.created_at ? new Date(post.created_at).toISOString() : ''}>
                 {formatDateKo(post.created_at)}
               </time>
@@ -148,9 +146,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </header>
           {series && <PostSeriesList series={series} currentPostId={post.id} />}
+          <div className="xl:hidden">
+            <TableOfContents items={tocItems} variant="collapsible" />
+          </div>
           <PostContent content={post.content as JSONContent} toc={tocItems} />
 
-          <div className="mt-16 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
+          <div className="mt-16 flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-6">
             <PostExportButtons title={post.title} content={post.content as JSONContent} />
             {isAdmin && (
               <>

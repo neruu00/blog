@@ -44,6 +44,57 @@
   --font-mono: var(--font-geist-mono);
   /* Galmuri11은 (portfolio) 레이아웃에서만 불러온다. 다른 화면에서는 굴림·돋움으로 대체된다 */
   --font-win: 'Galmuri11', Gulim, '굴림', Dotum, '돋움', sans-serif;
+
+  /* 블로그 레이아웃 치수. 값은 아래 :root의 --layout-*에 있고, 화면 구간마다 바뀌는 값도 있다 */
+  --spacing-header: var(--layout-header);
+  --spacing-sidenav: var(--layout-sidenav);
+  --spacing-drawer: var(--layout-drawer);
+  --spacing-fab: var(--layout-fab);
+  --spacing-gutter: var(--layout-gutter);
+  --spacing-page-top: var(--layout-page-top);
+  --spacing-float: var(--layout-float);
+  /* 상단 헤더 바로 아래. 모바일 토스트 위치 */
+  --spacing-below-header: calc(var(--layout-header) + var(--layout-float));
+  /* md 이상 토스트는 오른쪽 아래 FAB·EditorActions 열의 왼쪽에 띄워 겹치지 않게 한다 */
+  --spacing-beside-fab: calc(var(--layout-float) * 2 + var(--layout-fab));
+}
+
+/* 화면 구간: 모바일 < md(768px) ≤ 태블릿 < lg(1024px) ≤ 데스크톱.
+   사이드 네비는 lg부터 보이고, 그 아래에서는 MobileHeader가 대신한다 */
+@layer base {
+  :root {
+    --layout-header: calc(var(--spacing) * 14);
+    --layout-sidenav: calc(var(--spacing) * 64);
+    --layout-drawer: calc(var(--spacing) * 72);
+    --layout-fab: calc(var(--spacing) * 14);
+    --layout-gutter: calc(var(--spacing) * 4);
+    --layout-page-top: calc(var(--spacing) * 8);
+    --layout-float: calc(var(--spacing) * 4);
+
+    @variant md {
+      --layout-gutter: calc(var(--spacing) * 8);
+      --layout-page-top: calc(var(--spacing) * 12);
+      --layout-float: calc(var(--spacing) * 6);
+    }
+
+    @variant lg {
+      --layout-gutter: calc(var(--spacing) * 6);
+      --layout-page-top: calc(var(--spacing) * 24);
+    }
+  }
+}
+
+/* 페이지 제목(h1). PageHeader와 게시글·뉴스 상세 제목이 같이 쓴다. 긴 제목이 모바일에서 여러 줄로 감기므로 줄 간격은 snug로 둔다 */
+@utility page-title {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-gray-900);
+
+  @variant md {
+    font-size: var(--text-3xl);
+  }
 }
 
 /* 버튼 커서는 여기서만 정한다. 컴포넌트에 cursor-pointer를 붙이지 않는다. */

@@ -60,7 +60,7 @@
 
 | 용도 | 클래스 | 예시 |
 |---|---|---|
-| 페이지 제목 | `text-3xl font-bold` | 게시글 제목 |
+| 페이지 제목 | `page-title` (24px → `md` 이상 30px, bold) | 게시글 제목 |
 | 본문 제목 (H1 대응 h2) | `text-2xl font-bold` | 에디터 내 # 헤딩 |
 | 본문 부제목 (H2 대응 h3) | `text-xl font-bold` | 에디터 내 ## 헤딩 |
 | 본문 소제목 (H3 대응 h4) | `text-lg font-bold` | 에디터 내 ### 헤딩 |
@@ -80,7 +80,7 @@
 
 **링크는 `orange-700`.** `prose-orange` 기본값인 orange-600은 흰 배경 대비가 3.6:1로 AA 기준에 미달하므로 `.prose { --tw-prose-links }`로 덮어쓴다.
 
-> 📌 **본문 크기가 나뉘어 있다**: 뉴스 상세는 `prose-lg`(18px), 게시글 상세(`PostContent`)와 편집 화면(`TiptapEditor`)은 16px다. 통일 여부는 `PLAN.md` T-314.
+> 📌 **본문 크기가 나뉘어 있다**: 뉴스 상세는 `md` 이상에서 `prose-lg`(18px), 게시글 상세(`PostContent`)와 편집 화면(`TiptapEditor`)은 16px다. 통일 여부는 `PLAN.md` T-314.
 
 ### 목록 (ul / ol)
 
@@ -136,47 +136,67 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 
 ## 레이아웃
 
+화면은 모바일(`md` 미만), 태블릿(`md` 이상 `lg` 미만), 데스크톱(`lg` 이상) 세 구간으로 구분한다. 데스크톱에서만 고정 사이드 네비를 사용하고, 모바일과 태블릿에서는 상단 헤더와 드로어를 사용한다. 두 구간은 여백과 글자 크기로 구분한다.
+
+### 레이아웃 토큰
+
+레이아웃 치수는 `globals.css`의 `@theme`에 spacing 토큰으로 정의하고, 실제 값은 `:root`의 `--layout-*` 변수에 둔다. 구간마다 달라지는 값은 `:root`에서 `@variant md`·`@variant lg`로 바꾸므로 컴포넌트에서는 `px-gutter`처럼 토큰 하나만 쓰면 된다.
+
+| 토큰 | 유틸리티 예 | 모바일 | 태블릿 | 데스크톱 | 용도 |
+|---|---|---|---|---|---|
+| `header` | `h-header`, `pt-header` | 56px | 56px | — | `MobileHeader` 높이, 그만큼 본문을 내린다 |
+| `sidenav` | `w-sidenav`, `lg:pl-sidenav` | — | — | 256px | `SideNav` 폭, 그만큼 본문을 민다 |
+| `drawer` | `w-drawer` | 288px | 288px | — | 모바일 드로어 폭 |
+| `gutter` | `px-gutter`, `-mx-gutter` | 16px | 32px | 24px | 본문·헤더·푸터 좌우 여백 |
+| `page-top` | `pt-page-top` | 32px | 48px | 96px | 본문 위 여백 |
+| `float` | `right-float`, `bottom-float` | 16px | 24px | 24px | FAB·`EditorActions`·토스트와 화면 가장자리 사이 거리 |
+| `fab` | `size-fab` | 56px | 56px | 56px | FAB와 `EditorActions` 제출 버튼 크기 |
+| `below-header` | `top-below-header` | header + float | | | 모바일 토스트 위치 (헤더 바로 아래) |
+| `beside-fab` | `md:right-beside-fab` | | float × 2 + fab | | 태블릿 이상 토스트 위치 (FAB 열 왼쪽) |
+
 ### 데스크톱 (≥ 1024px)
 
 ```
 ┌────────────┬─────────────────────────────────────────┐
+│            │              pt-page-top                │
+│   SideNav  │                                         │
+│   (fixed)  │         Main Content Area               │
+│            │         max-w-6xl, px-gutter            │
+│ w-sidenav  │         (페이지마다 max-w-3xl 등)        │
 │            │                                         │
-│   SideNav  │           (넓은 상단 여백)               │
-│   (fixed)  │                                         │
-│            │                                         │
-│   w-64     │         Main Content Area               │
-│            │         max-w-3xl (768px)                │
-│   Logo     │         mx-auto                         │
+│   Logo     │                                         │
 │   ─────    │                                         │
 │   Home     │                                         │
 │   Posts    │                                         │
 │   News     │                                         │
-│            │                                         │
 │            │              Footer                     │
 └────────────┴─────────────────────────────────────────┘
 ```
 
-### 모바일 (< 1024px)
+게시글 상세에서는 `xl`(1280px) 이상일 때 본문 오른쪽에 목차(`TableOfContents`)를 고정한다.
+
+### 모바일·태블릿 (< 1024px)
 
 ```
 ┌───────────────────────────────┐
-│  ☰ Logo                      │  ← MobileHeader (sticky)
+│  Logo                      ☰  │  ← MobileHeader (fixed, h-header)
 ├───────────────────────────────┤
 │                               │
 │        Main Content           │
-│        px-6                   │
+│        px-gutter              │
 │                               │
 ├───────────────────────────────┤
 │          Footer               │
 └───────────────────────────────┘
 ```
 
-### 사이드 네비게이션
-
-- 로고 / 프로필 아바타
-- Home / Posts / News / Portfolio (`lib/constants/nav.ts`)
-- 하단: 로그인/프로필 버튼
-- 글쓰기 진입은 사이드 네비게이션이 아니라 `FloatingActionButton`(admin 전용)이 담당
+- 햄버거 버튼을 누르면 오른쪽에서 드로어가 열린다. 닫힌 드로어에는 `inert`를 걸어 포커스를 받지 않게 한다
+- FAB는 `z-30`이므로 드로어(오버레이 `z-40`, 패널 `z-50`)에 가려진다
+- 토스트는 모바일에서는 헤더 아래에 전체 폭으로, 태블릿 이상에서는 FAB 열 왼쪽에 표시한다
+- 필터 칩 줄(`FilterChipGroup`)은 모바일에서는 한 줄로 가로 스크롤하고, `md` 이상에서는 여러 줄로 감싼다
+- `NewsCard`는 모바일에서 제목을 최대 2줄까지 먼저 보여 주고, 그 아래에 소스와 날짜를 둔다
+- `AdjacentNav`는 모바일에서 이전/다음 글을 한 열로 쌓는다
+- 게시글 목차는 `xl` 미만에서 본문 위 접이식 패널(`CollapsiblePanel`)로 표시한다
 
 ## 컴포넌트 스타일
 

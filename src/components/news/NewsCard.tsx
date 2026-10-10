@@ -1,6 +1,6 @@
 /**
  * @file NewsCard.tsx
- * @description 소스 뱃지, 제목, 날짜를 한 줄로 보여주는 기술 뉴스 카드.
+ * @description 소스 뱃지, 제목, 날짜를 보여주는 기술 뉴스 카드. md 이상은 한 줄, 모바일은 제목 아래에 뱃지·날짜를 둔다.
  */
 
 import Link from 'next/link';
@@ -18,17 +18,23 @@ export default function NewsCard({ news }: NewsCardProps) {
 
   return (
     <article className="group py-3 first:pt-0 last:pb-0">
-      <Link href={`/news/${news.id}`} className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3 overflow-hidden">
+      <Link
+        href={`/news/${news.id}`}
+        className="flex flex-wrap items-center gap-x-3 gap-y-1.5 md:flex-nowrap md:gap-x-4"
+      >
+        <span className="order-2 flex md:order-none">
           <TagBadge tag={sourceLabel} hash={false} />
+        </span>
 
-          <h3 className="truncate text-sm font-medium text-gray-900 transition-colors group-hover:text-orange-500">
-            {news.title}
-          </h3>
-        </div>
+        <h3 className="order-1 line-clamp-2 basis-full text-sm font-medium text-gray-900 transition-colors group-hover:text-orange-500 md:order-none md:line-clamp-1 md:min-w-0 md:flex-1 md:basis-auto">
+          {news.title}
+        </h3>
 
         {/* 날짜는 상대 시간("3시간 전")으로 표시한다 */}
-        <time dateTime={news.publishedAt.toISOString()} className="shrink-0 text-xs text-gray-400">
+        <time
+          dateTime={news.publishedAt.toISOString()}
+          className="order-3 shrink-0 text-xs text-gray-400 md:order-none"
+        >
           {formatRelativeTime(news.publishedAt)}
         </time>
       </Link>

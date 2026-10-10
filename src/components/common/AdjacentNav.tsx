@@ -1,6 +1,6 @@
 /**
  * @file AdjacentNav.tsx
- * @description 상세 페이지 하단의 이전/다음 항목 내비게이션. 게시글과 프로젝트 상세가 함께 쓴다.
+ * @description 상세 페이지 하단의 이전/다음 항목 내비게이션. 모바일은 한 열, md 이상은 두 열로 놓는다.
  */
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -23,7 +23,7 @@ export default function AdjacentNav({ prev, next, prevLabel, nextLabel }: Adjace
   if (!prev && !next) return null;
 
   return (
-    <nav className="mt-12 grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
+    <nav className="mt-12 grid grid-cols-1 gap-4 border-t border-gray-100 pt-6 md:grid-cols-2">
       {prev ? (
         <Link href={prev.href} className="group flex min-w-0 flex-col gap-1">
           <span className="flex items-center gap-1 text-xs text-gray-400">
@@ -35,7 +35,7 @@ export default function AdjacentNav({ prev, next, prevLabel, nextLabel }: Adjace
           </span>
         </Link>
       ) : (
-        <div />
+        <div className="hidden md:block" />
       )}
 
       {next ? (
@@ -49,7 +49,7 @@ export default function AdjacentNav({ prev, next, prevLabel, nextLabel }: Adjace
           </span>
         </Link>
       ) : (
-        <div />
+        <div className="hidden md:block" />
       )}
     </nav>
   );

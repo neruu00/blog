@@ -16,7 +16,7 @@ export default function FilterChip({ href, active, children }: FilterChipProps) 
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+      className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
         active ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
       }`}
     >

@@ -35,7 +35,7 @@ export default function EditorActions({
   return (
     <div
       data-editor-actions
-      className="fixed right-6 bottom-6 z-50 flex flex-col items-center gap-3"
+      className="right-float bottom-float fixed z-50 flex flex-col items-center gap-3"
     >
       <Tooltip text="뒤로가기" position="left">
         <Button
@@ -67,7 +67,7 @@ export default function EditorActions({
         <Button
           type="submit"
           size="icon"
-          className={`${FLOATING} h-14 w-14`}
+          className={`${FLOATING} size-fab`}
           disabled={isSubmitting}
           aria-label={submitLabel}
         >

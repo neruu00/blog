@@ -42,7 +42,7 @@ export default function MobileHeader() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 z-50 flex h-14 w-full items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-md lg:hidden">
+      <header className="h-header px-gutter fixed top-0 left-0 z-50 flex w-full items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-md lg:hidden">
         <Link href="/" className="text-lg font-bold text-gray-900">
           neruu00<span className="text-orange-500">.log</span>
         </Link>
@@ -64,8 +64,9 @@ export default function MobileHeader() {
       )}
 
       <div
-        className={`fixed top-0 right-0 z-50 flex h-screen w-72 flex-col bg-white shadow-xl transition-transform duration-300 ease-out lg:hidden ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+        inert={!isOpen}
+        className={`w-drawer fixed top-0 right-0 z-50 flex h-dvh flex-col bg-white transition-transform duration-300 ease-out lg:hidden ${
+          isOpen ? 'translate-x-0 shadow-xl' : 'translate-x-full'
         }`}
       >
         <div className="flex items-center justify-end px-4 pt-4">

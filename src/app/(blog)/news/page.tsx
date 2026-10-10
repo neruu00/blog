@@ -10,6 +10,7 @@ import PageHeader from '@/components/common/PageHeader';
 import Pagination from '@/components/common/Pagination';
 import NewsCard from '@/components/news/NewsCard';
 import FilterChip from '@/components/ui/FilterChip';
+import FilterChipGroup from '@/components/ui/FilterChipGroup';
 import { supabase } from '@/lib/supabase';
 import { mapNewsListRow } from '@/lib/utils/mappers';
 import { TECH_NEWS_SOURCE_LABELS, type TechNewsSource } from '@/types/tech-news.type';
@@ -82,18 +83,16 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         description="프론트엔드 최신 소식과 한국어 요약을 제공합니다."
       />
 
-      <section className="mb-8">
-        <div className="flex flex-wrap gap-2">
-          <FilterChip href="/news" active={!activeSource}>
-            전체
+      <FilterChipGroup label="뉴스 소스 필터" className="mb-8">
+        <FilterChip href="/news" active={!activeSource}>
+          전체
+        </FilterChip>
+        {ALL_SOURCES.map((src) => (
+          <FilterChip key={src} href={`/news?source=${src}`} active={activeSource === src}>
+            {TECH_NEWS_SOURCE_LABELS[src]}
           </FilterChip>
-          {ALL_SOURCES.map((src) => (
-            <FilterChip key={src} href={`/news?source=${src}`} active={activeSource === src}>
-              {TECH_NEWS_SOURCE_LABELS[src]}
-            </FilterChip>
-          ))}
-        </div>
-      </section>
+        ))}
+      </FilterChipGroup>
 
       <section>
         {newsList.length > 0 ? (

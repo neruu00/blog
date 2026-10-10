@@ -18,12 +18,12 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
 
       <FloatingActionButton />
 
-      <div className="min-h-screen lg:pl-64">
+      <div className="lg:pl-sidenav min-h-screen">
         {/* 고정된 MobileHeader 높이만큼 내린다 */}
-        <div className="pt-14 lg:pt-0">
-          <div className="pt-16 lg:pt-24" />
+        <div className="pt-header lg:pt-0">
+          <div className="pt-page-top" />
 
-          <main className="mx-auto max-w-6xl px-6 pb-16">{children}</main>
+          <main className="px-gutter mx-auto max-w-6xl pb-16">{children}</main>
 
           <Footer />
         </div>

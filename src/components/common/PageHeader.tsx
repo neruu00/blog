@@ -1,6 +1,6 @@
 /**
  * @file PageHeader.tsx
- * @description 페이지 최상단 제목 영역. h1 스타일의 단일 출처.
+ * @description 페이지 최상단 제목 영역. h1 크기는 globals.css의 page-title 유틸리티가 정한다.
  */
 
 interface PageHeaderProps {
@@ -17,7 +17,7 @@ export default function PageHeader({ title, titleAside, description, children }:
   return (
     <header className="mb-10">
       <div className="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
+        <h1 className="page-title">{title}</h1>
         {titleAside}
       </div>
       {/* falsy지만 렌더 가능한 값(0 등)이 스타일 없이 새어나가지 않도록 null 계열만 생략 */}

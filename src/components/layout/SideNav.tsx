@@ -9,7 +9,7 @@ import NavLinks from './NavLinks';
 
 export default function SideNav() {
   return (
-    <aside className="fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col border-r border-gray-100 bg-white lg:flex">
+    <aside className="w-sidenav fixed top-0 left-0 z-40 hidden h-screen flex-col border-r border-gray-100 bg-white lg:flex">
       <div className="px-6 pt-20 pb-6">
         <BlogOwnerProfile />
       </div>

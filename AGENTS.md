@@ -115,15 +115,17 @@ export async function createPost(formData: FormData) {
 | 컴포넌트 | 위치 | 용도 |
 |---|---|---|
 | `EmptyState` | `common/` | 빈 목록 플레이스홀더 (점선 박스 + 안내 문구, 액션은 children) |
-| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. **h1 스타일의 단일 출처**. 제목 옆 보조 표기는 `titleAside`, 설명 아래 메타 정보는 children |
+| `PageHeader` | `common/` | 페이지 제목 h1 + 설명. h1 크기는 `page-title` 유틸리티. 제목 옆 보조 표기는 `titleAside`, 설명 아래 메타 정보는 children |
 | `SectionHeader` | `common/` | 섹션 제목 + "전체 보기 →" 링크 |
 | `BackLink` | `common/` | 상세 페이지의 "← 목록으로" |
-| `AdjacentNav` | `common/` | 상세 페이지 하단의 이전/다음 항목 링크 (게시글·프로젝트 상세에서 공통으로 사용) |
-| `TableOfContents` | `common/` | 상세 페이지 오른쪽의 목차 (xl 이상). 헤딩 id 배열을 받아 현재 위치를 강조하며, 게시글·프로젝트 상세가 함께 쓴다 |
+| `AdjacentNav` | `common/` | 상세 페이지 하단의 이전/다음 항목 링크. 모바일은 한 열, `md` 이상은 두 열 |
+| `TableOfContents` | `common/` | 게시글 상세 목차. `variant="sidebar"`는 본문 오른쪽 고정(xl 이상), `"collapsible"`은 본문 위 접이식 패널(xl 미만). 헤딩 id 배열을 받아 현재 위치를 강조한다 |
+| `CollapsiblePanel` | `common/` | 회색 배경의 접이식 패널(`<details>`, JS 없음) — 아이콘·제목·보조 표기. 시리즈 목록과 모바일 목차가 쓴다 |
 | `Pagination` | `common/` | 페이지네이션 |
 | `ConfirmDialog` | `common/` | 확인/취소 다이얼로그 (Modal 스토어와 조합) |
 | `Button` | `ui/` | **모든 버튼의 단일 출처** — variant: primary/outline/ghost/destructive, size: sm/md/icon. `href`를 주면 `next/link`로 렌더. 토글은 `aria-pressed` |
 | `FilterChip` | `ui/` | 필터 탭 알약 (활성 = 주황 배경, 테두리 없음) |
+| `FilterChipGroup` | `ui/` | `FilterChip`을 감싸는 줄. 모바일은 한 줄 가로 스크롤, `md` 이상은 줄바꿈 |
 | `TagBadge` | `ui/` | 전역 공용 뱃지 — 게시글 태그(`#` 자동)와 뉴스 소스 라벨(`hash={false}`)이 공유. 스타일은 하나 |
 | `DropdownMenu` | `ui/` | 드롭다운 (ESC/외부클릭 닫기). `trigger`는 render prop — 받은 props를 실제 버튼에 펼친다 |
 | `Modal` / `ToastContainer` | `ui/` | 전역 모달/토스트 (Zustand 스토어 연동) |
@@ -229,13 +231,27 @@ type ActionResult<T = void> =
 - 구분선은 `border-gray-100`, 카드 경계는 `border-gray-200`
 - 그림자는 **실제로 떠 있는 요소**(모달, 드롭다운, FAB)에만. 평면 카드에는 쓰지 않는다
 
+### 반응형
+
+화면은 세 구간으로 구분한다. 브레이크포인트는 Tailwind 기본값을 사용한다.
+
+| 구간 | 범위 | 내비게이션 |
+|---|---|---|
+| 모바일 | `md`(768px) 미만 | `MobileHeader` + 드로어 |
+| 태블릿 | `md` 이상 `lg`(1024px) 미만 | `MobileHeader` + 드로어 |
+| 데스크톱 | `lg` 이상 | 고정 `SideNav`. `xl`(1280px) 이상에서는 게시글 목차가 본문 오른쪽에 붙는다 |
+
+- 모바일 화면을 기준으로 작성하고 `md:`·`lg:`를 사용해 넓은 화면에 맞춘다
+- **레이아웃 치수는 `globals.css`의 레이아웃 토큰만 사용한다.** 헤더 높이, 사이드 네비 폭, 본문 좌우 여백 같은 값을 `h-14`, `px-6`처럼 숫자로 직접 쓰지 않는다. 구간마다 달라지는 값(`gutter`, `page-top`, `float`)은 토큰 안에서 바뀌므로 `md:px-8` 같은 분기도 쓰지 않는다. 토큰 목록은 `docs/design-system.md`의 레이아웃 절에 있다
+- 페이지 제목 h1에는 `page-title` 유틸리티를 쓴다
+- flex 행 안에서 줄어들어야 하는 본문 항목에는 `min-w-0`을 붙인다. 없으면 코드블록의 긴 줄이 모바일에서 페이지 전체를 가로로 밀어낸다
+
 ### 그 외
 
 - **인라인 `style`은 런타임 계산값에만** 쓴다. 정적인 값은 전부 Tailwind 유틸리티로 (허용 예: `EyePoster`의 커서 추적 transform, 스켈레톤의 동적 너비)
 - 본문 타이포(`.prose`) 오버라이드는 `globals.css`가 단일 출처다. `prose`는 `PostContent`(읽기)·`TiptapEditor`(편집)·뉴스 상세 래퍼 세 곳에만 붙인다. **한 본문에 두 번 겹치지 않는다** — 중첩되면 안쪽 `.prose`가 자기 `font-size`를 다시 선언해 바깥 `prose-lg`가 죽는다. `.prose` 오버라이드에 `!important`나 긴 선택자를 쓰지 않는다(레이어 밖이라 무조건 이긴다)
 - **`italic`을 쓰지 않는다.** Pretendard에 이탤릭이 없어 합성 oblique가 나오고 한글에서 뭉개진다
 - 아이콘은 **`lucide-react`만** 쓴다. 다른 아이콘 라이브러리를 추가하지 않는다
-- 사이드 네비는 `lg`(1024px) 기준으로 전환된다. 모바일은 `MobileHeader`
 - 버튼 커서는 `globals.css`가 전역으로 정한다 (`button:not(:disabled)`·`select:not(:disabled)`·`summary` → pointer, `:disabled` → not-allowed). 컴포넌트마다 `cursor-pointer`를 다시 붙이지 않는다
 - 기본 트랜지션은 `transition-colors`. 복잡한 애니메이션만 `globals.css`에 `@keyframes`로
 

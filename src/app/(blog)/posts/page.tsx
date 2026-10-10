@@ -9,6 +9,7 @@ import PageHeader from '@/components/common/PageHeader';
 import Pagination from '@/components/common/Pagination';
 import PostList from '@/components/post/PostList';
 import FilterChip from '@/components/ui/FilterChip';
+import FilterChipGroup from '@/components/ui/FilterChipGroup';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { POSTS_PER_PAGE, TAG_DICTIONARY } from '@/lib/constants/tags';
 import { supabase } from '@/lib/supabase';
@@ -80,7 +81,7 @@ export default async function PostsPage({
         description={`총 ${totalPosts}개의 글`}
       />
 
-      <nav className="mb-10 flex flex-wrap gap-2">
+      <FilterChipGroup label="태그 필터" className="mb-10">
         {categories.map((tag) => (
           <FilterChip
             key={tag}
@@ -90,7 +91,7 @@ export default async function PostsPage({
             {tag}
           </FilterChip>
         ))}
-      </nav>
+      </FilterChipGroup>
 
       <PostList posts={formattedPosts} isAdmin={isAdmin} />
 

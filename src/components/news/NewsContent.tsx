@@ -14,7 +14,7 @@ interface NewsContentProps {
 
 export default function NewsContent({ content }: NewsContentProps) {
   return (
-    <div className="prose prose-lg prose-orange max-w-none text-gray-900">
+    <div className="prose prose-orange md:prose-lg max-w-none text-gray-900">
       <ReactMarkdown
         components={{
           pre: ({ children }) => <>{children}</>,

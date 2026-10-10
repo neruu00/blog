@@ -137,10 +137,9 @@
 
 - [ ] **T-309** 테스트 0건 — 테스트 파일과 테스트 스크립트가 모두 없다. `pnpm verify`는 타입·린트·빌드만 검사하므로 로직 회귀를 잡지 못한다. 최소한 이미지 롤백(`actions/post.ts`)은 테스트로 다뤄야 한다.
 - [ ] **T-313** `next start`가 `routesManifest.dataRoutes is not iterable` 오류로 종료된다. `pnpm build`가 `--turbopack`으로 만든 산출물을 `next start`가 읽지 못하는 조합 문제로 보인다. **`pnpm dev`와 Vercel 배포에는 영향이 없다** — 로컬에서 프로덕션 HTML을 확인할 때만 막힌다.
-- [ ] **T-314** 읽기 본문 글자 크기가 서로 다르다 — 뉴스 상세는 `prose-lg`(18px), 게시글 상세(`PostContent`)와 편집 화면(`TiptapEditor`)은 16px다. 18로 올리면 편집·읽기가 어긋난다. 어느 쪽에 맞출지 소유자 결정이 필요하다.
+- [ ] **T-314** 읽기 본문의 글자 크기가 서로 다르다 — 뉴스 상세는 `md` 이상에서 `prose-lg`(18px), 게시글 상세(`PostContent`)와 편집 화면(`TiptapEditor`)은 16px다. 18로 올리면 편집 화면과 읽기 화면이 어긋난다. 어느 쪽에 맞출지 소유자의 결정이 필요하다.
 - [ ] **T-315** 죽은 CSS 2건: ① `globals.css` print 블록의 `[data-toolbar], .editor-toolbar` — 어디에도 붙지 않은 셀렉터 ② `.prose h1` 규칙 — `ShiftedHeading`이 레벨 2~4만 허용하므로 작성할 수 없는 태그를 스타일링한다.
 - [ ] **T-316** 게시글 이미지에 원본 width/height를 저장하지 않아 `next/image`를 쓸 수 없고, 로드 전에 자리를 잡지 못해 CLS가 발생한다. 업로드 시(`actions/image.ts`) 크기를 JSON attrs에 넣으면 `aspect-ratio`로 자리를 예약하고 `next/image`도 쓸 수 있다.
-- [ ] **T-317** 모바일에는 목차가 없다 — `TableOfContents`가 `hidden xl:block`이라 1280px 미만에서 사라진다. 접이식 상단 목차 하나면 된다. 헤딩 id는 서버에서 붙이므로 추가 배선이 필요 없다.
 - [ ] **T-318** `Testing` 태그 적중 0건 — 테스트 글을 쓸 계획이 없으면 제거한다. (T-309와 함께 판단)
 
 ## 🚀 T-4. 신규 기능 (임팩트 순)

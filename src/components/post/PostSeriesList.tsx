@@ -1,12 +1,12 @@
 /**
  * @file PostSeriesList.tsx
  * @description 게시글 상세 본문 위에 붙는 시리즈 목록. 같은 시리즈의 글을 순서대로 보여 주고 현재 글을 강조한다.
- *              접기·펼치기는 `<details>`로 처리해 클라이언트 JS 없이 동작한다.
  */
 
-import { ChevronDown, Library } from 'lucide-react';
+import { Library } from 'lucide-react';
 import Link from 'next/link';
 
+import CollapsiblePanel from '@/components/common/CollapsiblePanel';
 import type { PostSeries } from '@/types/series.type';
 
 interface PostSeriesListProps {
@@ -18,22 +18,14 @@ export default function PostSeriesList({ series, currentPostId }: PostSeriesList
   const currentIndex = series.posts.findIndex((post) => post.id === currentPostId);
 
   return (
-    <details open className="group mb-10 rounded-xl bg-gray-50 px-5 py-4">
-      <summary className="flex list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
-        <Library className="size-4 flex-shrink-0 text-orange-500" aria-hidden />
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">
-          {series.title}
-        </span>
-        <span className="flex-shrink-0 text-xs text-gray-500">
-          {currentIndex + 1} / {series.posts.length}
-        </span>
-        <ChevronDown
-          className="size-4 flex-shrink-0 text-gray-400 transition-transform group-open:rotate-180"
-          aria-hidden
-        />
-      </summary>
-
-      <ol className="mt-3 space-y-1.5">
+    <CollapsiblePanel
+      icon={<Library />}
+      title={series.title}
+      aside={`${currentIndex + 1} / ${series.posts.length}`}
+      defaultOpen
+      className="mb-10"
+    >
+      <ol className="space-y-1.5">
         {series.posts.map((post, index) => {
           const isCurrent = post.id === currentPostId;
 
@@ -56,6 +48,6 @@ export default function PostSeriesList({ series, currentPostId }: PostSeriesList
           );
         })}
       </ol>
-    </details>
+    </CollapsiblePanel>
   );
 }

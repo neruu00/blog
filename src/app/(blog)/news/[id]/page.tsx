@@ -81,9 +81,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <TagBadge tag={sourceLabel} hash={false} />
         </div>
 
-        <h1 className="mb-4 text-3xl leading-snug font-bold tracking-tight text-gray-900">
-          {news.title}
-        </h1>
+        <h1 className="page-title mb-4">{news.title}</h1>
 
         <time dateTime={news.publishedAt.toISOString()} className="text-sm text-gray-400">
           {formatDateKo(news.publishedAt)}
@@ -94,7 +92,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
         <NewsContent content={news.content} />
       </section>
 
-      <footer className="rounded-lg bg-gray-50 p-6">
+      <footer className="rounded-lg bg-gray-50 p-4 md:p-6">
         <p className="mb-4 text-sm font-medium text-gray-500">원문 읽기</p>
         <div className="space-y-3">
           {isValidOriginalUrl && (

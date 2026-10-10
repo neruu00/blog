@@ -24,7 +24,8 @@ export default function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed right-6 bottom-6 z-[100] flex flex-col gap-3">
+    // 모바일은 상단 헤더 아래 전체 폭, md 이상은 오른쪽 아래 FAB 열의 왼쪽에 띄운다
+    <div className="inset-x-float top-below-header md:right-beside-fab md:bottom-float fixed z-[100] flex flex-col gap-3 md:inset-x-auto md:top-auto">
       {toasts.map((toast) => (
         <div
           key={toast.id}
