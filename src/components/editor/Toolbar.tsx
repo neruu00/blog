@@ -114,6 +114,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
     input.click();
   };
 
+  // 모바일은 구분선을 숨겨 줄 수를 줄인다(375px 기준 두 줄). 표 메뉴(DropdownMenu)가 잘리므로 가로 스크롤로 바꾸지 않는다
   return (
     <div className="sticky top-0 z-40 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
       {/* H1~H3 버튼은 ShiftedHeading에 따라 실제로는 level 2~4를 만든다 */}
@@ -138,7 +139,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Heading3 className="h-5 w-5" />
       </ToolbarButton>
-      <div className="mx-1 h-6 w-px bg-gray-200" />
+      <div className="mx-1 hidden h-6 w-px bg-gray-200 md:block" />
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         aria-pressed={editor.isActive('bold')}
@@ -160,7 +161,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Strikethrough className="h-5 w-5" />
       </ToolbarButton>
-      <div className="mx-1 h-6 w-px bg-gray-200" />
+      <div className="mx-1 hidden h-6 w-px bg-gray-200 md:block" />
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleSuperscript().run()}
         aria-pressed={editor.isActive('superscript')}
@@ -175,7 +176,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Subscript className="h-5 w-5" />
       </ToolbarButton>
-      <div className="mx-1 h-6 w-px bg-gray-200" />
+      <div className="mx-1 hidden h-6 w-px bg-gray-200 md:block" />
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         aria-pressed={editor.isActive('codeBlock')}
@@ -210,7 +211,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
       >
         <Quote className="h-5 w-5" />
       </ToolbarButton>
-      <div className="mx-1 h-6 w-px bg-gray-200" />
+      <div className="mx-1 hidden h-6 w-px bg-gray-200 md:block" />
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         aria-pressed={editor.isActive('bulletList')}

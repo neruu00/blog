@@ -31,7 +31,7 @@ export default function PostTitleInput({ mode, seriesOptions, postId }: PostTitl
             onKeyDown={(e) => {
               if (e.key === 'Enter') e.preventDefault();
             }}
-            className="block min-w-0 flex-1 basis-64 border-none bg-transparent text-4xl font-bold text-gray-900 outline-none placeholder:text-gray-400"
+            className="page-title block min-w-0 flex-1 basis-64 border-none bg-transparent outline-none placeholder:text-gray-400"
           />
         </div>
       </div>
