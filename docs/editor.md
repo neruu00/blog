@@ -84,13 +84,13 @@
 
 ## EditorActions (작성/수정 페이지 전용)
 
-오른쪽 아래에 고정된 플로팅 아이콘 버튼 묶음 (`fixed right-6 bottom-6`, 세로 스택).
+오른쪽 아래에 고정된 플로팅 아이콘 버튼 묶음 (`fixed right-float bottom-float`, 세로 스택).
 
 | 순서 | 버튼 | 아이콘 | 스타일 |
 |---|---|---|---|
 | 위 | 뒤로가기 | `ArrowLeft` | `outline`, 48px |
 | 가운데 | 임시저장 | `Save` | `outline`, 48px |
-| 아래 | 게시하기 / 수정하기 | `Send` / `Check` | `primary`, 56px |
+| 아래 | 게시하기 / 수정하기 | `Send` / `Check` | `primary`, `size-fab`(56px) |
 
 - **위→아래 순서가 곧 탭 순서**이고, 주 액션(제출)이 가장 아래에 있으며 가장 크다
 - 제출 중에는 모두 disabled 처리하고, 제출 버튼에만 `Loader2` 스피너 표시
