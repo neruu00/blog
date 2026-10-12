@@ -55,7 +55,7 @@
 
 바탕화면의 `DOOM` 앱은 `public/doom/index.html`을 iframe으로 띄운다. 이 페이지는 클릭해서 시작하면 jsDelivr에서 `wasm-doom@1.2.0`(MIT, 셰어웨어 DOOM1.WAD 내장, 약 7MB)을 내려받는다. 게임을 멈추는 API가 없고 문서 전체의 키 입력을 가로채기 때문에 iframe 안에서 실행하며, 창을 닫으면 iframe이 제거되면서 게임도 종료된다. 소리는 나지 않는다.
 
-각 프로젝트는 서비스 한 줄(`tagline`)과 주장 한 문장(`claim`), 대표 이미지(`cover`), 짧은 소개(`intro`), 구조 다이어그램(`architecture`)을 갖고, 과제는 문제·재정의·선택·검증·한계 순으로 나누고 수치(`metric`)와 시각 자료(`visuals`)를 붙인다. 수치에는 출처 등급(실측·인용·계산·구조·못 잼)을 함께 적고, 다이어그램은 mermaid 코드로 두어 `MermaidDiagram`이 그린다. 아직 캡처가 없는 이미지는 `media` 없이 두면 화면에 이미지 자리로 나온다. 문서 창에는 목차를 두지 않는다. `ProjectDetail`은 섹션과 과제 헤딩에 id(`intro`, `architecture`, `challenges`, `challenge-1`…, `retrospective`)를 붙이므로 `#challenge-1` 같은 링크로 바로 이동할 수 있다.
+각 프로젝트는 서비스 한 줄(`tagline`)과 대표 이미지(`cover`), 짧은 소개(`intro`), 구조 다이어그램(`architecture`)을 갖고, 과제는 문제·접근 방법·해결 방법·확인 결과·한계 순으로 나누고 수치(`metric`)와 시각 자료(`visuals`)를 붙인다. 과제 항목은 라벨을 굵은 소제목으로 두고 내용을 그 아래에 쌓는다. 수치에는 출처 등급(실측·인용·계산·구조·못 잼)을 함께 적고, 다이어그램은 mermaid 코드로 두어 `MermaidDiagram`이 그린다. 아직 캡처가 없는 이미지는 `media` 없이 두면 화면에 이미지 자리로 나온다. 문서 창에는 목차를 두지 않는다. `ProjectDetail`은 섹션과 과제 헤딩에 id(`intro`, `architecture`, `challenges`, `challenge-1`…, `retrospective`)를 붙이므로 `#challenge-1` 같은 링크로 바로 이동할 수 있다.
 
 ## 데이터 흐름
 

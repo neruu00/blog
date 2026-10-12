@@ -18,7 +18,7 @@ import { useWin95Windows } from '@/hooks/useWin95Windows';
 import type { Project } from '@/lib/constants/portfolio';
 
 /** 클라이언트 번들에 portfolio.ts 전체가 실리지 않도록 미리 보기에 필요한 필드만 받는다 */
-export type ProjectApp = Pick<Project, 'slug' | 'name' | 'nameEn' | 'period' | 'claim' | 'cover'>;
+export type ProjectApp = Pick<Project, 'slug' | 'name' | 'nameEn' | 'period' | 'cover'>;
 
 interface ProjectAppGridProps {
   apps: ProjectApp[];
@@ -61,7 +61,6 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
               }}
               icon={<ProjectAppGlyph size={48} letter={app.nameEn.charAt(0)} />}
               label={app.name}
-              aria-describedby={`app-${app.slug}-claim`}
               onPointerEnter={(e) => {
                 if (e.pointerType !== 'mouse') return;
                 anchor.current = { x: e.clientX, y: e.clientY };
@@ -80,14 +79,11 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
               }}
               onBlur={() => setActive(null)}
             />
-            <span id={`app-${app.slug}-claim`} className="sr-only">
-              {app.claim}
-            </span>
           </li>
         ))}
       </ul>
 
-      {/* 아이콘 설명은 aria-describedby로 읽히므로 대화상자는 보조기기에서 숨긴다 */}
+      {/* 미리 보기는 아이콘 이름과 같은 정보라 보조기기에서 숨긴다 */}
       {active &&
         createPortal(
           <div
@@ -106,7 +102,6 @@ export default function ProjectAppGrid({ apps }: ProjectAppGridProps) {
               <p>
                 <span className="font-bold">{active.nameEn}</span> · {active.period}
               </p>
-              <p className="leading-relaxed">{active.claim}</p>
             </div>
           </div>,
           document.body,

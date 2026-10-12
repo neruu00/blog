@@ -2,7 +2,7 @@
  * @file ProjectDetail.tsx
  * @description /portfolio 프로젝트 문서 창의 본문. Windows 95 문서처럼 섹션 제목은 제목줄 띠로,
  *              기본 정보와 과제는 그룹 상자로 묶는다. 문서의 h1부터 렌더링한다.
- *              블록 순서는 헤더 → 주장 → 소개 → 구조 → 해결한 과제 → 회고이며, 포트폴리오 슬라이드 순서와 같다.
+ *              블록 순서는 헤더 → 소개 → 구조 → 문제와 해결 → 회고이며, 포트폴리오 슬라이드 순서와 같다.
  *              retrospective는 선택 항목이라 없으면 회고 블록을 건너뛴다.
  */
 
@@ -18,9 +18,9 @@ import { cn } from '@/lib/utils';
 
 const SECTION_TITLE = {
   intro: '소개',
-  architecture: '구조',
-  challenges: '해결한 과제',
-  retrospective: '회고',
+  architecture: '서비스 구조',
+  challenges: '문제와 해결',
+  retrospective: '배운 점과 아쉬운 점',
 } as const;
 
 /** 헤딩 id. #challenge-1 같은 링크로 해당 과제에 바로 갈 수 있다 */
@@ -91,12 +91,28 @@ interface PropertyRowProps {
   tone?: RowTone;
 }
 
-/** 속성 창처럼 "이름:" 라벨과 값을 나란히 놓는 행. sm 미만에서는 세로로 쌓는다 */
+/** 정보 상자의 행. 속성 창처럼 "이름:" 라벨과 값을 나란히 놓고, sm 미만에서는 세로로 쌓는다 */
 function PropertyRow({ label, children, tone = 'body' }: PropertyRowProps) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
       <dt className="w-14 shrink-0 text-gray-500">{label}:</dt>
       <dd className={cn('min-w-0', ROW_TONE[tone])}>{children}</dd>
+    </div>
+  );
+}
+
+interface FieldProps {
+  label: string;
+  children: React.ReactNode;
+  tone?: RowTone;
+}
+
+/** 과제 항목. 라벨을 굵은 소제목으로 두고 내용을 그 아래에 쌓는다 */
+function Field({ label, children, tone = 'body' }: FieldProps) {
+  return (
+    <div>
+      <dt className="font-bold">{label}</dt>
+      <dd className={cn('mt-1 min-w-0', ROW_TONE[tone])}>{children}</dd>
     </div>
   );
 }
@@ -124,18 +140,18 @@ function ChallengeSection({ challenge, index }: { challenge: Challenge; index: n
         </h3>
       }
     >
-      <dl className="mt-2 space-y-2.5">
-        <PropertyRow label="문제">{problem}</PropertyRow>
+      <dl className="mt-2 space-y-4">
+        <Field label="문제">{problem}</Field>
         {definition && (
-          <PropertyRow label="재정의" tone="emphasis">
+          <Field label="접근 방법" tone="emphasis">
             {definition}
-          </PropertyRow>
+          </Field>
         )}
-        <PropertyRow label="선택">{solution}</PropertyRow>
+        <Field label="해결 방법">{solution}</Field>
         {visuals && visuals.length > 0 && (
           <div className="py-1">
             {/* dl의 자식은 dt·dd 묶음이어야 해서 시각 자료도 숨긴 라벨을 단 행으로 둔다 */}
-            <dt className="sr-only">시각 자료</dt>
+            <dt className="sr-only">도표와 이미지</dt>
             <dd className="space-y-4">
               {visuals.map((visual, i) =>
                 visual.kind === 'diagram' ? (
@@ -148,22 +164,22 @@ function ChallengeSection({ challenge, index }: { challenge: Challenge; index: n
           </div>
         )}
         {verification && (
-          <PropertyRow label="검증" tone="meta">
+          <Field label="확인 결과" tone="meta">
             {verification}
-          </PropertyRow>
+          </Field>
         )}
         {limitation && (
-          <PropertyRow label="한계" tone="meta">
+          <Field label="한계" tone="meta">
             {limitation}
-          </PropertyRow>
+          </Field>
         )}
         {(metric || challenge.postHref) && (
-          <PropertyRow label={metric ? '지표' : '글'}>
+          <Field label={metric ? '수치' : '관련 글'}>
             <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
               {metric && <MetricTile metric={metric} />}
               {challenge.postHref && <PostLink href={challenge.postHref} />}
             </div>
-          </PropertyRow>
+          </Field>
         )}
       </dl>
     </GroupBox>
@@ -179,7 +195,6 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
     name,
     nameEn,
     tagline,
-    claim,
     period,
     team,
     role,
@@ -224,8 +239,6 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
           </dl>
         </GroupBox>
       </header>
-
-      <p className="win-raised mt-5 p-3 font-bold">{claim}</p>
 
       <section>
         <SectionHeading id="intro">{SECTION_TITLE.intro}</SectionHeading>

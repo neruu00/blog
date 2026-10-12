@@ -30,12 +30,11 @@ export const metadata: Metadata = {
   },
 };
 
-const apps = PROJECTS.map(({ slug, name, nameEn, period, claim, cover }) => ({
+const apps = PROJECTS.map(({ slug, name, nameEn, period, cover }) => ({
   slug,
   name,
   nameEn,
   period,
-  claim,
   cover,
 }));
 
