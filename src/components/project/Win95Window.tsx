@@ -2,11 +2,12 @@
  * @file Win95Window.tsx
  * @description /portfolio 바탕화면의 Windows 95 창 하나. 제목줄·(폴더·문서면) 주소창·본문·상태 표시줄로 구성된다.
  *              위치·크기·쌓임 순서는 Win95WindowManager가 갖고, 이 컴포넌트는 그리기와 제목줄 끌기만 맡는다.
+ *              compact(좁은 화면)에서는 앱 화면처럼 바탕화면을 꽉 채우고, 제목줄의 ← 버튼으로 닫는다.
  */
 
 'use client';
 
-import { Minus, X } from 'lucide-react';
+import { ArrowLeft, Minus, X } from 'lucide-react';
 import { useRef } from 'react';
 
 import Win95Button from '@/components/project/Win95Button';
@@ -40,6 +41,8 @@ interface Win95WindowProps {
   fill?: boolean;
   /** 상태 표시줄 내용. 없으면 상태 표시줄을 그리지 않는다 */
   status?: React.ReactNode;
+  /** 좁은 화면용 배치. 끌기·최소화·주소창·상태 표시줄 없이 바탕화면을 꽉 채운다 */
+  compact?: boolean;
   children: React.ReactNode;
 }
 
@@ -72,13 +75,14 @@ export default function Win95Window({
   minimized,
   fill = false,
   status,
+  compact = false,
   children,
 }: Win95WindowProps) {
   const frameRef = useRef<HTMLElement>(null);
   const drag = useRef<DragState | null>(null);
 
   const startDrag = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 || (e.target as HTMLElement).closest('a, button')) return;
+    if (compact || e.button !== 0 || (e.target as HTMLElement).closest('a, button')) return;
     const area = frameRef.current?.offsetParent?.getBoundingClientRect();
     if (!area) return;
 
@@ -114,43 +118,67 @@ export default function Win95Window({
       onFocusCapture={onFocus}
       // 위치·크기·쌓임 순서는 런타임 값이라 인라인 style로 준다. transform을 쓰면 창 안의 position: fixed
       // 요소가 창을 기준으로 잡히므로 left/top을 쓴다
-      style={{
-        left: frame.x,
-        top: frame.y,
-        width: frame.width,
-        height: frame.height,
-        zIndex: frame.z,
-      }}
+      style={
+        compact
+          ? { zIndex: frame.z }
+          : {
+              left: frame.x,
+              top: frame.y,
+              width: frame.width,
+              height: frame.height,
+              zIndex: frame.z,
+            }
+      }
       className={`win-raised font-win absolute flex-col gap-0.5 p-[3px] text-xs text-black ${
         minimized ? 'hidden' : 'flex'
-      }`}
+      } ${compact ? 'inset-0' : ''}`}
     >
       <div
         onPointerDown={startDrag}
         onPointerMove={moveDrag}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        className={`flex h-[22px] shrink-0 touch-none items-center gap-1.5 pr-[3px] pl-1 font-bold text-white select-none ${
-          active ? 'win-titlebar' : 'win-titlebar-inactive'
-        }`}
+        className={`flex shrink-0 touch-none items-center gap-1.5 pr-[3px] pl-1 font-bold text-white select-none ${
+          compact ? 'h-11' : 'h-[22px]'
+        } ${active ? 'win-titlebar' : 'win-titlebar-inactive'}`}
       >
-        {icon}
+        {compact ? (
+          <Win95Button
+            size="touch"
+            onClick={onClose}
+            aria-label={`${title} 닫고 뒤로 가기`}
+            title="뒤로"
+          >
+            <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+          </Win95Button>
+        ) : (
+          icon
+        )}
         <span className="min-w-0 flex-1 truncate">{title}</span>
-        <Win95Button size="icon" onClick={onMinimize} aria-label={`${title} 최소화`} title="최소화">
-          <Minus className="h-3 w-3 translate-y-[3px]" strokeWidth={3} />
-        </Win95Button>
-        <Win95Button
-          size="icon"
-          onClick={onClose}
-          aria-label={`${title} 닫기`}
-          title="닫기"
-          className="ml-0.5"
-        >
-          <X className="h-3 w-3" strokeWidth={3} />
-        </Win95Button>
+        {!compact && (
+          <>
+            <Win95Button
+              size="icon"
+              onClick={onMinimize}
+              aria-label={`${title} 최소화`}
+              title="최소화"
+            >
+              <Minus className="h-3 w-3 translate-y-[3px]" strokeWidth={3} />
+            </Win95Button>
+            <Win95Button
+              size="icon"
+              onClick={onClose}
+              aria-label={`${title} 닫기`}
+              title="닫기"
+              className="ml-0.5"
+            >
+              <X className="h-3 w-3" strokeWidth={3} />
+            </Win95Button>
+          </>
+        )}
       </div>
 
-      {address && (
+      {address && !compact && (
         <div className="border-win-shadow flex shrink-0 items-center gap-1.5 border-t px-1 py-1 shadow-[inset_0_1px_var(--color-white)]">
           <span className="shrink-0">주소</span>
           <div className="win-sunken flex h-[22px] min-w-0 flex-1 items-center gap-1.5 bg-white px-1.5">
@@ -169,7 +197,9 @@ export default function Win95Window({
         {children}
       </div>
 
-      {status && <div className="win-sunken flex h-5 shrink-0 items-center px-1.5">{status}</div>}
+      {status && !compact && (
+        <div className="win-sunken flex h-5 shrink-0 items-center px-1.5">{status}</div>
+      )}
     </section>
   );
 }

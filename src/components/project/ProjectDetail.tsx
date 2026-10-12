@@ -54,7 +54,7 @@ function GroupBox({ legend, children, className }: GroupBoxProps) {
   return (
     <fieldset
       className={cn(
-        'border-win-shadow min-w-0 border px-3 pt-1 pb-3 shadow-[inset_1px_1px_var(--color-white),1px_1px_var(--color-white)]',
+        'border-win-shadow min-w-0 border px-2 pt-1 pb-3 shadow-[inset_1px_1px_var(--color-white),1px_1px_var(--color-white)] sm:px-3',
         className,
       )}
     >
