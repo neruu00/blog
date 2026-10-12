@@ -10,12 +10,14 @@ import { cn } from '@/lib/utils';
 
 import type { ButtonHTMLAttributes, ComponentPropsWithoutRef } from 'react';
 
-type Win95ButtonSize = 'md' | 'icon';
+type Win95ButtonSize = 'md' | 'icon' | 'touch';
 
 const SIZE_CLASSES: Record<Win95ButtonSize, string> = {
   md: 'h-7 px-3',
   /** 제목줄의 닫기 버튼 크기 */
   icon: 'h-4 w-[18px]',
+  /** 좁은 화면 제목줄의 뒤로 버튼. 손가락으로 누를 수 있는 크기 */
+  touch: 'h-9 w-9',
 };
 
 function win95ButtonClass(size: Win95ButtonSize, pressed: boolean, className?: string) {

@@ -30,12 +30,11 @@ export const metadata: Metadata = {
   },
 };
 
-const apps = PROJECTS.map(({ slug, name, nameEn, period, claim, cover }) => ({
+const apps = PROJECTS.map(({ slug, name, nameEn, period, cover }) => ({
   slug,
   name,
   nameEn,
   period,
-  claim,
   cover,
 }));
 
@@ -84,7 +83,7 @@ const windows: Win95WindowDef[] = [
     width: 960,
     height: 760,
     content: (
-      <div className="px-4 py-6 sm:px-8">
+      <div className="px-3 py-4 sm:px-8 sm:py-6">
         <article className="mx-auto max-w-3xl">
           <ProjectDetail project={project} />
         </article>
