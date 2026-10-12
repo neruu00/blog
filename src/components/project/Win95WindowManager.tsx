@@ -3,6 +3,7 @@
  * @description /portfolio 바탕화면. 바탕화면 아이콘·창 여러 개·작업 표시줄을 그리고, 어떤 창이 열려 있는지와
  *              각 창의 위치·크기·쌓임 순서를 관리한다. 창은 실제 경로가 아니라 가상 경로(id)로 연다.
  *              /portfolio?open=project/secome처럼 open 파라미터를 주면 들어오자마자 그 창을 연다.
+ *              창 본문의 확대 배율은 모든 창이 하나를 같이 쓰고, 작업 표시줄에서 바꾸며 브라우저에 기억한다.
  *              좁은 화면(compact)에서는 창을 앱 화면처럼 꽉 채워 열고, 창을 열 때마다 방문 기록을 하나 쌓아
  *              휴대폰의 뒤로 가기가 페이지를 떠나지 않고 맨 위 창을 닫게 한다.
  */
@@ -14,7 +15,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import Win95IconButton from '@/components/project/Win95IconButton';
 import Win95Taskbar from '@/components/project/Win95Taskbar';
 import Win95Window from '@/components/project/Win95Window';
-import type { Win95WindowFrame } from '@/components/project/Win95Window';
+import type { Win95WindowFrame, Win95WindowRect } from '@/components/project/Win95Window';
 import { Win95WindowsContext } from '@/hooks/useWin95Windows';
 
 export interface Win95WindowDef {
@@ -52,6 +53,8 @@ interface Win95WindowManagerProps {
 interface OpenWindow extends Win95WindowFrame {
   id: string;
   minimized: boolean;
+  /** 최대화해도 x·y·width·height는 그대로 두어 이전 크기로 돌아갈 자리로 쓴다 */
+  maximized: boolean;
 }
 
 /** 창과 바탕화면 가장자리 사이 최소 간격(px) */
@@ -62,6 +65,20 @@ const CASCADE = 28;
 const COMPACT_WIDTH = 640;
 
 const COMPACT_QUERY = `(max-width: ${COMPACT_WIDTH - 1}px)`;
+
+/** 창 본문 확대 단계. Galmuri11은 12px 격자 글꼴이라 200%에서 가장 선명하고, 중간 단계는 조금 흐려진다 */
+const ZOOM_LEVELS = [1, 1.25, 1.5, 2];
+const ZOOM_STORAGE_KEY = 'portfolio-zoom';
+
+/** 저장해 둔 배율. 저장소를 쓸 수 없거나 단계에 없는 값이면 100%로 시작한다 */
+function readStoredZoom() {
+  try {
+    const value = Number(window.localStorage.getItem(ZOOM_STORAGE_KEY));
+    return ZOOM_LEVELS.includes(value) ? value : 1;
+  } catch {
+    return 1;
+  }
+}
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
@@ -110,6 +127,7 @@ export default function Win95WindowManager({
   const [opened, setOpened] = useState<OpenWindow[]>([]);
   const defs = useMemo(() => new Map(windows.map((def) => [def.id, def])), [windows]);
   const compact = useCompact();
+  const [zoom, setZoom] = useState(1);
   const compactRef = useRef(compact);
   /** 열린 창 id. setOpened 갱신 함수는 StrictMode에서 두 번 실행되므로 기록 쌓기는 이 값으로 판단한다 */
   const openIds = useRef(new Set<string>());
@@ -121,6 +139,23 @@ export default function Win95WindowManager({
   useEffect(() => {
     compactRef.current = compact;
   }, [compact]);
+
+  // localStorage는 서버 렌더링에 없으므로 마운트한 뒤에 읽는다. 창은 마운트 후에만 열려서 배율이 바뀌어도 깜빡이지 않는다
+  useEffect(() => {
+    setZoom(readStoredZoom());
+  }, []);
+
+  /** 확대 단계를 하나 올리거나 내린다. 양 끝에서는 그대로 둔다 */
+  const stepZoom = useCallback((direction: 1 | -1) => {
+    setZoom((current) => {
+      const index = ZOOM_LEVELS.indexOf(current);
+      const next = ZOOM_LEVELS[clamp(index + direction, 0, ZOOM_LEVELS.length - 1)];
+      try {
+        window.localStorage.setItem(ZOOM_STORAGE_KEY, String(next));
+      } catch {}
+      return next;
+    });
+  }, []);
 
   /** 맨 앞으로 가져온다. 최소화돼 있었다면 다시 띄운다 */
   const focus = useCallback((id: string) => {
@@ -151,7 +186,13 @@ export default function Win95WindowManager({
         }
         return [
           ...list,
-          { id, z: topZ.current, minimized: false, ...placeWindow(def, area, list.length) },
+          {
+            id,
+            z: topZ.current,
+            minimized: false,
+            maximized: false,
+            ...placeWindow(def, area, list.length),
+          },
         ];
       });
     },
@@ -202,6 +243,14 @@ export default function Win95WindowManager({
 
   const move = useCallback((id: string, x: number, y: number) => {
     setOpened((list) => list.map((w) => (w.id === id ? { ...w, x, y } : w)));
+  }, []);
+
+  const resize = useCallback((id: string, rect: Win95WindowRect) => {
+    setOpened((list) => list.map((w) => (w.id === id ? { ...w, ...rect } : w)));
+  }, []);
+
+  const toggleMaximize = useCallback((id: string) => {
+    setOpened((list) => list.map((w) => (w.id === id ? { ...w, maximized: !w.maximized } : w)));
   }, []);
 
   // 정적 페이지라 searchParams 대신 마운트한 뒤 주소에서 직접 읽는다
@@ -258,8 +307,12 @@ export default function Win95WindowManager({
               active={w.id === activeId}
               onFocus={() => focus(w.id)}
               onMove={(x, y) => move(w.id, x, y)}
+              onResize={(rect) => resize(w.id, rect)}
               onClose={() => close(w.id)}
               onMinimize={() => minimize(w.id)}
+              maximized={w.maximized}
+              onToggleMaximize={() => toggleMaximize(w.id)}
+              zoom={zoom}
               minimized={w.minimized}
               fill={def.fill}
               compact={compact}
@@ -278,6 +331,11 @@ export default function Win95WindowManager({
           active: w.id === activeId,
         }))}
         onTaskClick={toggleTask}
+        zoom={zoom}
+        canZoomOut={zoom > ZOOM_LEVELS[0]}
+        canZoomIn={zoom < ZOOM_LEVELS[ZOOM_LEVELS.length - 1]}
+        onZoomOut={() => stepZoom(-1)}
+        onZoomIn={() => stepZoom(1)}
         github={github}
         email={email}
       />
