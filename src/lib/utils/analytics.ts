@@ -19,11 +19,3 @@ function sendEvent(eventName: string, params?: Record<string, string | number | 
 export function trackPostView(postId: string, title: string) {
   sendEvent('post_view', { post_id: postId, post_title: title });
 }
-
-export function trackCommentCreate(postId: string) {
-  sendEvent('comment_create', { post_id: postId });
-}
-
-export function trackCommentDelete(postId: string) {
-  sendEvent('comment_delete', { post_id: postId });
-}

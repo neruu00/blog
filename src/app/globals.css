@@ -440,7 +440,7 @@ body {
   cursor: col-resize;
 }
 
-/* 인쇄 스타일. 본문만 남기고 네비게이션·에디터 버튼·댓글·목차를 숨긴다. */
+/* 인쇄 스타일. 본문만 남기고 네비게이션·에디터 버튼·목차를 숨긴다. */
 
 @media print {
   nav,
@@ -459,7 +459,6 @@ body {
     display: none !important;
   }
 
-  [data-comments],
   [data-toc] {
     display: none !important;
   }

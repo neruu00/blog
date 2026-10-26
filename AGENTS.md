@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, Google 로그인 사용자는 댓글만 쓸 수 있다. 매일 RSS 8곳을 수집해 LLM으로 요약하는 뉴스 큐레이션이 함께 돌아간다.
+Next.js 15 App Router 기반 1인 기술 블로그. 관리자만 글을 쓰고, Google 로그인은 관리자 확인에만 쓴다. 매일 RSS 8곳을 수집해 LLM으로 요약하는 뉴스 큐레이션이 함께 돌아간다.
 
 이 문서는 **코드에서 읽어낼 수 없는 것**만 담는다. 파일 목록이나 구현 세부는 `docs/`의 스펙 문서를 보라.
 
@@ -141,7 +141,7 @@ export async function createPost(formData: FormData) {
 page.tsx (서버)
   ├── PostList (서버)
   │     └── PostCard (서버 — 표시만)
-  └── CommentSection (클라이언트 — 입력·삭제 처리)
+  └── ViewCounter (클라이언트 — 마운트 시 조회수 증가)
 ```
 
 | 디렉토리 | 용도 |
@@ -161,7 +161,7 @@ page.tsx (서버)
 | 상황 | 수단 |
 |---|---|
 | 라우트 전환 | `(blog)/loading.tsx` |
-| 페이지 일부 (댓글 등) | `<Suspense>` + 스켈레톤 |
+| 페이지 일부 | `<Suspense>` + 스켈레톤 |
 | 버튼·폼 제출 | `useTransition`의 `isPending`으로 비활성화 + 문구 변경. 아이콘 버튼은 스피너로 (`EditorActions` 참고) |
 | 브라우저 전용 라이브러리 (mermaid 등) | 클라이언트 컴포넌트 + `Skeleton`. **정적 import하지 말고 그릴 때 `import()`로 받는다** — 안 쓰는 글의 번들까지 무거워진다 (`MermaidDiagram` 참고) |
 | 이미지·영상 로드 | 미디어 뒤에 `Spinner`를 깔고 `onLoad`/`onLoadedData`에 걷는다. `onError`에서도 걷어야 영영 돌지 않는다 (`ProjectThumbnail` 참고) |
@@ -306,7 +306,7 @@ cat draft.md | codex exec -s read-only --ephemeral --skip-git-repo-check -o poli
 | `docs/PLAN.md` | 개선 백로그와 결정 로그. **작업 전에 관련 항목이 있는지 확인하라** |
 | `docs/architecture.md` | 기술 스택, 코드 진입점, 라우트 그룹, 데이터 흐름 |
 | `docs/database.md` | 테이블·RPC 읽기용 요약 |
-| `docs/features.md` | 인증·게시글·댓글·뉴스·SEO 동작 명세 |
+| `docs/features.md` | 인증·게시글·뉴스·SEO 동작 명세 |
 | `docs/editor.md` | Tiptap 확장 |
 | `docs/design-system.md` | 컬러, 타이포그래피, 컴포넌트 레시피 |
 

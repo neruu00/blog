@@ -33,7 +33,7 @@
 | 페이지 라우트   | `src/app/(blog)/`, `src/app/(protected)/`           | 그룹별 권한은 아래 "라우트 그룹" 참고                                    |
 | API · 크론      | `src/app/api/`                                      | NextAuth, fetch-news, cleanup-images                                     |
 | SEO 메타 라우트 | `src/app/` — `sitemap.ts`, `robots.ts`, `feed.xml/` | 1h ISR                                                                   |
-| 서버 액션       | `src/actions/`                                      | post / comment / image, 도메인별 1파일                                   |
+| 서버 액션       | `src/actions/`                                      | post / series / image, 도메인별 1파일                                   |
 | 도메인 로직     | `src/lib/`                                          | auth, supabase(service_role), rss, article, llm, export, image-converter |
 | 상수            | `src/lib/constants/`                                | tags, nav, site(SITE_URL), portfolio                                     |
 | 컴포넌트        | `src/components/`                                   | 분류 기준은 `AGENTS.md` 컴포넌트 섹션 참고                               |
