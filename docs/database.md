@@ -44,17 +44,6 @@
 
 시리즈를 별도로 관리하는 화면은 없다. 글 작성 화면의 시리즈 다이얼로그에서 새 시리즈를 고르고 글을 저장하면 `actions/post.ts`가 같은 이름의 시리즈를 찾거나 새로 만들고(`upsert` on `title`), 속한 글이 하나도 없으면 삭제한다. 이름 변경과 삭제는 `actions/series.ts`가 처리한다. 삭제할 때는 속한 글의 `series_id`·`series_order`를 먼저 비운다. FK의 `ON DELETE SET NULL`은 `series_order`를 남기기 때문이다.
 
-### comments
-
-| 컬럼 | 타입 | 기본값 | 설명 |
-|---|---|---|---|
-| `id` | UUID | `gen_random_uuid()` | PK |
-| `post_id` | UUID | — | FK → posts(id) ON DELETE CASCADE |
-| `user_id` | UUID | — | FK → users(id) ON DELETE CASCADE |
-| `parent_id` | UUID | `NULL` | FK → comments(id) ON DELETE CASCADE (대댓글, 1단) |
-| `content` | TEXT | — | 댓글 내용 |
-| `created_at` | TIMESTAMPTZ | `now()` | 생성일 |
-
 ### images
 
 | 컬럼 | 타입 | 설명 |

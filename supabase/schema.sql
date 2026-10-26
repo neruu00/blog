@@ -29,16 +29,6 @@ CREATE TABLE IF NOT EXISTS images (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- comments: parent_id로 1단 대댓글을 만든다.
-CREATE TABLE IF NOT EXISTS comments (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  post_id    UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-  user_id    UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
-  parent_id  UUID REFERENCES comments(id) ON DELETE CASCADE,
-  content    TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
 CREATE TABLE IF NOT EXISTS tech_news (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title        TEXT NOT NULL,
@@ -62,7 +52,6 @@ ALTER TABLE posts ADD COLUMN IF NOT EXISTS series_order INTEGER;
 
 CREATE INDEX IF NOT EXISTS idx_posts_series_id ON posts(series_id);
 
-CREATE INDEX IF NOT EXISTS idx_comments_post_id       ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_tech_news_published_at ON tech_news(published_at DESC);
 
 -- tech_news 중복 정리 + original_url UNIQUE
@@ -94,3 +83,7 @@ DROP FUNCTION IF EXISTS increment_like_count(UUID);
 DROP FUNCTION IF EXISTS decrement_like_count(UUID);
 DROP TABLE IF EXISTS likes;
 ALTER TABLE posts DROP COLUMN IF EXISTS like_count;
+
+-- 댓글 기능 제거
+-- ⚠️ 라이브 DB 미적용. Supabase SQL Editor에서 실행한 뒤 이 블록을 지운다.
+DROP TABLE IF EXISTS comments;

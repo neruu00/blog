@@ -1,6 +1,6 @@
 # 기능 명세
 
-> **스코프**: 인증·게시글·댓글·조회수·뉴스·SEO·에러 처리 동작 명세.
+> **스코프**: 인증·게시글·조회수·뉴스·SEO·에러 처리 동작 명세.
 > 서버 액션 작성 규약(`ActionResult<T>`, 권한 → Zod → 로직 → revalidate 순서)은 저장소의 `AGENTS.md`가 원본이다.
 
 ## 인증 · 권한
@@ -10,7 +10,6 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 | 역할 | 판별 | 권한 |
 |---|---|---|
 | 비로그인 | 세션 없음 | 게시글·뉴스 열람, 조회수 |
-| 일반 유저 | Google 세션 존재 | + 댓글 |
 | Admin | 세션 이메일 === `ADMIN_EMAIL` | + 게시글 CRUD, 이미지 업로드 |
 
 ### 파일 구성
@@ -27,7 +26,7 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 
 ### 로그인 UI
 
-`signIn('google')` / `signOut()`. 사이드 네비 하단과 모바일 헤더의 로그인/프로필 버튼(`LoginButton`, `ProfileButton`).
+`signIn('google')` / `signOut()`. 사이드 네비 하단과 모바일 헤더의 로그인/프로필 버튼(`LoginButton`, `ProfileButton`). 방문자는 로그인할 일이 없으므로 `LoginButton`은 회색 아이콘으로만 둔다. 관리자가 아닌 계정으로 로그인해도 권한은 비로그인 방문자와 같다.
 
 ## 게시글
 
@@ -60,7 +59,7 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 
 ### 상세 페이지 — 이전/다음 글
 
-- 본문 하단(내보내기 버튼 아래, 댓글 위)에 `AdjacentNav`를 표시한다
+- 본문 하단(내보내기 버튼 아래)에 `AdjacentNav`를 표시한다
 - **시리즈 글이면 시리즈 내 앞뒤 편**을 이전/다음 글로 보여 준다. 시리즈의 첫 편에는 이전 글이 없고, 마지막 편에는 다음 글이 없다
 - 시리즈가 없는 글은 `created_at` 기준으로 인접한 글 2건을 `maybeSingle()`로 조회한다 — 이전 글 = 더 오래된 글, 다음 글 = 더 최신 글
 - 양쪽 모두 없으면 렌더링하지 않는다
@@ -86,35 +85,10 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 ### 태그
 
 - URL searchParams 기반 필터링. `TAG_DICTIONARY`(`lib/constants/tags.ts`)에 있는 태그만 입력할 수 있고, **배열 순서가 곧 `/posts` 필터 칩 순서**다
-- `TagInputField` 자동완성으로 입력 — `keywords`는 검색용이므로 소문자로 적는다(입력값을 소문자로 변환해 비교)
+- `TagInputField` 자동완성으로 입력 — `keywords`는 검색용이므로 소문자로 적는다(입력값을 소문자로 변환해 비교). Enter 처리 전에 **`e.nativeEvent.isComposing`을 반드시 먼저 검사한다** — 한글 조합 중 Enter는 글자를 확정하는 데 쓰이므로, 이 가드가 없으면 조합 중인 글자가 그대로 태그로 등록된다
 - 현재 사전: Javascript, Typescript, React, Next.js, CSS, Browser, Performance, Testing, Network, Security, Database, Algorithm, Java, Python, etc
 
 **태그는 "어떤 스택인가"가 아니라 "무엇에 대한 글인가"를 기준으로 나눈다.** 따라서 Frontend/Backend처럼 거의 모든 글에 해당하는 태그는 두지 않는다. 인증 관련 글은 `Security`에 넣고, `인증`·`인가`·`oauth`·`jwt`는 keywords로 검색된다.
-
-## 댓글
-
-- **작성**: Google 로그인 사용자만. **삭제**: 본인 또는 admin
-- **1단 대댓글**(flat reply): `parent_id`로 연결하며, `null`이면 최상위
-- 게시글별 생성순 정렬
-
-**Enter로 입력 내용을 제출한다 — 제출 버튼은 없다.** `Shift+Enter`는 줄바꿈.
-
-`CommentForm`은 `<form>`이 아니라 textarea + `onKeyDown`이다. **`e.nativeEvent.isComposing`을 반드시 먼저 검사한다** — 한글 조합 중 Enter는 글자를 확정하는 데 쓰이므로, 이 가드가 없으면 "안녕"을 입력하는 도중 "안녕"이 그대로 등록된다. 같은 가드가 `TagInputField`에도 있다.
-
-전송 중에는 textarea를 disabled 상태로 두고 하단 힌트 문구를 `작성 중...`으로 바꾼다. 버튼이 없으므로 이것이 유일한 진행 표시다.
-
-```typescript
-interface Comment {
-  id: string;
-  postId: string;
-  userId: string;
-  userName: string;
-  userImage: string;
-  parentId: string | null;
-  content: string;
-  createdAt: Date;
-}
-```
 
 ## 조회수
 

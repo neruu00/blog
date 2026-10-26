@@ -1,24 +1,21 @@
 /**
  * @file page.tsx
- * @description 게시글 상세 페이지. 본문, 목차, 시리즈 목록, 이전/다음 글, 댓글을 보여주고
+ * @description 게시글 상세 페이지. 본문, 목차, 시리즈 목록, 이전/다음 글을 보여주고
  *              관리자에게는 수정·삭제 버튼을 보여준다.
  */
 
 import { notFound } from 'next/navigation';
-import { cache, Suspense } from 'react';
+import { cache } from 'react';
 
-import { getComments } from '@/actions/comment';
 import AdjacentNav from '@/components/common/AdjacentNav';
 import BackLink from '@/components/common/BackLink';
 import TableOfContents from '@/components/common/TableOfContents';
-import CommentSection from '@/components/post/CommentSection';
 import DeletePostButton from '@/components/post/DeletePostButton';
 import PostContent from '@/components/post/PostContent';
 import PostExportButtons from '@/components/post/PostExportButtons';
 import PostSeriesList from '@/components/post/PostSeriesList';
 import ViewCounter from '@/components/post/ViewCounter';
 import Button from '@/components/ui/Button';
-import Skeleton from '@/components/ui/Skeleton';
 import TagBadge from '@/components/ui/TagBadge';
 import { isAdmin as checkIsAdmin } from '@/lib/auth';
 import { getPostSeries } from '@/lib/series';
@@ -60,14 +57,6 @@ export async function generateMetadata(
       tags: post.tags || [],
     },
   };
-}
-
-async function PostCommentSection({ postId }: { postId: string }) {
-  const commentsResponse = await getComments(postId);
-  const initialComments =
-    commentsResponse.success && commentsResponse.data ? commentsResponse.data : [];
-
-  return <CommentSection postId={postId} initialComments={initialComments} />;
 }
 
 interface Neighbors {
@@ -169,10 +158,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             prevLabel="이전 글"
             nextLabel="다음 글"
           />
-
-          <Suspense fallback={<Skeleton className="mt-16 h-32 w-full rounded-xl" />}>
-            <PostCommentSection postId={post.id} />
-          </Suspense>
         </article>
 
         <div className="hidden xl:block">
