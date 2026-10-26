@@ -64,7 +64,7 @@
 | `title` | TEXT | — | 기사 원제 |
 | `original_url` | TEXT | — | 원문 URL |
 | `content` | TEXT | — | LLM이 생성한 마크다운 요약 |
-| `source` | TEXT | — | 피드 소스 (`react`, `nextjs`, `typescript`, `chrome`, `tailwindcss`, `javascript`) |
+| `source` | TEXT | — | 피드 소스 (`react`, `nextjs`, `typescript`, `chrome`, `tailwindcss`, `javascript`, `node`, `frontend`) |
 | `published_at` | TIMESTAMPTZ | — | 원문 발행일 (RSS `isoDate`/`pubDate`) |
 | `created_at` | TIMESTAMPTZ | `now()` | 수집 시간 |
 

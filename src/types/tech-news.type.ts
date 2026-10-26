@@ -9,7 +9,9 @@ export type TechNewsSource =
   | 'typescript'
   | 'chrome'
   | 'tailwindcss'
-  | 'javascript';
+  | 'javascript'
+  | 'node'
+  | 'frontend';
 
 /** `tech_news` 테이블 행 */
 export interface TechNewsRow {
@@ -40,4 +42,6 @@ export const TECH_NEWS_SOURCE_LABELS: Record<TechNewsSource, string> = {
   chrome: 'Chrome Dev',
   tailwindcss: 'Tailwind CSS',
   javascript: 'JavaScript',
+  node: 'Node.js',
+  frontend: 'Frontend',
 };

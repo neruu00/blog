@@ -118,6 +118,8 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 | `chrome` | `developer.chrome.com/static/blog/feed.xml` |
 | `tailwindcss` | `tailwindcss.com/feeds/feed.xml` |
 | `javascript` | `javascriptweekly.com/rss/` |
+| `node` | `nodeweekly.com/rss/` |
+| `frontend` | `frontendfoc.us/rss/` |
 
 ### 파이프라인 (`/api/cron/fetch-news`, 매일 00:00 UTC)
 
