@@ -68,6 +68,6 @@
                 │
                 └── [Zustand] ← 전역 UI 상태 (모달/토스트/사이드바)
 
-[Vercel Cron] → [fetch-news] → [RSS 6종 + 원문] → [gpt-4o-mini] → [tech_news]
+[Vercel Cron] → [fetch-news] → [RSS 8종 + 원문] → [gpt-4o-mini] → [tech_news]
              └→ [cleanup-images] → 24h 경과 고아 이미지 삭제
 ```

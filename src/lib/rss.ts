@@ -32,6 +32,14 @@ export const RSS_FEEDS: { source: TechNewsSource; url: string }[] = [
     source: 'javascript',
     url: 'https://javascriptweekly.com/rss/',
   },
+  {
+    source: 'node',
+    url: 'https://nodeweekly.com/rss/',
+  },
+  {
+    source: 'frontend',
+    url: 'https://frontendfoc.us/rss/',
+  },
 ];
 
 export interface ParsedFeedItem {

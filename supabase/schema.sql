@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS tech_news (
   title        TEXT NOT NULL,
   original_url TEXT NOT NULL,
   content      TEXT NOT NULL,          -- 마크다운 요약
-  source       TEXT NOT NULL,          -- react | nextjs | typescript | chrome | tailwindcss | javascript
+  source       TEXT NOT NULL,          -- react | nextjs | typescript | chrome | tailwindcss | javascript | node | frontend
   published_at TIMESTAMPTZ NOT NULL,
   created_at   TIMESTAMPTZ DEFAULT now()
 );
