@@ -18,9 +18,9 @@ import ProfileButton from './ProfileButton';
 export default function AuthSection() {
   const { data: session, status } = useSession();
 
-  // 세션을 확인하는 동안 "Log in"이 잠깐 나타났다 사라지지 않도록 스켈레톤을 보여준다
+  // 대부분은 비로그인 방문자라 로그인 아이콘 크기만큼만 자리를 잡는다
   if (status === 'loading') {
-    return <Skeleton className="h-16 w-full rounded-lg" />;
+    return <Skeleton className="size-9 rounded-lg" />;
   }
 
   return session ? <ProfileButton session={session} /> : <LoginButton />;
