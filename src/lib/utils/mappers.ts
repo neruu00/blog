@@ -4,6 +4,7 @@
  */
 
 import type { Post, PostCategory } from '@/types/post.type';
+import type { PostSearchResult } from '@/types/search.type';
 import type { TechNewsSource } from '@/types/tech-news.type';
 
 /* Supabase 클라이언트에 DB 타입 제네릭이 없어 행 타입이 없다. 매퍼 진입점에서만 느슨하게 받는다. */
@@ -23,6 +24,19 @@ export function mapPostRow(row: Row): Post {
     tags: (row.tags as string[]) || [],
     category: ((row.category as string) || 'tech') as PostCategory,
     viewCount: (row.view_count as number) || 0,
+    seriesTitle: series?.title ?? null,
+  };
+}
+
+/** posts 검색 행(id, title, tags, created_at, series(title)) → 검색 미리 보기 항목 */
+export function mapPostSearchRow(row: Row): PostSearchResult {
+  const series = row.series as { title: string } | null | undefined;
+
+  return {
+    id: row.id as string,
+    title: row.title as string,
+    tags: (row.tags as string[]) || [],
+    createdAt: row.created_at as string,
     seriesTitle: series?.title ?? null,
   };
 }

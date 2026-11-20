@@ -77,7 +77,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   const newsList = (rows ?? []).map(mapNewsListRow);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageHeader
         title="기술 뉴스"
         description="프론트엔드 최신 소식과 한국어 요약을 제공합니다."

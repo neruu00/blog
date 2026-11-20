@@ -8,13 +8,19 @@ import PostCard from './PostCard';
 interface PostListProps {
   posts: Post[];
   isAdmin?: boolean;
+  /** 글이 없을 때 보여줄 문구. 검색 결과가 비었을 때처럼 상황에 맞게 바꾼다 */
+  emptyMessage?: string;
 }
 
 /** 게시글 목록. 글이 없으면 빈 상태를 보여준다. */
-export default function PostList({ posts, isAdmin }: PostListProps) {
+export default function PostList({
+  posts,
+  isAdmin,
+  emptyMessage = '아직 작성된 글이 없습니다.',
+}: PostListProps) {
   if (posts.length === 0) {
     return (
-      <EmptyState message="이 카테고리에 글이 없습니다.">
+      <EmptyState message={emptyMessage}>
         {isAdmin && (
           <Link href="/write" className="text-sm font-medium text-orange-500 hover:underline">
             새 글 작성하기 →

@@ -57,9 +57,9 @@ export default function TableOfContents({ items, variant = 'sidebar' }: TableOfC
     );
   }
 
-  // 표시 여부(hidden xl:block)는 부모(page.tsx)가 결정한다
+  // 표시 여부(hidden 2xl:block)와 위치는 부모(page.tsx)가 결정한다. 본문 밖 여백에 들어가도록 w-56을 넘기지 않는다
   return (
-    <div className="sticky top-24 w-64 shrink-0">
+    <div className="sticky top-24 w-56 shrink-0">
       <h3 className="mb-4 text-sm font-semibold text-gray-900">목차</h3>
       {list}
     </div>

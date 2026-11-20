@@ -150,6 +150,7 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 | `gutter` | `px-gutter`, `-mx-gutter` | 16px | 32px | 24px | 본문·헤더·푸터 좌우 여백 |
 | `page-top` | `pt-page-top` | 32px | 48px | 96px | 본문 위 여백 |
 | `float` | `right-float`, `bottom-float` | 16px | 24px | 24px | FAB·`EditorActions`·토스트와 화면 가장자리 사이 거리 |
+| `content` | `max-w-content` | 720px | 720px | 720px | 블로그 본문 최대 폭. `(blog)/layout.tsx`의 `<main>` 안쪽 래퍼 한 곳에만 걸고, 페이지에서는 따로 `max-w`를 걸지 않는다. 푸터도 같은 폭을 쓴다 |
 | `fab` | `size-fab` | 56px | 56px | 56px | FAB와 `EditorActions` 제출 버튼 크기 |
 | `below-header` | `top-below-header` | header + float | | | 모바일 토스트 위치 (헤더 바로 아래) |
 | `beside-fab` | `md:right-beside-fab` | | float × 2 + fab | | 태블릿 이상 토스트 위치 (FAB 열 왼쪽) |
@@ -161,8 +162,8 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 │            │              pt-page-top                │
 │   SideNav  │                                         │
 │   (fixed)  │         Main Content Area               │
-│            │         max-w-6xl, px-gutter            │
-│ w-sidenav  │         (페이지마다 max-w-3xl 등)        │
+│            │         px-gutter                       │
+│ w-sidenav  │         max-w-content (720px)           │
 │            │                                         │
 │   Logo     │                                         │
 │   ─────    │                                         │
@@ -173,7 +174,7 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 └────────────┴─────────────────────────────────────────┘
 ```
 
-게시글 상세에서는 `xl`(1280px) 이상일 때 본문 오른쪽에 목차(`TableOfContents`)를 고정한다.
+게시글 상세에서는 `2xl`(1536px) 이상일 때 본문 폭 밖 오른쪽 여백에 목차(`TableOfContents`, `w-56`)를 고정한다. 그보다 좁으면 본문 오른쪽 여백이 목차 폭보다 좁아서 본문 위 접이식 패널로 보여준다.
 
 ### 모바일·태블릿 (< 1024px)
 
@@ -244,15 +245,15 @@ Tiptap의 listItem은 항상 `<li><p>…</p></li>`로 렌더링된다. typograph
 
 ### 카드
 
-목록 카드(PostCard, NewsCard)는 박스가 아니라 **플랫 리스트 항목**이다. 컨테이너의 `divide-y divide-gray-100`으로 구분하고, hover는 제목 색 전환(`group-hover:text-orange-500`)으로 표현한다. 테두리·그림자·배경 박스는 쓰지 않는다.
+목록 카드(PostCard, NewsCard)는 박스가 아니라 **플랫 리스트 항목**이다. 컨테이너의 `divide-y divide-gray-100`으로 구분하고, hover는 제목 색 전환(`group-hover:text-orange-500`)으로 표현한다. 테두리·그림자·배경 박스는 쓰지 않는다. 예외로 `PostCard`는 hover 때 항목 전체에 `bg-orange-50` 배경을 깔고, 제목 색과 함께 `duration-200 ease-out`으로 전환한다. 여백(`px-3 py-5`)은 article이 아니라 링크에 줘서 배경이 구분선 사이를 빈틈없이 채우게 하고, `-mx-3`으로 글자 시작선을 목록 밖 요소와 맞춘다.
+
+`PostCard`에는 본문 요약·태그·시리즈를 넣지 않는다. 제목 아래 한 줄에 날짜·조회수를 `text-gray-500` 텍스트로 표시한다. 시리즈는 게시글 상세의 시리즈 목록과 검색 미리 보기에서 보여준다. 태그는 게시글 상세 화면에서 보여주고, 목록에서는 검색(`PostSearch`)에만 쓴다.
 
 그림자는 떠 있거나 고정된 요소에만 쓴다 — sticky 툴바, EditorActions, FAB, 모달, 드롭다운.
 
-### 홈 포스터
+### 홈
 
-- 시그니처는 `EyePoster`(방범카메라) 하나 — 마우스를 따라 움직이는 눈동자 + 「作動中!」. `h-64 border-gray-200 bg-gray-100`
-- 마우스 전용 장식 요소이므로 **md 미만에서는 숨긴다**
-- 홈은 시각적 제목 없이 포스터(1/5) + 최신 뉴스(4/5)로 시작한다 — 문서 아웃라인용 `sr-only` h1만 둔다
+- 홈은 시각적 제목이나 포스터 없이 최신 뉴스 → 최신 글 순서로 바로 시작한다 — 문서 아웃라인용 `sr-only` h1만 둔다
 
 ### 입력 필드
 
