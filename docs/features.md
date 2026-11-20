@@ -52,7 +52,7 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 
 ### 상세 페이지 — TOC
 
-- heading(h2~h4)을 파싱해 목차로 보여 준다. `xl`(1280px) 이상에서는 본문 오른쪽에 고정하고, 그 미만에서는 본문 위 접이식 패널로 둔다. 패널은 처음에는 닫혀 있으며, 항목을 누르면 해당 위치로 이동한 뒤 닫힌다
+- heading(h2~h4)을 파싱해 목차로 보여 준다. `2xl`(1536px) 이상에서는 본문 오른쪽 여백에 고정하고, 그 미만에서는 본문 위 접이식 패널로 둔다. 패널은 처음에는 닫혀 있으며, 항목을 누르면 해당 위치로 이동한 뒤 닫힌다
 - 에디터의 Heading Shift(`#` → h2)를 반영한 계층 매핑: h2=L1, h3=L2, h4=L3
 - **헤딩 id는 `PostContent`가 서버 렌더링 시 붙인다.** 페이지가 `extractTocFromTiptap` 결과 하나를 `TableOfContents`와 `PostContent` 양쪽에 넘기므로 id가 항상 일치한다. 텍스트가 없는 헤딩은 양쪽 모두 건너뛴다
 - `IntersectionObserver`로 현재 위치를 하이라이트하고, 클릭하면 스무스 스크롤한다. 헤딩에 `scroll-mt-24`를 적용해 고정 헤더 여백을 확보한다
@@ -84,9 +84,19 @@ Google OAuth(next-auth v4) + Supabase Adapter를 사용한다. 세션은 JWT 전
 
 ### 태그
 
-- URL searchParams 기반 필터링. `TAG_DICTIONARY`(`lib/constants/tags.ts`)에 있는 태그만 입력할 수 있고, **배열 순서가 곧 `/posts` 필터 칩 순서**다
+- `TAG_DICTIONARY`(`lib/constants/tags.ts`)에 있는 태그만 입력할 수 있다. 태그는 목록에서 필터 버튼으로 노출하지 않고 검색에 쓴다(아래 "검색")
 - `TagInputField` 자동완성으로 입력 — `keywords`는 검색용이므로 소문자로 적는다(입력값을 소문자로 변환해 비교). Enter 처리 전에 **`e.nativeEvent.isComposing`을 반드시 먼저 검사한다** — 한글 조합 중 Enter는 글자를 확정하는 데 쓰이므로, 이 가드가 없으면 조합 중인 글자가 그대로 태그로 등록된다
-- 현재 사전: Javascript, Typescript, React, Next.js, CSS, Browser, Performance, Testing, Network, Security, Database, Algorithm, Java, Python, etc
+- 현재 사전: Javascript, Typescript, React, Next.js, CSS, Browser, Performance, Testing, Network, Security, Database, Algorithm, Java, Python
+
+### 검색
+
+- `/posts` 제목 옆의 검색 버튼(`PostSearch`)으로 검색 창을 연다. ⌘K / Ctrl+K로도 열린다. `lg` 이상에서는 화면 위쪽에 뜨는 Spotlight형 창, 그 아래에서는 아래에서 올라오는 드로어다. 둘 다 `<dialog>`의 `showModal()`로 열어 포커스 가두기·Esc 닫기는 브라우저에 맡긴다
+- 입력이 200ms 멈추면 `searchPosts` 서버 액션(`actions/search.ts`)으로 최대 8개를 미리 보여준다. 늦게 도착한 이전 요청의 응답은 버린다. ↑↓로 고르고 Enter로 글을 연다. 마지막 항목 "전체 결과 보기"는 `/posts?q=`로 이동한다
+- `/posts?q=`는 같은 조건의 전체 결과를 페이지네이션과 함께 보여준다
+- 검색어는 `postSearchQuerySchema`로 정리한다 — 앞뒤 공백 제거, 50자 제한, `"`·`\` 제거
+- 조건(`lib/utils/postSearch.ts`)은 **제목 부분 일치(`ilike`) 또는 태그 일치**다. 검색어가 태그 이름이나 `keywords`의 일부와 맞으면 그 태그가 붙은 글도 찾는다 — "리액트" → React, "jwt" → Security
+- 본문은 검색하지 않는다
+- 페이지네이션 링크는 `q`를 유지한다
 
 **태그는 "어떤 스택인가"가 아니라 "무엇에 대한 글인가"를 기준으로 나눈다.** 따라서 Frontend/Backend처럼 거의 모든 글에 해당하는 태그는 두지 않는다. 인증 관련 글은 `Security`에 넣고, `인증`·`인가`·`oauth`·`jwt`는 keywords로 검색된다.
 

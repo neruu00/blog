@@ -23,7 +23,10 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         <div className="pt-header lg:pt-0">
           <div className="pt-page-top" />
 
-          <main className="px-gutter mx-auto max-w-6xl pb-16">{children}</main>
+          {/* 본문 폭은 모든 블로그 페이지가 여기서 공유한다. 페이지에서 따로 max-w를 걸지 않는다 */}
+          <main className="px-gutter pb-16">
+            <div className="max-w-content mx-auto">{children}</div>
+          </main>
 
           <Footer />
         </div>

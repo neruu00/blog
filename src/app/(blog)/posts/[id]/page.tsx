@@ -112,9 +112,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
     <>
       <BackLink href="/posts">목록으로</BackLink>
 
-      <div className="relative flex xl:gap-8">
+      {/* 2xl 이상에서는 목차를 본문 폭(max-w-content) 밖 오른쪽 여백에 띄운다 */}
+      <div className="relative">
         <ViewCounter postId={post.id} />
-        <article className="mx-auto max-w-3xl min-w-0 flex-1">
+        <article className="min-w-0">
           <header className="mb-10">
             <h1 className="page-title mb-4">{post.title}</h1>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 md:gap-x-4">
@@ -135,7 +136,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
             )}
           </header>
           {series && <PostSeriesList series={series} currentPostId={post.id} />}
-          <div className="xl:hidden">
+          <div className="2xl:hidden">
             <TableOfContents items={tocItems} variant="collapsible" />
           </div>
           <PostContent content={post.content as JSONContent} toc={tocItems} />
@@ -160,7 +161,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           />
         </article>
 
-        <div className="hidden xl:block">
+        <div className="absolute top-0 left-full ml-8 hidden h-full 2xl:block">
           <TableOfContents items={tocItems} />
         </div>
       </div>

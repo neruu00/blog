@@ -53,6 +53,8 @@
   --spacing-gutter: var(--layout-gutter);
   --spacing-page-top: var(--layout-page-top);
   --spacing-float: var(--layout-float);
+  /* 블로그 본문 최대 폭. max-w-content로 쓴다 */
+  --container-content: var(--layout-content);
   /* 상단 헤더 바로 아래. 모바일 토스트 위치 */
   --spacing-below-header: calc(var(--layout-header) + var(--layout-float));
   /* md 이상 토스트는 오른쪽 아래 FAB·EditorActions 열의 왼쪽에 띄워 겹치지 않게 한다 */
@@ -70,6 +72,7 @@
     --layout-gutter: calc(var(--spacing) * 4);
     --layout-page-top: calc(var(--spacing) * 8);
     --layout-float: calc(var(--spacing) * 4);
+    --layout-content: calc(var(--spacing) * 180);
 
     @variant md {
       --layout-gutter: calc(var(--spacing) * 8);

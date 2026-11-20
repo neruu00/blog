@@ -1,11 +1,10 @@
 /**
  * @file page.tsx
- * @description 블로그 홈. EyePoster, 최신 기술 뉴스, 최신 게시글을 보여준다.
+ * @description 블로그 홈. 최신 기술 뉴스와 최신 게시글을 보여준다.
  */
 
 import EmptyState from '@/components/common/EmptyState';
 import SectionHeader from '@/components/common/SectionHeader';
-import EyePoster from '@/components/layout/EyePoster';
 import NewsCard from '@/components/news/NewsCard';
 import PostCard from '@/components/post/PostCard';
 import { supabase } from '@/lib/supabase';
@@ -30,7 +29,7 @@ export default async function HomePage() {
         .from('tech_news')
         .select('id, title, source, published_at')
         .order('published_at', { ascending: false })
-        .limit(5),
+        .limit(3),
     ]);
 
   if (postsError) {
@@ -46,31 +45,24 @@ export default async function HomePage() {
   const newsList = (newsRows ?? []).map(mapNewsListRow);
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div>
       {/* 화면에 제목을 두지 않고 문서 아웃라인용 h1만 둔다 */}
       <h1 className="sr-only">neruu00.log</h1>
 
-      {/* 포스터는 마우스로만 반응하는 장식이라 md 미만에서는 숨긴다 */}
-      <section className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-5">
-        <div className="hidden md:col-span-1 md:block">
-          <EyePoster />
-        </div>
+      <section className="mb-16">
+        <SectionHeader title="최신 기술 뉴스" href="/news" />
 
-        <div className="md:col-span-4">
-          <SectionHeader title="최신 기술 뉴스" href="/news" />
-
-          {newsList.length > 0 ? (
-            <div className="flex flex-col divide-y divide-gray-100">
-              {newsList.map((news) => (
-                <NewsCard key={news.id} news={news} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState message="뉴스가 아직 수집되지 않았습니다.">
-              <p className="text-sm text-gray-400">새 뉴스가 수집되면 자동으로 표시됩니다.</p>
-            </EmptyState>
-          )}
-        </div>
+        {newsList.length > 0 ? (
+          <div className="flex flex-col divide-y divide-gray-100">
+            {newsList.map((news) => (
+              <NewsCard key={news.id} news={news} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState message="뉴스가 아직 수집되지 않았습니다.">
+            <p className="text-sm text-gray-400">새 뉴스가 수집되면 자동으로 표시됩니다.</p>
+          </EmptyState>
+        )}
       </section>
 
       <section>

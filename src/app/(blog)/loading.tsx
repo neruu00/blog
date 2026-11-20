@@ -8,7 +8,7 @@ import Skeleton from '@/components/ui/Skeleton';
 
 export default function BlogLoading() {
   return (
-    <div className="mx-auto max-w-3xl" aria-busy="true" aria-label="불러오는 중">
+    <div aria-busy="true" aria-label="불러오는 중">
       <div className="mb-10">
         <Skeleton className="mb-3 h-8 w-1/3" />
         <Skeleton className="h-4 w-1/5" />

@@ -73,7 +73,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <BackLink href="/news">뉴스 목록으로</BackLink>
 
       <header className="mb-10 border-b border-gray-100 pb-8">
